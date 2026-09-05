@@ -6,7 +6,7 @@
   <title>Hostal Somnis Workspace</title>
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#FFFFFF">
-  <link rel="stylesheet" href="css/styles.css?v=9">
+  <link rel="stylesheet" href="css/styles.css?v=10">
 </head>
 <body>
 
@@ -107,15 +107,22 @@
                 </div>
 
                 <div class="form-group">
-                  <label class="form-label">Habitació</label>
-                  <select id="codigos-habitacio" class="form-select">
-                    <option value="101">Habitació 101</option>
-                    <option value="102" selected>Habitació 102</option>
-                    <option value="201">Habitació 201</option>
-                    <option value="202">Habitació 202</option>
-                    <option value="301">Habitació 301</option>
-                    <option value="302">Habitació 302</option>
-                  </select>
+                  <label class="form-label">Habitacions</label>
+                  <div id="habitaciones-container" style="display: flex; flex-direction: column; gap: 8px;">
+                    <div class="habitacion-row" style="display: flex; gap: 8px; align-items: center;">
+                      <select class="form-select habitacion-select" style="flex: 1;">
+                        <option value="101">Habitació 101</option>
+                        <option value="102" selected>Habitació 102</option>
+                        <option value="201">Habitació 201</option>
+                        <option value="202">Habitació 202</option>
+                        <option value="301">Habitació 301</option>
+                        <option value="302">Habitació 302</option>
+                      </select>
+                    </div>
+                  </div>
+                  <button type="button" class="btn" id="btn-add-habitacion" onclick="CodesModule.addRoom()" style="margin-top: 8px; width: 100%; border: 1px dashed var(--border-dark); font-size: 13px; padding: 7px; color: var(--text-main); background: var(--bg-element); border-radius: 4px;">
+                    + Afegir una altra habitació
+                  </button>
                 </div>
 
                 <div class="form-group" style="margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border-color);">
@@ -174,9 +181,9 @@
     </main>
   </div>
 
-  <script src="js/store.js?v=9"></script>
-  <script src="js/app.js?v=9"></script>
-  <script src="js/codes.js?v=9"></script>
-  <script src="js/settings.js?v=9"></script>
+  <script src="js/store.js?v=10"></script>
+  <script src="js/app.js?v=10"></script>
+  <script src="js/codes.js?v=10"></script>
+  <script src="js/settings.js?v=10"></script>
 </body>
 </html>

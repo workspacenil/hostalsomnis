@@ -25,7 +25,7 @@ const CodesModule = {
       }
     });
 
-    const otherInputs = ['codigos-idioma', 'codigos-caixa-num', 'codigos-habitacio', 'codigos-limpieza'];
+    const otherInputs = ['codigos-idioma', 'codigos-caixa-num', 'codigos-limpieza'];
     otherInputs.forEach(id => {
       const el = document.getElementById(id);
       if (el) {
@@ -33,6 +33,38 @@ const CodesModule = {
         el.addEventListener('change', () => this.generateText());
       }
     });
+
+    const habContainer = document.getElementById('habitaciones-container');
+    if (habContainer) {
+      habContainer.addEventListener('change', (e) => {
+        if (e.target.classList.contains('habitacion-select')) {
+          this.generateText();
+        }
+      });
+    }
+  },
+
+  addRoom() {
+    const container = document.getElementById('habitaciones-container');
+    if (!container) return;
+
+    const row = document.createElement('div');
+    row.className = 'habitacion-row';
+    row.style.cssText = 'display: flex; gap: 8px; align-items: center;';
+    row.innerHTML = `
+      <select class="form-select habitacion-select" style="flex: 1;">
+        <option value="101">Habitació 101</option>
+        <option value="102">Habitació 102</option>
+        <option value="201" selected>Habitació 201</option>
+        <option value="202">Habitació 202</option>
+        <option value="301">Habitació 301</option>
+        <option value="302">Habitació 302</option>
+      </select>
+      <button type="button" class="btn" style="color: var(--danger); border: 1px solid var(--border-color); padding: 6px 12px; font-weight: bold; border-radius: 4px;" title="Eliminar habitació" onclick="this.parentElement.remove(); CodesModule.generateText();">✕</button>
+    `;
+
+    container.appendChild(row);
+    this.generateText();
   },
 
   render() {
@@ -64,12 +96,35 @@ const CodesModule = {
     const porta = document.getElementById('codigos-porta').value || '______';
     const caixaNum = document.getElementById('codigos-caixa-num').value || '1';
     const caixaCodi = document.getElementById('codigos-caixa-codi').value || '____';
-    const habitacio = document.getElementById('codigos-habitacio').value || '101';
-    // Determinar la planta automáticamente: si empieza por 1 es planta 1, por 2 planta 2, por 3 planta 3
-    const plantaVal = habitacio.charAt(0);
-    const incloureNeteja = document.getElementById('codigos-limpieza').checked;
     
-    const floorText = this.getFloorText(lang, plantaVal);
+    // Obtener todas las habitaciones seleccionadas
+    const habitacionSelects = document.querySelectorAll('.habitacion-select');
+    const rooms = [];
+    habitacionSelects.forEach(sel => {
+      if (sel.value) {
+        rooms.push({
+          num: sel.value,
+          planta: sel.value.charAt(0)
+        });
+      }
+    });
+
+    if (rooms.length === 0) {
+      rooms.push({ num: '101', planta: '1' });
+    }
+
+    let roomsText = '';
+    if (lang === 'ca') {
+      roomsText = rooms.map(r => `HABITACIÓ ${r.num}  (${this.getFloorText(lang, r.planta)})`).join('\n');
+    } else if (lang === 'es') {
+      roomsText = rooms.map(r => `Habitación ${r.num}  (${this.getFloorText(lang, r.planta)})`).join('\n');
+    } else if (lang === 'en') {
+      roomsText = rooms.map(r => `Room: ${r.num}  (${this.getFloorText(lang, r.planta)})`).join('\n');
+    } else if (lang === 'fr') {
+      roomsText = rooms.map(r => `Chambre : ${r.num}  (${this.getFloorText(lang, r.planta)})`).join('\n');
+    }
+
+    const incloureNeteja = document.getElementById('codigos-limpieza').checked;
     const cleaningText = incloureNeteja ? this.getCleaningText(lang) : '';
     let text = '';
 
@@ -84,7 +139,7 @@ Codi per obrir la caixa:
 
 Caixa ${caixaNum}
 Codi:  ${caixaCodi} A i girar la rodeta.
-HABITACIÓ ${habitacio}  (${floorText})
+${roomsText}
 
 Aquesta targeta obre la porta d'entrada col·locant-la sobre el teclat (ja no caldrà marcar el codi) i també obre l'habitació.${cleaningText}
 
@@ -104,7 +159,7 @@ El código para abrir la caja:
 
 Caja ${caixaNum}
 Código:  ${caixaCodi} A y girar ruedecilla.
-Habitación ${habitacio}  ${floorText}
+${roomsText}
 
 Esta tarjeta abre la puerta de entrada poniéndola sobre el teclado (ya no hará falta marcar el código) y también abre la habitación.${cleaningText}
 
@@ -124,7 +179,7 @@ The code to open the box:
 
 Box ${caixaNum}
 Code:  ${caixaCodi} A and turn the wheel.
-Room: ${habitacio}  ${floorText}
+${roomsText}
 
 This card opens the front door by placing it on the keyboard and also opens the room. With the key card, you won't need to enter the code anymore.${cleaningText}
 
@@ -139,7 +194,7 @@ La carte de la chambre se trouve dans les boîtes derrière la porte principale.
 
 Boîte ${caixaNum}
 Code :  ${caixaCodi} A puis tourner la molette
-Chambre : ${habitacio}  ${floorText}
+${roomsText}
 
 Cette carte ouvre la porte principale en la posant sur le clavier, ainsi que la chambre. Il ne sera plus nécessaire de taper le code.${cleaningText}
 
