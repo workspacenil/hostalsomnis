@@ -129,11 +129,11 @@ const CodesModule = {
     let text = '';
 
     if (lang === 'ca') {
-      text = `Per accedir, cal marcar al teclat lateral de la porta d'entrada al codi:
+      text = `Per accedir, cal marcar al teclat lateral de la porta d’entrada:
 
-         ${porta}   i   ✅
+el codi  ${porta}   i ✅
 
-La targeta/clau de l'habitació és a les caixes que hi ha darrere de la porta.
+La targeta/clau de l’habitació és a les caixes que hi ha darrere de la porta.
 
 Codi per obrir la caixa:
 
@@ -141,54 +141,58 @@ Caixa ${caixaNum}
 Codi:  ${caixaCodi} A i girar la rodeta.
 ${roomsText}
 
-Aquesta targeta obre la porta d'entrada col·locant-la sobre el teclat (ja no caldrà marcar el codi) i també obre l'habitació.${cleaningText}
+Ara amb la targeta podeu obrir totes dues portes, passeu-la pel lector. Ja no necessiteu el codi.${cleaningText}
 
-Hora de check-out: 11:30 h
+Hora de check-out: 11:30 AM
 Podeu tornar la targeta a la mateixa caixa de recollida si la recepció està tancada.
 
 Gràcies 
 Hostal Somnis`;
     } else if (lang === 'es') {
-      text = `Para acceder se tiene que marcar en el teclado lateral de la puerta de entrada el código:
+      text = `Para acceder se tiene que marcar en el teclado lateral de la puerta de entrada:
 
-         ${porta}   y   ✅
+código     ${porta}  y ✅
 
 La tarjeta / llave de la habitación está en las cajas de detrás de la puerta.
 
 El código para abrir la caja:
 
-Caja ${caixaNum}
+Caja  ${caixaNum}
 Código:  ${caixaCodi} A y girar ruedecilla.
 ${roomsText}
 
-Esta tarjeta abre la puerta de entrada poniéndola sobre el teclado (ya no hará falta marcar el código) y también abre la habitación.${cleaningText}
+Ahora con la tarjeta puede abrir ambas puertas, pásela por el teclado. Ya no necesita el código.${cleaningText}
 
-Hora Check out: 11:30h
+*Hora Check out:   11:30 AM *
 Si la recepción estuviera cerrada, pueden dejar la tarjeta en la misma caja de recogida.
 
 Gracias 
 HOSTAL SOMNIS`;
     } else if (lang === 'en') {
-      text = `To access, please use the side keypad by the main entrance door and enter the code:
+      text = `To access, please use the side keypad by the main entrance door and enter the code: 
 
-         ${porta}   and   ✅
+${porta}   and ✅
 
 The keycard for the room is in the boxes behind the door.
 
 Code to open the box:
+
 Box ${caixaNum}
 Code:  ${caixaCodi} A and turn the wheel.
 ${roomsText}
 
-This card opens the front door by placing it on the reader and opens your room door. With the keycard, you won't need to enter the code anymore.
+Now with the keycard you can open both doors, just tap it on the keypad. You will no longer need the code.${cleaningText}
 
 Check-out time: 11:30 AM
 
-If reception is closed, the room key card can be left in the same box where it was collected.${cleaningText}`;
-    } else if (lang === 'fr') {
-      text = `Pour entrer, il faut composer sur le clavier situé à côté de la porte principale le code :
+If reception is closed, you can return your keycard to the same box.
 
-         ${porta}   et   ✅
+Thank you
+Hostal Somnis`;
+    } else if (lang === 'fr') {
+      text = `Pour entrer, il faut composer sur le clavier situé à côté de la porte principale Code : 
+
+${porta}   et ✅
 
 La carte de la chambre se trouve dans les boîtes derrière la porte principale.
 
@@ -196,9 +200,10 @@ Boîte ${caixaNum}
 Code :  ${caixaCodi} A puis tourner la molette
 ${roomsText}
 
-Cette carte ouvre la porte principale en la posant sur le clavier, ainsi que la chambre. Il ne sera plus nécessaire de taper le code.${cleaningText}
+Vous pouvez désormais ouvrir les deux portes avec la carte, il suffit de la passer sur le lecteur. Vous n'avez plus besoin du code.${cleaningText}
 
-Heure de check-out : 11h30
+Heure de check-out : 11:30 AM
+
 En partant, si la réception est fermée, vous pouvez laisser la carte dans la même boîte de dépôt.
 
 Merci
