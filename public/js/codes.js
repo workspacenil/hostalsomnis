@@ -85,7 +85,7 @@ const CodesModule = {
     const texts = {
       ca: '\n\nIMPORTANT: Si cal que netegin l\'habitació, penjar el cartell verd.',
       es: '\n\nIMPORTANTE: Si desean la limpieza de la habitación, colgar el cartel verde.',
-      en: '\n\nIMPORTANT: If you want your room to be cleaned, please hang the green sign.',
+      en: '\n\nIf you would like your room to be cleaned, please hang the green sign.',
       fr: '\n\nIMPORTANT : Si vous souhaitez que la chambre soit nettoyée, veuillez accrocher l\'écriteau vert.'
     };
     return texts[lang] || '';
@@ -169,22 +169,22 @@ Si la recepción estuviera cerrada, pueden dejar la tarjeta en la misma caja de 
 Gracias 
 HOSTAL SOMNIS`;
     } else if (lang === 'en') {
-      text = `To access, please enter on the side keypad by the main entrance door the code:
+      text = `To access, please use the side keypad by the main entrance door and enter the code:
 
          ${porta}   and   ✅
 
-The card/key of the room is in the boxes behind the door.
+The keycard for the room is in the boxes behind the door.
 
-The code to open the box:
-
+Code to open the box:
 Box ${caixaNum}
 Code:  ${caixaCodi} A and turn the wheel.
 ${roomsText}
 
-This card opens the front door by placing it on the keyboard and also opens the room. With the key card, you won't need to enter the code anymore.${cleaningText}
+This card opens the front door by placing it on the reader and opens your room door. With the keycard, you won't need to enter the code anymore.
 
-Check out: 11:30h
-The room key card can be left in the same box where it was collected.`;
+Check-out time: 11:30 AM
+
+If reception is closed, the room key card can be left in the same box where it was collected.${cleaningText}`;
     } else if (lang === 'fr') {
       text = `Pour entrer, il faut composer sur le clavier situé à côté de la porte principale le code :
 
