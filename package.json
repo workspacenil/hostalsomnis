@@ -1,0 +1,26 @@
+{
+  "name": "hostal-somnis-app",
+  "version": "1.0.0",
+  "description": "Aplicación de gestión sencilla para Hostal Somnis en Súria",
+  "main": "server/app.js",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node server/app.js",
+    "dev": "node --watch server/app.js"
+  },
+  "keywords": [
+    "hostal",
+    "somnis",
+    "gestion",
+    "caldav",
+    "icloud"
+  ],
+  "author": "Hostal Somnis",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.21.2",
+    "ical.js": "^2.1.0",
+    "uuid": "^11.1.0"
+  }
+}

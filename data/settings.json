@@ -1,0 +1,37 @@
+{
+  "hostalName": "Hostal Somnis",
+  "legalName": "Hostal Somnis Súria",
+  "nif": "B-12345678",
+  "address": "Carrer Major, 12",
+  "city": "Súria",
+  "postalCode": "08260",
+  "province": "Barcelona",
+  "phone": "+34 600 000 000",
+  "email": "info@hostalsomnis.cat",
+  "rooms": [
+    {
+      "id": "hab-1",
+      "name": "Habitación 1 - Doble"
+    },
+    {
+      "id": "hab-2",
+      "name": "Habitación 2 - Matrimonial"
+    },
+    {
+      "id": "hab-3",
+      "name": "Habitación 3 - Doble"
+    },
+    {
+      "id": "hab-4",
+      "name": "Habitación 4 - Individual"
+    }
+  ],
+  "icloud": {
+    "enabled": false,
+    "appleId": "",
+    "appPassword": "",
+    "calendarName": "Hostal Somnis",
+    "calendarUrl": "",
+    "lastSync": null
+  }
+}
