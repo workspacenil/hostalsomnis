@@ -1,16 +1,14 @@
-const CACHE_NAME = 'hostal-somnis-v1';
+const CACHE_NAME = 'hostal-somnis-v2';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
   './css/styles.css',
   './js/app.js',
-  './js/calendar.js',
-  './js/finances.js',
-  './js/invoice.js',
-  './js/templates.js',
+  './js/codes.js',
   './js/settings.js',
   './js/store.js',
-  './manifest.json'
+  './manifest.json',
+  './assets/logo.png'
 ];
 
 // Instalación del Service Worker
