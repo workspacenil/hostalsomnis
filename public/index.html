@@ -6,7 +6,7 @@
   <title>Hostal Somnis Workspace</title>
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#FFFFFF">
-  <link rel="stylesheet" href="css/styles.css?v=6">
+  <link rel="stylesheet" href="css/styles.css?v=7">
 </head>
 <body>
 
@@ -52,9 +52,13 @@
     <!-- MAIN CONTENT -->
     <main class="main-content">
       
-      <div class="top-bar">
+      <div class="top-bar" style="display: flex; justify-content: space-between; align-items: center;">
         <button class="btn-toggle-sidebar" onclick="App.toggleSidebar()" title="Mostrar/Ocultar Menú">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+        </button>
+        <button class="btn-toggle-sidebar" onclick="window.location.reload(true)" title="Recargar última versión" style="display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text-muted); padding: 4px 10px;">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
+          Actualizar versión
         </button>
       </div>
 
@@ -173,9 +177,9 @@
     </main>
   </div>
 
-  <script src="js/store.js?v=6"></script>
-  <script src="js/app.js?v=6"></script>
-  <script src="js/codes.js?v=6"></script>
-  <script src="js/settings.js?v=6"></script>
+  <script src="js/store.js?v=7"></script>
+  <script src="js/app.js?v=7"></script>
+  <script src="js/codes.js?v=7"></script>
+  <script src="js/settings.js?v=7"></script>
 </body>
 </html>
