@@ -102,10 +102,10 @@ const CodesModule = {
       return drafts[lang] || drafts['ca'];
     } else {
       const drafts = {
-        ca: `\n\n[RECORDAR ESMORZAR INCLÒS: De ${inicio} a ${fin}] Pendent de text...`,
-        es: `\n\n[RECORDAR DESAYUNO INCLUIDO: De ${inicio} a ${fin}] Pendiente de texto...`,
-        en: `\n\n[REMIND INCLUDED BREAKFAST: From ${inicio} to ${fin}] Pending text...`,
-        fr: `\n\n[RAPPELER PETIT-DÉJ INCLUS: De ${inicio} à ${fin}] Texte en attente...`
+        ca: `\n\nL'esmorzar se serveix a la planta baixa de ${inicio} a ${fin} h. A quina hora us aniria bé esmorzar?`,
+        es: `\n\nEl desayuno se sirve en la planta baja de ${inicio} a ${fin} h. ¿A qué hora les iría bien desayunar?`,
+        en: `\n\nBreakfast is served on the ground floor from ${inicio} to ${fin} AM. What time would suit you best for breakfast?`,
+        fr: `\n\nLe petit-déjeuner est servi au rez-de-chaussée de ${inicio} à ${fin}. À quelle heure souhaiteriez-vous prendre le petit-déjeuner ?`
       };
       return drafts[lang] || drafts['ca'];
     }
