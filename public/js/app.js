@@ -46,8 +46,8 @@ const App = {
     if (window.CodesModule) CodesModule.init();
     if (window.SettingsModule) SettingsModule.init();
     
-    // Cargar la vista por defecto (codigos)
-    this.switchView('codigos');
+    // Cargar la vista por defecto (checkin primero)
+    this.switchView('checkin');
   },
 
   // Gestión del sidebar responsivo
