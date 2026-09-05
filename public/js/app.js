@@ -43,21 +43,36 @@ const App = {
     this.setupNavigation();
     
     // Inicializar submódulos si existen
-    if (window.FinancesModule) FinancesModule.init();
     if (window.CodesModule) CodesModule.init();
     if (window.SettingsModule) SettingsModule.init();
     
-    // Cargar la vista por defecto (finanzas)
-    this.switchView('finanzas');
+    // Cargar la vista por defecto (codigos)
+    this.switchView('codigos');
+  },
+
+  // Gestión del sidebar responsivo
+  toggleSidebar() {
+    const sidebar = document.getElementById('app-sidebar');
+    if (sidebar) {
+      sidebar.classList.toggle('collapsed');
+    }
   },
 
   // Gestión de pestañas de navegación
   setupNavigation() {
-    const tabs = document.querySelectorAll('.nav-item');
-    tabs.forEach(tab => {
-      tab.addEventListener('click', () => {
-        const targetView = tab.getAttribute('data-view');
-        this.switchView(targetView);
+    const navItems = document.querySelectorAll('.nav-item');
+    navItems.forEach(item => {
+      item.addEventListener('click', (e) => {
+        const viewId = e.currentTarget.getAttribute('data-view');
+        this.switchView(viewId);
+        
+        // En móvil, cerrar el sidebar automáticamente tras hacer clic en un enlace
+        if (window.innerWidth <= 768) {
+          const sidebar = document.getElementById('app-sidebar');
+          if (sidebar && !sidebar.classList.contains('collapsed')) {
+            sidebar.classList.add('collapsed');
+          }
+        }
       });
     });
   },

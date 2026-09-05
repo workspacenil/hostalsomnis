@@ -28,7 +28,7 @@
   <div class="app-container" id="main-app" style="display: none;">
     
     <!-- SIDEBAR -->
-    <aside class="sidebar">
+    <aside class="sidebar collapsed" id="app-sidebar">
       <div class="sidebar-header" style="display: flex; flex-direction: column; align-items: flex-start;">
         <img src="assets/logo.png" alt="Logo Hostal Somnis" style="width: 56px; height: 56px; margin-bottom: 12px;">
         <h1 class="sidebar-title" style="margin-bottom: 2px;">Hostal Somnis</h1>
@@ -36,8 +36,7 @@
       </div>
       
       <nav class="sidebar-nav">
-        <button class="nav-item active" data-view="finanzas">Ingresos y Gastos</button>
-        <button class="nav-item" data-view="codigos">Còdigs (Check-in)</button>
+        <button class="nav-item active" data-view="codigos">Còdigs (Check-in)</button>
       </nav>
 
       <div class="sidebar-footer" onclick="App.switchView('ajustes')" style="cursor: pointer; display: flex; align-items: center; justify-content: space-between; margin-top: auto; padding: 12px 8px; border-radius: 6px; transition: background 0.2s;" onmouseover="this.style.background='var(--bg-element)'" onmouseout="this.style.background='transparent'">
@@ -48,56 +47,19 @@
       </div>
     </aside>
 
+    <div class="mobile-overlay" onclick="App.toggleSidebar()"></div>
+
     <!-- MAIN CONTENT -->
     <main class="main-content">
       
-      <!-- VISTA FINANZAS (ACTIVA POR DEFECTO) -->
-      <section id="view-finanzas" class="view-section active">
-        <div class="section-header">
-          <h2 class="section-title">Ingresos y Gastos</h2>
-          <div class="section-subtitle">Control económico de caja y balance financiero</div>
-        </div>
-        
-        <div class="panels-grid" style="margin-bottom: 24px;">
-          <div class="panel">
-            <div class="panel-header">Balance Neto</div>
-            <div class="panel-body">
-              <div style="font-size: 28px; font-weight: 600;" id="kpi-balance">0,00 €</div>
-              <div style="font-size: 13px; color: var(--text-muted); margin-top: 4px;">
-                Ingresos: <span id="kpi-ingresos">0,00 €</span> | Gastos: <span id="kpi-gastos">0,00 €</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="calendar-toolbar" style="margin-bottom: 16px;">
-          <h3 style="font-size: 14px; font-weight: 500;">Registro de Movimientos</h3>
-          <div style="display: flex; gap: 8px;">
-            <button class="btn btn-primary" onclick="FinancesModule.openModal('ingreso')">+ Añadir Ingreso</button>
-            <button class="btn btn-outline" style="color: var(--danger); border-color: var(--danger);" onclick="FinancesModule.openModal('gasto')">- Añadir Gasto</button>
-          </div>
-        </div>
-
-        <div class="panel">
-          <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 13px;">
-            <thead>
-              <tr style="background: var(--bg-sidebar); border-bottom: 1px solid var(--border-color);">
-                <th style="padding: 12px 16px; font-weight: 600;">Fecha</th>
-                <th style="padding: 12px 16px; font-weight: 600;">Concepto</th>
-                <th style="padding: 12px 16px; font-weight: 600;">Categoría</th>
-                <th style="padding: 12px 16px; font-weight: 600; text-align: right;">Importe</th>
-                <th style="padding: 12px 16px; font-weight: 600; text-align: center;">Acción</th>
-              </tr>
-            </thead>
-            <tbody id="finanzas-table-body">
-              <!-- Rellenado por JS -->
-            </tbody>
-          </table>
-        </div>
-      </section>
+      <div class="top-bar">
+        <button class="btn-toggle-sidebar" onclick="App.toggleSidebar()" title="Mostrar/Ocultar Menú">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+        </button>
+      </div>
 
       <!-- VISTA CÒDIGS (CHECK-IN) -->
-      <section id="view-codigos" class="view-section">
+      <section id="view-codigos" class="view-section active">
         <div class="section-header">
           <h2 class="section-title">Còdigs (Check-in)</h2>
           <div class="section-subtitle">Generador rápido de mensajes para enviar a los clientes</div>
@@ -124,8 +86,8 @@
                   <input type="text" id="codigos-porta" class="form-input" placeholder="152030">
                 </div>
 
-                <div style="display: flex; gap: 16px;">
-                  <div class="form-group" style="flex: 1;">
+                <div class="form-row">
+                  <div class="form-group">
                     <label class="form-label">Número de Caixa</label>
                     <select id="codigos-caixa-num" class="form-select">
                       <option value="1">Caixa 1</option>
@@ -134,18 +96,18 @@
                       <option value="4">Caixa 4</option>
                     </select>
                   </div>
-                  <div class="form-group" style="flex: 1;">
+                  <div class="form-group">
                     <label class="form-label">Codi de Caixa</label>
                     <input type="text" id="codigos-caixa-codi" class="form-input" placeholder="1479">
                   </div>
                 </div>
 
-                <div style="display: flex; gap: 16px;">
-                  <div class="form-group" style="flex: 1;">
+                <div class="form-row">
+                  <div class="form-group">
                     <label class="form-label">Habitació</label>
                     <input type="text" id="codigos-habitacio" class="form-input" placeholder="102">
                   </div>
-                  <div class="form-group" style="flex: 1;">
+                  <div class="form-group">
                     <label class="form-label">Planta</label>
                     <select id="codigos-planta" class="form-select">
                       <option value="1">1a planta</option>
@@ -155,7 +117,7 @@
                   </div>
                 </div>
 
-                <div class="form-group" style="margin-top: 24px; padding-top: 16px; border-top: 1px solid var(--border-color);">
+                <div class="form-group" style="margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border-color);">
                   <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 13px; color: var(--text-main); font-weight: 500;">
                     <input type="checkbox" id="codigos-limpieza" checked style="width: 16px; height: 16px; accent-color: var(--text-main);">
                     Incluir aviso "Cartel Verde" (Limpieza de habitación)
@@ -260,7 +222,6 @@
 
   <script src="js/store.js"></script>
   <script src="js/app.js"></script>
-  <script src="js/finances.js"></script>
   <script src="js/codes.js"></script>
   <script src="js/settings.js"></script>
 </body>
