@@ -6,7 +6,7 @@
   <title>Hostal Somnis Workspace</title>
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#FFFFFF">
-  <link rel="stylesheet" href="css/styles.css?v=7">
+  <link rel="stylesheet" href="css/styles.css?v=8">
 </head>
 <body>
 
@@ -86,8 +86,8 @@
                 </div>
 
                 <div class="form-group">
-                  <label class="form-label">Codi Porta Principal (ej. 152030)</label>
-                  <input type="text" id="codigos-porta" class="form-input" placeholder="152030">
+                  <label class="form-label">Codi Porta Principal (máx. 6 dígitos)</label>
+                  <input type="tel" inputmode="numeric" pattern="[0-9]*" maxlength="6" id="codigos-porta" class="form-input" placeholder="152030">
                 </div>
 
                 <div class="form-row">
@@ -101,8 +101,8 @@
                     </select>
                   </div>
                   <div class="form-group">
-                    <label class="form-label">Codi de Caixa</label>
-                    <input type="text" id="codigos-caixa-codi" class="form-input" placeholder="1479">
+                    <label class="form-label">Codi de Caixa (máx. 4 dígitos)</label>
+                    <input type="tel" inputmode="numeric" pattern="[0-9]*" maxlength="4" id="codigos-caixa-codi" class="form-input" placeholder="1479">
                   </div>
                 </div>
 
@@ -177,9 +177,9 @@
     </main>
   </div>
 
-  <script src="js/store.js?v=7"></script>
-  <script src="js/app.js?v=7"></script>
-  <script src="js/codes.js?v=7"></script>
-  <script src="js/settings.js?v=7"></script>
+  <script src="js/store.js?v=8"></script>
+  <script src="js/app.js?v=8"></script>
+  <script src="js/codes.js?v=8"></script>
+  <script src="js/settings.js?v=8"></script>
 </body>
 </html>
