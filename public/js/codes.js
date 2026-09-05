@@ -25,7 +25,7 @@ const CodesModule = {
       }
     });
 
-    const otherInputs = ['codigos-idioma', 'codigos-caixa-num', 'codigos-habitacio', 'codigos-planta', 'codigos-limpieza'];
+    const otherInputs = ['codigos-idioma', 'codigos-caixa-num', 'codigos-habitacio', 'codigos-limpieza'];
     otherInputs.forEach(id => {
       const el = document.getElementById(id);
       if (el) {
@@ -64,8 +64,9 @@ const CodesModule = {
     const porta = document.getElementById('codigos-porta').value || '______';
     const caixaNum = document.getElementById('codigos-caixa-num').value || '1';
     const caixaCodi = document.getElementById('codigos-caixa-codi').value || '____';
-    const habitacio = document.getElementById('codigos-habitacio').value || '___';
-    const plantaVal = document.getElementById('codigos-planta').value || '1';
+    const habitacio = document.getElementById('codigos-habitacio').value || '101';
+    // Determinar la planta automáticamente: si empieza por 1 es planta 1, por 2 planta 2, por 3 planta 3
+    const plantaVal = habitacio.charAt(0);
     const incloureNeteja = document.getElementById('codigos-limpieza').checked;
     
     const floorText = this.getFloorText(lang, plantaVal);
