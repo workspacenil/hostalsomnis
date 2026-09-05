@@ -4,14 +4,15 @@
   "description": "Aplicación de gestión sencilla para Hostal Somnis en Súria.",
   "start_url": "./index.html",
   "display": "standalone",
-  "background_color": "#FFFFFF",
-  "theme_color": "#FFFFFF",
+  "background_color": "#111827",
+  "theme_color": "#111827",
   "orientation": "portrait",
   "icons": [
     {
-      "src": "assets/logo.png",
+      "src": "assets/app-icon.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any"
     }
   ]
 }
