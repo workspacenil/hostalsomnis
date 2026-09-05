@@ -57,7 +57,8 @@ const CodesModule = {
     let text = '';
 
     if (lang === 'ca') {
-      text = `Per accedir, cal marcar al teclat lateral de la porta d'entrada el codi: ${porta} i ✅
+      text = `Per accedir, cal marcar al teclat lateral de la porta d'entrada al codi:
+${porta} i ✅
 
 La targeta/clau de l'habitació és a les caixes que hi ha darrere de la porta.
 
@@ -75,27 +76,27 @@ Podeu tornar la targeta a la mateixa caixa de recollida si la recepció està ta
 Gràcies 
 Hostal Somnis`;
     } else if (lang === 'es') {
-      text = `Para acceder se tiene que marcar en el teclado lateral de la puerta de entrada el código: ${porta} y ✅
+      text = `Para acceder se tiene que marcar en el teclado lateral de la puerta de entrada el código:
+${porta} y ✅
 
 La tarjeta / llave de la habitación está en las cajas de detrás de la puerta.
 
-El código para abrir la caja :
+El código para abrir la caja:
 
-Caja  ${caixaNum}
+Caja ${caixaNum}
 Código:  ${caixaCodi} A y girar ruedecilla.
 Habitación ${habitacio}  ${floorText}
 
-
 Esta tarjeta abre la puerta de entrada poniéndola sobre el teclado (ya no hará falta marcar el código) y también abre la habitación.${cleaningText}
 
-
-Hora Check out:   11:30h
+Hora Check out: 11:30h
 Si la recepción estuviera cerrada, pueden dejar la tarjeta en la misma caja de recogida.
 
 Gracias 
 HOSTAL SOMNIS`;
     } else if (lang === 'en') {
-      text = `To access, please enter on the side keypad by the main entrance door the code: ${porta} and ✅
+      text = `To access, please enter on the side keypad by the main entrance door the code:
+${porta} and ✅
 
 The card/key of the room is in the boxes behind the door.
 
@@ -103,20 +104,21 @@ The code to open the box:
 
 Box ${caixaNum}
 Code:  ${caixaCodi} A and turn the wheel.
-Room : ${habitacio}  ${floorText}
+Room: ${habitacio}  ${floorText}
 
 This card opens the front door by placing it on the keyboard and also opens the room. With the key card, you won't need to enter the code anymore.${cleaningText}
 
 Check out: 11:30h
 The room key card can be left in the same box where it was collected.`;
     } else if (lang === 'fr') {
-      text = `Pour entrer, il faut composer sur le clavier situé à côté de la porte principale le code : ${porta} + ✅
+      text = `Pour entrer, il faut composer sur le clavier situé à côté de la porte principale le code :
+${porta} + ✅
 
 La carte de la chambre se trouve dans les boîtes derrière la porte principale.
 
 Boîte ${caixaNum}
-Code : ${caixaCodi} A puis tourner la molette
-Chambre : ${habitacio} ${floorText}
+Code :  ${caixaCodi} A puis tourner la molette
+Chambre : ${habitacio}  ${floorText}
 
 Cette carte ouvre la porte principale en la posant sur le clavier, ainsi que la chambre. Il ne sera plus nécessaire de taper le code.${cleaningText}
 
