@@ -94,6 +94,8 @@ const App = {
       FinancesModule.render();
     } else if (viewName === 'codigos' && window.CodesModule) {
       CodesModule.render();
+    } else if (viewName === 'checkin' && window.CheckinModule) {
+      CheckinModule.render();
     } else if (viewName === 'ajustes' && window.SettingsModule) {
       SettingsModule.render();
     }

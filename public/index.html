@@ -6,7 +6,7 @@
   <title>Hostal Somnis Workspace</title>
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#FFFFFF">
-  <link rel="stylesheet" href="css/styles.css?v=11">
+  <link rel="stylesheet" href="css/styles.css?v=12">
 </head>
 <body>
 
@@ -36,7 +36,8 @@
       </div>
       
       <nav class="sidebar-nav">
-        <button class="nav-item active" data-view="codigos">Còdigs (Check-in)</button>
+        <button class="nav-item active" data-view="codigos">Còdigs</button>
+        <button class="nav-item" data-view="checkin">CHECK-IN</button>
       </nav>
 
       <div class="sidebar-footer" onclick="App.switchView('ajustes')" style="cursor: pointer; display: flex; align-items: center; justify-content: space-between; margin-top: auto; padding: 12px 8px; border-radius: 6px; transition: background 0.2s;" onmouseover="this.style.background='var(--bg-element)'" onmouseout="this.style.background='transparent'">
@@ -151,6 +152,24 @@
         </div>
       </section>
 
+      <!-- VISTA CHECK-IN -->
+      <section id="view-checkin" class="view-section">
+        <div class="section-header">
+          <h2 class="section-title">CHECK-IN</h2>
+          <div class="section-subtitle">Plantillas y textos preparados para copiar y enviar</div>
+        </div>
+        <div id="checkin-container" class="panels-grid">
+          <div class="panel">
+            <div class="panel-header">
+              <span>Plantillas de Check-in</span>
+            </div>
+            <div class="panel-body">
+              <p style="color: var(--text-muted); font-size: 13px;">Sección preparada. Pásame los textos y los colocaré aquí con sus botones de copiar.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <!-- VISTA AJUSTES -->
       <section id="view-ajustes" class="view-section">
         <div class="section-header">
@@ -181,9 +200,9 @@
     </main>
   </div>
 
-  <script src="js/store.js?v=11"></script>
-  <script src="js/app.js?v=11"></script>
-  <script src="js/codes.js?v=11"></script>
-  <script src="js/settings.js?v=11"></script>
+  <script src="js/store.js?v=12"></script>
+  <script src="js/app.js?v=12"></script>
+  <script src="js/codes.js?v=12"></script>
+  <script src="js/settings.js?v=12"></script>
 </body>
 </html>
