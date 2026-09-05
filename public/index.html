@@ -4,15 +4,15 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Hostal Somnis Workspace</title>
-  <link rel="manifest" href="manifest.json?v=22">
-  <link rel="icon" type="image/png" href="assets/app-icon.png?v=22">
-  <link rel="apple-touch-icon" href="assets/app-icon.png?v=22">
-  <link rel="apple-touch-icon-precomposed" href="assets/app-icon.png?v=22">
+  <link rel="manifest" href="manifest.json?v=23">
+  <link rel="icon" type="image/png" href="assets/app-icon.png?v=23">
+  <link rel="apple-touch-icon" href="assets/app-icon.png?v=23">
+  <link rel="apple-touch-icon-precomposed" href="assets/app-icon.png?v=23">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
   <meta name="apple-mobile-web-app-title" content="Hostal Somnis">
   <meta name="theme-color" content="#000000">
-  <link rel="stylesheet" href="css/styles.css?v=22">
+  <link rel="stylesheet" href="css/styles.css?v=23">
 </head>
 <body>
 
@@ -138,6 +138,32 @@
                     Incluir aviso "Cartel Verde" (Limpieza de habitación)
                   </label>
                 </div>
+
+                <div class="form-group" style="margin-top: 12px;">
+                  <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 13px; color: var(--text-main); font-weight: 500;">
+                    <input type="checkbox" id="codigos-esmorzar" style="width: 16px; height: 16px; accent-color: var(--text-main);" onchange="document.getElementById('esmorzar-options').style.display = this.checked ? 'block' : 'none'; window.CodesModule.generateText();">
+                    Añadir información de Esmorzar (Desayuno)
+                  </label>
+                </div>
+                
+                <div id="esmorzar-options" style="display: none; margin-left: 24px; margin-top: 12px; padding: 12px; background: #f3f4f6; border-radius: 6px; border: 1px solid #e5e7eb;">
+                  <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px;">
+                    <label style="display: flex; align-items: center; gap: 6px; cursor: pointer; font-size: 13px; color: var(--text-main);">
+                      <input type="radio" name="esmorzar-tipo" id="esmorzar-ofrecer" value="ofrecer" checked onchange="window.CodesModule.generateText();" style="accent-color: var(--text-main);">
+                      Ofrecer comprar desayuno
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 6px; cursor: pointer; font-size: 13px; color: var(--text-main);">
+                      <input type="radio" name="esmorzar-tipo" id="esmorzar-recordar" value="recordar" onchange="window.CodesModule.generateText();" style="accent-color: var(--text-main);">
+                      Recordar desayuno ya incluido
+                    </label>
+                  </div>
+                  <div style="display: flex; align-items: center; gap: 6px; font-size: 13px;">
+                    <span>Horario de:</span>
+                    <input type="time" id="esmorzar-inicio" class="form-input" value="08:00" style="padding: 4px; width: auto;" onchange="window.CodesModule.generateText();">
+                    <span>a:</span>
+                    <input type="time" id="esmorzar-fin" class="form-input" value="10:00" style="padding: 4px; width: auto;" onchange="window.CodesModule.generateText();">
+                  </div>
+                </div>
               </form>
             </div>
           </div>
@@ -216,10 +242,10 @@
     </main>
   </div>
 
-  <script src="js/store.js?v=22"></script>
-  <script src="js/app.js?v=22"></script>
-  <script src="js/checkin.js?v=22"></script>
-  <script src="js/codes.js?v=22"></script>
-  <script src="js/settings.js?v=22"></script>
+  <script src="js/store.js?v=23"></script>
+  <script src="js/app.js?v=23"></script>
+  <script src="js/checkin.js?v=23"></script>
+  <script src="js/codes.js?v=23"></script>
+  <script src="js/settings.js?v=23"></script>
 </body>
 </html>
