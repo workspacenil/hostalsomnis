@@ -1,0 +1,47 @@
+[
+  {
+    "id": "fin-001",
+    "date": "2026-09-04",
+    "concept": "Reserva: Laura Fernández (Habitación 4 - Individual)",
+    "amount": 90,
+    "type": "ingreso",
+    "category": "Alojamiento",
+    "notes": "Cobrado en efectivo a la llegada"
+  },
+  {
+    "id": "fin-002",
+    "date": "2026-09-03",
+    "concept": "Compra sábanas de recambio y toallas",
+    "amount": 54.90,
+    "type": "gasto",
+    "category": "Equipamiento",
+    "notes": "Textiles para habitaciones dobles"
+  },
+  {
+    "id": "fin-003",
+    "date": "2026-09-02",
+    "concept": "Ingreso desayunos fin de semana anterior",
+    "amount": 65,
+    "type": "ingreso",
+    "category": "Desayunos",
+    "notes": "Desayunos rústicos con embutidos de Súria"
+  },
+  {
+    "id": "fin-004",
+    "date": "2026-09-01",
+    "concept": "Productos de limpieza y desinfección",
+    "amount": 38.40,
+    "type": "gasto",
+    "category": "Limpieza",
+    "notes": "Detergente, lejía y ambientadores"
+  },
+  {
+    "id": "fin-005",
+    "date": "2026-08-30",
+    "concept": "Factura luz Hostal Somnis (Agosto)",
+    "amount": 142.20,
+    "type": "gasto",
+    "category": "Suministros",
+    "notes": "Recibo domiciliado"
+  }
+]

@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hostal Somnis Workspace</title>
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#FFFFFF">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+  <!-- PANTALLA DE LOGIN -->
+  <div id="login-screen" style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; width: 100vw; background-color: #F9FAFB; position: absolute; top: 0; left: 0; z-index: 9999;">
+    <div style="background: #FFF; width: 100%; max-width: 360px; text-align: center; padding: 40px 32px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); border: 1px solid #E5E7EB;">
+      <img src="assets/logo.png" alt="Hostal Somnis" style="width: 72px; height: 72px; margin-bottom: 20px; border-radius: 8px;">
+      <h2 style="font-size: 18px; margin-bottom: 6px; font-weight: 600; color: #111827;">Hostal Somnis</h2>
+      <p style="font-size: 13px; color: #6B7280; margin-bottom: 24px;">Introduce la contraseña para acceder</p>
+      
+      <form onsubmit="App.handleLogin(event)" style="display: flex; flex-direction: column; gap: 16px;">
+        <input type="password" id="login-password" class="form-input" placeholder="Contraseña..." required autofocus style="text-align: center; padding: 10px;">
+        <button type="submit" class="btn btn-primary" style="padding: 10px; width: 100%;">Entrar al Workspace</button>
+      </form>
+      <div id="login-error" style="color: #DC2626; font-size: 12px; margin-top: 12px; display: none;">Contraseña incorrecta</div>
+    </div>
+  </div>
+
+  <div class="app-container" id="main-app" style="display: none;">
+    
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="sidebar-header" style="display: flex; flex-direction: column; align-items: flex-start;">
+        <img src="assets/logo.png" alt="Logo Hostal Somnis" style="width: 56px; height: 56px; margin-bottom: 12px;">
+        <h1 class="sidebar-title" style="margin-bottom: 2px;">Hostal Somnis</h1>
+        <div class="sidebar-subtitle">Workspace local</div>
+      </div>
+      
+      <nav class="sidebar-nav">
+        <button class="nav-item active" data-view="finanzas">Ingresos y Gastos</button>
+        <button class="nav-item" data-view="codigos">Còdigs (Check-in)</button>
+      </nav>
+
+      <div class="sidebar-footer" onclick="App.switchView('ajustes')" style="cursor: pointer; display: flex; align-items: center; justify-content: space-between; margin-top: auto; padding: 12px 8px; border-radius: 6px; transition: background 0.2s;" onmouseover="this.style.background='var(--bg-element)'" onmouseout="this.style.background='transparent'">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+          <span style="font-size: 13px; color: var(--text-main); font-weight: 500;">Configuración</span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+      
+      <!-- VISTA FINANZAS (ACTIVA POR DEFECTO) -->
+      <section id="view-finanzas" class="view-section active">
+        <div class="section-header">
+          <h2 class="section-title">Ingresos y Gastos</h2>
+          <div class="section-subtitle">Control económico de caja y balance financiero</div>
+        </div>
+        
+        <div class="panels-grid" style="margin-bottom: 24px;">
+          <div class="panel">
+            <div class="panel-header">Balance Neto</div>
+            <div class="panel-body">
+              <div style="font-size: 28px; font-weight: 600;" id="kpi-balance">0,00 €</div>
+              <div style="font-size: 13px; color: var(--text-muted); margin-top: 4px;">
+                Ingresos: <span id="kpi-ingresos">0,00 €</span> | Gastos: <span id="kpi-gastos">0,00 €</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="calendar-toolbar" style="margin-bottom: 16px;">
+          <h3 style="font-size: 14px; font-weight: 500;">Registro de Movimientos</h3>
+          <div style="display: flex; gap: 8px;">
+            <button class="btn btn-primary" onclick="FinancesModule.openModal('ingreso')">+ Añadir Ingreso</button>
+            <button class="btn btn-outline" style="color: var(--danger); border-color: var(--danger);" onclick="FinancesModule.openModal('gasto')">- Añadir Gasto</button>
+          </div>
+        </div>
+
+        <div class="panel">
+          <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 13px;">
+            <thead>
+              <tr style="background: var(--bg-sidebar); border-bottom: 1px solid var(--border-color);">
+                <th style="padding: 12px 16px; font-weight: 600;">Fecha</th>
+                <th style="padding: 12px 16px; font-weight: 600;">Concepto</th>
+                <th style="padding: 12px 16px; font-weight: 600;">Categoría</th>
+                <th style="padding: 12px 16px; font-weight: 600; text-align: right;">Importe</th>
+                <th style="padding: 12px 16px; font-weight: 600; text-align: center;">Acción</th>
+              </tr>
+            </thead>
+            <tbody id="finanzas-table-body">
+              <!-- Rellenado por JS -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- VISTA CÒDIGS (CHECK-IN) -->
+      <section id="view-codigos" class="view-section">
+        <div class="section-header">
+          <h2 class="section-title">Còdigs (Check-in)</h2>
+          <div class="section-subtitle">Generador rápido de mensajes para enviar a los clientes</div>
+        </div>
+        
+        <div class="panels-grid">
+          <!-- Formulario de datos -->
+          <div class="panel">
+            <div class="panel-header">Datos de Llegada</div>
+            <div class="panel-body">
+              <form id="form-codigos">
+                <div class="form-group">
+                  <label class="form-label">Idioma del Mensaje</label>
+                  <select id="codigos-idioma" class="form-select">
+                    <option value="ca">Català</option>
+                    <option value="es">Castellano</option>
+                    <option value="en">English</option>
+                    <option value="fr">Français</option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">Codi Porta Principal (ej. 152030)</label>
+                  <input type="text" id="codigos-porta" class="form-input" placeholder="152030">
+                </div>
+
+                <div style="display: flex; gap: 16px;">
+                  <div class="form-group" style="flex: 1;">
+                    <label class="form-label">Número de Caixa</label>
+                    <select id="codigos-caixa-num" class="form-select">
+                      <option value="1">Caixa 1</option>
+                      <option value="2">Caixa 2</option>
+                      <option value="3">Caixa 3</option>
+                      <option value="4">Caixa 4</option>
+                    </select>
+                  </div>
+                  <div class="form-group" style="flex: 1;">
+                    <label class="form-label">Codi de Caixa</label>
+                    <input type="text" id="codigos-caixa-codi" class="form-input" placeholder="1479">
+                  </div>
+                </div>
+
+                <div style="display: flex; gap: 16px;">
+                  <div class="form-group" style="flex: 1;">
+                    <label class="form-label">Habitació</label>
+                    <input type="text" id="codigos-habitacio" class="form-input" placeholder="102">
+                  </div>
+                  <div class="form-group" style="flex: 1;">
+                    <label class="form-label">Planta</label>
+                    <select id="codigos-planta" class="form-select">
+                      <option value="1">1a planta</option>
+                      <option value="2">2a planta</option>
+                      <option value="3">3a planta</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="form-group" style="margin-top: 24px; padding-top: 16px; border-top: 1px solid var(--border-color);">
+                  <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 13px; color: var(--text-main); font-weight: 500;">
+                    <input type="checkbox" id="codigos-limpieza" checked style="width: 16px; height: 16px; accent-color: var(--text-main);">
+                    Incluir aviso "Cartel Verde" (Limpieza de habitación)
+                  </label>
+                </div>
+              </form>
+            </div>
+          </div>
+
+          <!-- Resultado y Copiar -->
+          <div class="panel">
+            <div class="panel-header" style="display: flex; justify-content: space-between; align-items: center;">
+              <span>Mensaje Generado</span>
+              <button class="btn btn-primary" onclick="CodesModule.copyText()" style="display: flex; align-items: center; gap: 6px; padding: 6px 14px; border-radius: 6px; font-size: 13px;">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                Copiar
+              </button>
+            </div>
+            <div class="panel-body" style="display: flex; flex-direction: column; height: 100%; padding: 0;">
+              <div id="codigos-resultado" style="flex: 1; padding: 24px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size: 14px; line-height: 1.6; color: #374151; white-space: pre-wrap; overflow-y: auto; background-color: #FAFAFA;"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- VISTA AJUSTES -->
+      <section id="view-ajustes" class="view-section">
+        <div class="section-header">
+          <h2 class="section-title">Configuración</h2>
+          <div class="section-subtitle">Ajustes generales del hostal</div>
+        </div>
+        <div class="panels-grid">
+          <div class="panel">
+            <div class="panel-header">Datos del Hostal</div>
+            <div class="panel-body">
+              <form id="form-settings" onsubmit="SettingsModule.saveSettings(event)">
+                <div class="form-group">
+                  <label class="form-label">Nombre del Hostal</label>
+                  <input type="text" id="settings-name" class="form-input" value="Hostal Somnis">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Ubicación</label>
+                  <input type="text" id="settings-city" class="form-input" value="Súria">
+                </div>
+                <div style="margin-top: 16px;">
+                  <button type="submit" class="btn btn-primary">Guardar Ajustes</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- MODAL NUEVO MOVIMIENTO FINANCIERO -->
+  <div class="modal-overlay" id="modal-finance">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 class="modal-title" id="modal-finance-title">Nuevo Movimiento</h3>
+        <button class="modal-close" onclick="FinancesModule.closeModal()">×</button>
+      </div>
+      <div class="modal-body">
+        <form id="form-finance" onsubmit="FinancesModule.saveTransaction(event)">
+          <input type="hidden" id="finance-type" value="ingreso">
+          
+          <div class="form-group">
+            <label class="form-label">Concepto / Descripción</label>
+            <input type="text" id="finance-concept" class="form-input" required autofocus placeholder="Ej. Reserva, Compra sábanas, Luz...">
+          </div>
+          
+          <div style="display: flex; gap: 16px;">
+            <div class="form-group" style="flex: 1;">
+              <label class="form-label">Importe (€)</label>
+              <input type="number" id="finance-amount" class="form-input" required step="0.01" min="0.01">
+            </div>
+            <div class="form-group" style="flex: 1;">
+              <label class="form-label">Fecha</label>
+              <input type="date" id="finance-date" class="form-input" required>
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">Categoría</label>
+            <select id="finance-category" class="form-select">
+              <option value="Alojamiento">Alojamiento</option>
+              <option value="Desayunos">Desayunos</option>
+              <option value="Suministros">Suministros (Luz, Agua, Internet)</option>
+              <option value="Mantenimiento">Mantenimiento y Reparaciones</option>
+              <option value="Limpieza">Limpieza</option>
+              <option value="Otros">Otros</option>
+            </select>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" onclick="FinancesModule.closeModal()">Cancelar</button>
+        <button class="btn btn-primary" type="submit" form="form-finance">Guardar Movimiento</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/store.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/finances.js"></script>
+  <script src="js/codes.js"></script>
+  <script src="js/settings.js"></script>
+</body>
+</html>
