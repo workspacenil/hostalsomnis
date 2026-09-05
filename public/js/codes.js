@@ -94,10 +94,10 @@ const CodesModule = {
   getBreakfastText(lang, tipo, inicio, fin) {
     if (tipo === 'ofrecer') {
       const drafts = {
-        ca: `\n\n[OFRECER ESMORZAR: De ${inicio} a ${fin}] Pendent de text...`,
-        es: `\n\n[OFRECER DESAYUNO: De ${inicio} a ${fin}] Pendiente de texto...`,
-        en: `\n\n[OFFER BREAKFAST: From ${inicio} to ${fin}] Pending text...`,
-        fr: `\n\n[PROPOSER PETIT-DÉJ: De ${inicio} à ${fin}] Texte en attente...`
+        ca: `\n\nOferim servei d'esmorzar (de ${inicio} a ${fin}, 14 € per persona).\nSi us ve de gust esmorzar, us agrairem que ens ho feu saber avui abans de les 19 h.`,
+        es: `\n\nDisponemos de servicio de desayuno (de ${inicio} a ${fin}, 14 € por persona).\nSi les apetece, pueden confirmárnoslo hoy antes de las 19h.`,
+        en: `\n\nWe offer a delicious breakfast service (from ${inicio} to ${fin}, €14 per person).\nIf you would like to have breakfast with us, please let us know today before 7:00 PM.`,
+        fr: `\n\nNous proposons un service de petit-déjeuner (de ${inicio} à ${fin}, 14 € par personne).\nSi vous souhaitez prendre le petit-déjeuner avec nous, merci de nous le faire savoir aujourd'hui avant 19 h.`
       };
       return drafts[lang] || drafts['ca'];
     } else {
