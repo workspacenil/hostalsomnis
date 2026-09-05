@@ -1,4 +1,4 @@
-const CACHE_NAME = 'hostal-somnis-v20';
+const CACHE_NAME = 'hostal-somnis-v21';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
@@ -10,7 +10,9 @@ const ASSETS_TO_CACHE = [
   './js/store.js',
   './manifest.json',
   './assets/logo.png',
-  './assets/app-icon.png'
+  './assets/app-icon.png',
+  './apple-touch-icon.png',
+  './apple-touch-icon-precomposed.png'
 ];
 
 // Instalación del Service Worker

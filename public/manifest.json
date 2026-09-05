@@ -9,10 +9,16 @@
   "orientation": "portrait",
   "icons": [
     {
-      "src": "assets/app-icon.png",
+      "src": "assets/app-icon.png?v=21",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
+    },
+    {
+      "src": "assets/app-icon.png?v=21",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
     }
   ]
 }
