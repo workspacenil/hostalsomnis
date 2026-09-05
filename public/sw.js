@@ -1,4 +1,4 @@
-const CACHE_NAME = 'hostal-somnis-v18';
+const CACHE_NAME = 'hostal-somnis-v19';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
@@ -9,7 +9,8 @@ const ASSETS_TO_CACHE = [
   './js/settings.js',
   './js/store.js',
   './manifest.json',
-  './assets/logo.png'
+  './assets/logo.png',
+  './assets/app-icon.png'
 ];
 
 // Instalación del Service Worker
