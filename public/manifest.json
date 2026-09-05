@@ -9,7 +9,12 @@
   "orientation": "portrait",
   "icons": [
     {
-      "src": "assets/logo.png",
+      "src": "assets/icon-light.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    },
+    {
+      "src": "assets/icon-dark.png",
       "sizes": "512x512",
       "type": "image/png"
     }

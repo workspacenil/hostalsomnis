@@ -417,3 +417,75 @@ body {
   outline: none;
   border-color: var(--text-main);
 }
+
+/* ==========================================================================
+   MODO OSCURO (LOGO BLANCO Y COLORES ADAPTATIVOS)
+   ========================================================================== */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg-app: #111827;
+    --bg-sidebar: #1F2937;
+    --bg-element: #374151;
+    --bg-hover: #4B5563;
+    --border-color: #374151;
+    --border-dark: #4B5563;
+    --text-main: #F9FAFB;
+    --text-muted: #9CA3AF;
+  }
+
+  /* El logo cambia a blanco puro automáticamente en modo oscuro */
+  .sidebar-header img,
+  #login-screen img,
+  .app-logo {
+    filter: invert(1) brightness(2) !important;
+  }
+
+  #login-screen {
+    background-color: #111827 !important;
+  }
+  #login-screen > div {
+    background-color: #1F2937 !important;
+    border-color: #374151 !important;
+  }
+  #login-screen h2 {
+    color: #F9FAFB !important;
+  }
+
+  #codigos-resultado,
+  #checkin-text-display {
+    background-color: #1F2937 !important;
+    color: #F9FAFB !important;
+    border-color: #374151 !important;
+  }
+
+  .panel-header {
+    background-color: #1F2937 !important;
+    color: #F9FAFB !important;
+    border-color: #374151 !important;
+  }
+  
+  .panel {
+    background-color: #111827 !important;
+    border-color: #374151 !important;
+  }
+
+  .form-input, .form-select {
+    background-color: #1F2937 !important;
+    color: #F9FAFB !important;
+    border-color: #4B5563 !important;
+  }
+
+  .btn-primary {
+    background-color: #F9FAFB !important;
+    color: #111827 !important;
+  }
+  .btn-primary:hover {
+    background-color: #E5E7EB !important;
+  }
+
+  .btn-outline {
+    border-color: #4B5563 !important;
+    color: #F9FAFB !important;
+    background: transparent !important;
+  }
+}
