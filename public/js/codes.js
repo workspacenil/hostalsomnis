@@ -9,8 +9,24 @@ const CodesModule = {
   },
 
   bindEvents() {
-    const inputs = ['codigos-idioma', 'codigos-porta', 'codigos-caixa-num', 'codigos-caixa-codi', 'codigos-habitacio', 'codigos-planta', 'codigos-limpieza'];
-    inputs.forEach(id => {
+    const numericInputs = [
+      { id: 'codigos-porta', max: 6 },
+      { id: 'codigos-caixa-codi', max: 4 }
+    ];
+
+    numericInputs.forEach(({ id, max }) => {
+      const el = document.getElementById(id);
+      if (el) {
+        el.addEventListener('input', (e) => {
+          // Solo números y limitar longitud máxima
+          e.target.value = e.target.value.replace(/\D/g, '').slice(0, max);
+          this.generateText();
+        });
+      }
+    });
+
+    const otherInputs = ['codigos-idioma', 'codigos-caixa-num', 'codigos-habitacio', 'codigos-planta', 'codigos-limpieza'];
+    otherInputs.forEach(id => {
       const el = document.getElementById(id);
       if (el) {
         el.addEventListener('input', () => this.generateText());
