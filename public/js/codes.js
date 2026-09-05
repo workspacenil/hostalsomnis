@@ -57,11 +57,7 @@ const CodesModule = {
     let text = '';
 
     if (lang === 'ca') {
-      text = `Hola,
-
-Sobre la reserva per avui:
-
-Per accedir, cal marcar al teclat lateral de la porta d'entrada 
+      text = `Per accedir, cal marcar al teclat lateral de la porta d'entrada 
 el codi  ${porta}   i ✅
 
 La targeta/clau de l'habitació és a les caixes que hi ha darrere de la porta.
@@ -80,12 +76,9 @@ Podeu tornar la targeta a la mateixa caixa de recollida si la recepció està ta
 Gràcies 
 Hostal Somnis`;
     } else if (lang === 'es') {
-      text = `Hola,
-sobre la reserva para hoy,
+      text = `Para acceder se tiene que marcar en el teclado lateral de la puerta de entrada.
 
-para acceder se tiene que marcar en el teclado lateral de la puerta de entrada.
-
-código     ${porta}  y ✅
+Código     ${porta}  y ✅
 
 La tarjeta / llave de la habitación está en las cajas de detrás de la puerta.
 
@@ -105,10 +98,7 @@ Si la recepción estuviera cerrada, pueden dejar la tarjeta en la misma caja de 
 Gracias 
 HOSTAL SOMNIS`;
     } else if (lang === 'en') {
-      text = `Hello,
-regarding your reservation for today,
-
-to access, please enter the code 
+      text = `To access, please enter the code 
 ${porta}     and  ✅
 on the side keypad by the main entrance door.
 
@@ -125,10 +115,7 @@ This card opens the front door by placing it on the keyboard and also opens the 
 Check out: 11:30h
 The room key card can be left in the same box where it was collected.`;
     } else if (lang === 'fr') {
-      text = `Bonjour,
-pour la réservation d'aujourd'hui :
-
-Pour entrer, il faut composer sur le clavier situé à côté de la porte principale :
+      text = `Pour entrer, il faut composer sur le clavier situé à côté de la porte principale :
 
 Code : ${porta} + ✅
 
