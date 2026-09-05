@@ -91,6 +91,26 @@ const CodesModule = {
     return texts[lang] || '';
   },
 
+  getBreakfastText(lang, tipo, inicio, fin) {
+    if (tipo === 'ofrecer') {
+      const drafts = {
+        ca: `\n\n[OFRECER ESMORZAR: De ${inicio} a ${fin}] Pendent de text...`,
+        es: `\n\n[OFRECER DESAYUNO: De ${inicio} a ${fin}] Pendiente de texto...`,
+        en: `\n\n[OFFER BREAKFAST: From ${inicio} to ${fin}] Pending text...`,
+        fr: `\n\n[PROPOSER PETIT-DÉJ: De ${inicio} à ${fin}] Texte en attente...`
+      };
+      return drafts[lang] || drafts['ca'];
+    } else {
+      const drafts = {
+        ca: `\n\n[RECORDAR ESMORZAR INCLÒS: De ${inicio} a ${fin}] Pendent de text...`,
+        es: `\n\n[RECORDAR DESAYUNO INCLUIDO: De ${inicio} a ${fin}] Pendiente de texto...`,
+        en: `\n\n[REMIND INCLUDED BREAKFAST: From ${inicio} to ${fin}] Pending text...`,
+        fr: `\n\n[RAPPELER PETIT-DÉJ INCLUS: De ${inicio} à ${fin}] Texte en attente...`
+      };
+      return drafts[lang] || drafts['ca'];
+    }
+  },
+
   generateText() {
     const lang = document.getElementById('codigos-idioma').value || 'ca';
     const porta = document.getElementById('codigos-porta').value || '______';
@@ -126,6 +146,16 @@ const CodesModule = {
 
     const incloureNeteja = document.getElementById('codigos-limpieza').checked;
     const cleaningText = incloureNeteja ? this.getCleaningText(lang) : '';
+
+    const elEsmorzar = document.getElementById('codigos-esmorzar');
+    let breakfastText = '';
+    if (elEsmorzar && elEsmorzar.checked) {
+      const tipo = document.getElementById('esmorzar-ofrecer').checked ? 'ofrecer' : 'recordar';
+      const inicio = document.getElementById('esmorzar-inicio').value;
+      const fin = document.getElementById('esmorzar-fin').value;
+      breakfastText = this.getBreakfastText(lang, tipo, inicio, fin);
+    }
+
     let text = '';
 
     if (lang === 'ca') {
@@ -141,7 +171,7 @@ Caixa ${caixaNum}
 Codi:  ${caixaCodi} A i girar la rodeta.
 ${roomsText}
 
-Ara amb la targeta podeu obrir totes dues portes, passeu-la pel lector. Ja no necessiteu el codi.${cleaningText}
+Ara amb la targeta podeu obrir totes dues portes, passeu-la pel lector. Ja no necessiteu el codi.${cleaningText}${breakfastText}
 
 Hora de check-out: 11:30 AM
 Podeu tornar la targeta a la mateixa caixa de recollida si la recepció està tancada.
@@ -161,7 +191,7 @@ Caja  ${caixaNum}
 Código:  ${caixaCodi} A y girar ruedecilla.
 ${roomsText}
 
-Ahora con la tarjeta puede abrir ambas puertas, pásela por el teclado. Ya no necesita el código.${cleaningText}
+Ahora con la tarjeta puede abrir ambas puertas, pásela por el teclado. Ya no necesita el código.${cleaningText}${breakfastText}
 
 *Hora Check out:   11:30 AM *
 Si la recepción estuviera cerrada, pueden dejar la tarjeta en la misma caja de recogida.
@@ -181,7 +211,7 @@ Box ${caixaNum}
 Code:  ${caixaCodi} A and turn the wheel.
 ${roomsText}
 
-Now with the keycard you can open both doors, just tap it on the keypad. You will no longer need the code.${cleaningText}
+Now with the keycard you can open both doors, just tap it on the keypad. You will no longer need the code.${cleaningText}${breakfastText}
 
 Check-out time: 11:30 AM
 
@@ -200,7 +230,7 @@ Boîte ${caixaNum}
 Code :  ${caixaCodi} A puis tourner la molette
 ${roomsText}
 
-Vous pouvez désormais ouvrir les deux portes avec la carte, il suffit de la passer sur le lecteur. Vous n'avez plus besoin du code.${cleaningText}
+Vous pouvez désormais ouvrir les deux portes avec la carte, il suffit de la passer sur le lecteur. Vous n'avez plus besoin du code.${cleaningText}${breakfastText}
 
 Heure de check-out : 11:30 AM
 
