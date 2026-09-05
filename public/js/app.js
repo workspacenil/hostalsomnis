@@ -43,6 +43,7 @@ const App = {
     this.setupNavigation();
     
     // Inicializar submódulos si existen
+    if (window.CheckinModule) CheckinModule.init();
     if (window.CodesModule) CodesModule.init();
     if (window.SettingsModule) SettingsModule.init();
     

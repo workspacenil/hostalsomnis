@@ -204,6 +204,8 @@ body {
 }
 .btn-primary { background-color: var(--text-main); color: var(--bg-app); }
 .btn-primary:hover { background-color: #374151; }
+.btn-outline { border: 1px solid var(--border-dark); color: var(--text-main); background: var(--bg-app); }
+.btn-outline:hover { background-color: var(--bg-element); }
 
 /* ==========================================================================
    MEDIA QUERIES (MÓVIL RESPONSIVE)
