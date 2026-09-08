@@ -417,3 +417,24 @@ body {
   outline: none;
   border-color: var(--text-main);
 }
+
+/* ==========================================================================
+   ESTILOS MÓDULO MAILS & IA
+   ========================================================================== */
+.mail-spinner {
+  width: 18px;
+  height: 18px;
+  border: 2px solid var(--border-dark);
+  border-top-color: var(--text-main);
+  border-radius: 50%;
+  animation: mailSpin 0.7s linear infinite;
+  display: inline-block;
+}
+@keyframes mailSpin {
+  to { transform: rotate(360deg); }
+}
+
+.train-item-card:hover {
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+

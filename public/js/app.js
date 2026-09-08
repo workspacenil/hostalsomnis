@@ -43,6 +43,7 @@ const App = {
     this.setupNavigation();
     
     // Inicializar submódulos si existen
+    if (window.MailsModule) MailsModule.init();
     if (window.CheckinModule) CheckinModule.init();
     if (window.CodesModule) CodesModule.init();
     if (window.SettingsModule) SettingsModule.init();
@@ -91,7 +92,9 @@ const App = {
     if (activeSection) activeSection.classList.add('active');
 
     // Refrescar contenido según vista
-    if (viewName === 'finanzas' && window.FinancesModule) {
+    if (viewName === 'mails' && window.MailsModule) {
+      MailsModule.render();
+    } else if (viewName === 'finanzas' && window.FinancesModule) {
       FinancesModule.render();
     } else if (viewName === 'codigos' && window.CodesModule) {
       CodesModule.render();
