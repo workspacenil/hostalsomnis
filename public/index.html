@@ -4,15 +4,15 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Hostal Somnis Workspace</title>
-  <link rel="manifest" href="manifest.json?v=26">
-  <link rel="icon" type="image/png" href="assets/app-icon.png?v=26">
-  <link rel="apple-touch-icon" href="assets/app-icon.png?v=26">
-  <link rel="apple-touch-icon-precomposed" href="assets/app-icon.png?v=26">
+  <link rel="manifest" href="manifest.json?v=27">
+  <link rel="icon" type="image/png" href="assets/app-icon.png?v=27">
+  <link rel="apple-touch-icon" href="assets/app-icon.png?v=27">
+  <link rel="apple-touch-icon-precomposed" href="assets/app-icon.png?v=27">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
   <meta name="apple-mobile-web-app-title" content="Hostal Somnis">
   <meta name="theme-color" content="#000000">
-  <link rel="stylesheet" href="css/styles.css?v=26">
+  <link rel="stylesheet" href="css/styles.css?v=27">
 </head>
 <body>
 
@@ -163,6 +163,10 @@
                     <span>a:</span>
                     <input type="time" id="esmorzar-fin" min="05:00" max="12:00" class="form-input" value="10:00" style="padding: 4px; width: auto;" onchange="window.CodesModule.generateText();">
                   </div>
+                  <div style="display: flex; align-items: center; gap: 6px; font-size: 13px; margin-top: 8px;">
+                    <span>Precio (€):</span>
+                    <input type="number" id="esmorzar-precio" inputmode="numeric" pattern="[0-9]*" min="0" max="20" class="form-input" value="13" style="padding: 4px; width: 60px;" onchange="window.CodesModule.generateText();" oninput="window.CodesModule.generateText();">
+                  </div>
                 </div>
               </form>
             </div>
@@ -242,10 +246,10 @@
     </main>
   </div>
 
-  <script src="js/store.js?v=26"></script>
-  <script src="js/app.js?v=26"></script>
-  <script src="js/checkin.js?v=26"></script>
-  <script src="js/codes.js?v=26"></script>
-  <script src="js/settings.js?v=26"></script>
+  <script src="js/store.js?v=27"></script>
+  <script src="js/app.js?v=27"></script>
+  <script src="js/checkin.js?v=27"></script>
+  <script src="js/codes.js?v=27"></script>
+  <script src="js/settings.js?v=27"></script>
 </body>
 </html>
