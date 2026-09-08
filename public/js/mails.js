@@ -37,41 +37,61 @@ const MailsModule = {
   },
 
   // =========================================================================
-  // GESTIÓN DE GOOGLE GEMINI API KEY (MODIFICABLE DESDE LA APP)
+  // GESTIÓN DE API KEYS (MULTI-IA: GEMINI, GROQ, OPENROUTER, MISTRAL)
   // =========================================================================
   getConfig() {
-    return Store.get('gemini_config', {
-      apiKey: '',
-      model: 'gemini-2.5-flash',
-      customTone: 'Responde siempre con el tono familiar, cercano, muy educado y hospitalario de mi madre para Hostal Somnis en Súria. Sé clara, amable y resolutiva.'
-    });
+    let config = Store.get('ai_keys_config');
+    if (!config) {
+      // Migrar de la configuración previa si existía
+      const oldGemini = Store.get('gemini_config', {});
+      config = {
+        geminiKeys: oldGemini.apiKey ? [oldGemini.apiKey] : [],
+        groqKey: '',
+        openRouterKey: '',
+        mistralKey: '',
+        customTone: oldGemini.customTone || 'Responde siempre con el tono familiar, cercano, muy educado y hospitalario de mi madre para Hostal Somnis en Súria. Sé clara, amable y resolutiva.'
+      };
+      Store.set('ai_keys_config', config);
+    }
+    return config;
   },
 
   renderApiKeyStatus() {
     const config = this.getConfig();
     const statusBadge = document.getElementById('mail-api-status-badge');
-    const apiKeyInput = document.getElementById('mail-api-key-input');
+    const geminiTextarea = document.getElementById('mail-gemini-keys-input');
+    const groqInput = document.getElementById('mail-groq-key-input');
+    const openRouterInput = document.getElementById('mail-openrouter-key-input');
+    const mistralInput = document.getElementById('mail-mistral-key-input');
     const customToneInput = document.getElementById('mail-custom-tone-input');
 
-    if (apiKeyInput) {
-      apiKeyInput.value = config.apiKey || '';
+    if (geminiTextarea) {
+      geminiTextarea.value = (config.geminiKeys || []).join('\n');
     }
-    if (customToneInput) {
-      customToneInput.value = config.customTone || '';
-    }
+    if (groqInput) groqInput.value = config.groqKey || '';
+    if (openRouterInput) openRouterInput.value = config.openRouterKey || '';
+    if (mistralInput) mistralInput.value = config.mistralKey || '';
+    if (customToneInput) customToneInput.value = config.customTone || '';
+
+    // Contar total de claves disponibles
+    const geminiCount = (config.geminiKeys || []).filter(k => k.trim().length > 10).length;
+    const groqCount = config.groqKey && config.groqKey.trim().length > 10 ? 1 : 0;
+    const openRouterCount = config.openRouterKey && config.openRouterKey.trim().length > 10 ? 1 : 0;
+    const mistralCount = config.mistralKey && config.mistralKey.trim().length > 10 ? 1 : 0;
+    const totalCount = geminiCount + groqCount + openRouterCount + mistralCount;
 
     if (statusBadge) {
-      if (config.apiKey && config.apiKey.trim().length > 10) {
+      if (totalCount > 0) {
         statusBadge.innerHTML = `
-          <span style="display: inline-flex; align-items: center; gap: 5px; color: var(--success); font-size: 12px; font-weight: 600;">
+          <span style="display: inline-flex; align-items: center; gap: 6px; color: var(--success); font-size: 12px; font-weight: 600; background: #ECFDF5; border: 1px solid #A7F3D0; padding: 4px 10px; border-radius: 16px;">
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
-            Google API Conectada
+            ${totalCount} IA${totalCount === 1 ? '' : 's'} / Clave${totalCount === 1 ? '' : 's'} lista${totalCount === 1 ? '' : 's'} (Fallback activo)
           </span>`;
       } else {
         statusBadge.innerHTML = `
-          <span style="display: inline-flex; align-items: center; gap: 5px; color: #D97706; font-size: 12px; font-weight: 500;">
+          <span style="display: inline-flex; align-items: center; gap: 5px; color: #D97706; font-size: 12px; font-weight: 500; background: #FFFBEB; border: 1px solid #FDE68A; padding: 4px 10px; border-radius: 16px;">
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
-            API Key pendiente
+            Configurar API Keys
           </span>`;
       }
     }
@@ -86,77 +106,221 @@ const MailsModule = {
 
   saveConfig(e) {
     if (e) e.preventDefault();
-    const keyInput = document.getElementById('mail-api-key-input');
-    const toneInput = document.getElementById('mail-custom-tone-input');
-    const current = this.getConfig();
+    const geminiTextarea = document.getElementById('mail-gemini-keys-input');
+    const groqInput = document.getElementById('mail-groq-key-input');
+    const openRouterInput = document.getElementById('mail-openrouter-key-input');
+    const mistralInput = document.getElementById('mail-mistral-key-input');
+    const customToneInput = document.getElementById('mail-custom-tone-input');
 
-    current.apiKey = keyInput ? keyInput.value.trim() : '';
-    if (toneInput) current.customTone = toneInput.value.trim();
+    const geminiRaw = geminiTextarea ? geminiTextarea.value : '';
+    const geminiKeys = geminiRaw
+      .split('\n')
+      .map(k => k.trim())
+      .filter(k => k.length > 5);
 
-    Store.set('gemini_config', current);
+    const newConfig = {
+      geminiKeys: geminiKeys,
+      groqKey: groqInput ? groqInput.value.trim() : '',
+      openRouterKey: openRouterInput ? openRouterInput.value.trim() : '',
+      mistralKey: mistralInput ? mistralInput.value.trim() : '',
+      customTone: customToneInput ? customToneInput.value.trim() : ''
+    };
+
+    Store.set('ai_keys_config', newConfig);
     this.renderApiKeyStatus();
-    alert('Configuración de Google Gemini guardada correctamente.');
+    alert(`Configuración guardada correctamente con ${geminiKeys.length} clave(s) de Google Gemini y proveedores de respaldo.`);
     this.toggleConfigDrawer();
   },
 
-  async testConnection() {
-    const keyInput = document.getElementById('mail-api-key-input');
-    const apiKey = keyInput ? keyInput.value.trim() : this.getConfig().apiKey;
-    const testBtn = document.getElementById('btn-test-api');
+  // =========================================================================
+  // CLIENTES DE API INDIVIDUALES (HTTP DIRECTO)
+  // =========================================================================
+  async callGemini(apiKey, systemPrompt, userMessage) {
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        contents: [{ role: 'user', parts: [{ text: userMessage }] }],
+        systemInstruction: { parts: [{ text: systemPrompt }] },
+        generationConfig: { temperature: 0.35, topP: 0.95 }
+      })
+    });
 
-    if (!apiKey) {
-      alert('Por favor, introduce primero tu API Key de Google Gemini.');
-      return;
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      const msg = err.error?.message || `HTTP ${res.status}`;
+      throw new Error(`Google Gemini (${res.status}): ${msg}`);
     }
 
-    if (testBtn) {
-      testBtn.disabled = true;
-      testBtn.textContent = 'Verificando con Google...';
+    const data = await res.json();
+    const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
+    if (!text) throw new Error('Google Gemini no devolvió contenido.');
+    return text.trim();
+  },
+
+  async callGroq(apiKey, systemPrompt, userMessage) {
+    const url = 'https://api.groq.com/openai/v1/chat/completions';
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${apiKey}`
+      },
+      body: JSON.stringify({
+        model: 'llama-3.3-70b-versatile',
+        messages: [
+          { role: 'system', content: systemPrompt },
+          { role: 'user', content: userMessage }
+        ],
+        temperature: 0.35
+      })
+    });
+
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      const msg = err.error?.message || `HTTP ${res.status}`;
+      throw new Error(`Groq (${res.status}): ${msg}`);
     }
 
-    try {
-      const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
-      const res = await fetch(url, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          contents: [{ role: 'user', parts: [{ text: 'Hola, responde exactamente "OK".' }] }]
-        })
+    const data = await res.json();
+    const text = data.choices?.[0]?.message?.content;
+    if (!text) throw new Error('Groq no devolvió contenido.');
+    return text.trim();
+  },
+
+  async callOpenRouter(apiKey, systemPrompt, userMessage) {
+    const url = 'https://openrouter.ai/api/v1/chat/completions';
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${apiKey}`
+      },
+      body: JSON.stringify({
+        model: 'meta-llama/llama-3.3-70b-instruct:free',
+        messages: [
+          { role: 'system', content: systemPrompt },
+          { role: 'user', content: userMessage }
+        ],
+        temperature: 0.35
+      })
+    });
+
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      const msg = err.error?.message || `HTTP ${res.status}`;
+      throw new Error(`OpenRouter (${res.status}): ${msg}`);
+    }
+
+    const data = await res.json();
+    const text = data.choices?.[0]?.message?.content;
+    if (!text) throw new Error('OpenRouter no devolvió contenido.');
+    return text.trim();
+  },
+
+  async callMistral(apiKey, systemPrompt, userMessage) {
+    const url = 'https://api.mistral.ai/v1/chat/completions';
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${apiKey}`
+      },
+      body: JSON.stringify({
+        model: 'mistral-small-latest',
+        messages: [
+          { role: 'system', content: systemPrompt },
+          { role: 'user', content: userMessage }
+        ],
+        temperature: 0.35
+      })
+    });
+
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      const msg = err.error?.message || `HTTP ${res.status}`;
+      throw new Error(`Mistral (${res.status}): ${msg}`);
+    }
+
+    const data = await res.json();
+    const text = data.choices?.[0]?.message?.content;
+    if (!text) throw new Error('Mistral no devolvió contenido.');
+    return text.trim();
+  },
+
+  // =========================================================================
+  // GENERACIÓN CON FALLBACK EN CASCADA INTELIGENTE
+  // =========================================================================
+  buildQueue(config) {
+    const queue = [];
+
+    // 1º Prioridad: Claves de Google Gemini (gemini-2.5-flash)
+    if (config.geminiKeys && Array.isArray(config.geminiKeys)) {
+      config.geminiKeys.forEach((k, idx) => {
+        const cleanKey = k.trim();
+        if (cleanKey.length > 8) {
+          queue.push({
+            name: `Google Gemini (Clave #${idx + 1})`,
+            fn: (sys, usr) => this.callGemini(cleanKey, sys, usr)
+          });
+        }
       });
+    }
 
-      if (!res.ok) {
-        const errData = await res.json().catch(() => ({}));
-        throw new Error(errData.error?.message || `Error HTTP ${res.status}`);
-      }
+    // 2º Prioridad: Groq Llama 3.3 70B (ultra rápida)
+    if (config.groqKey && config.groqKey.trim().length > 8) {
+      queue.push({
+        name: 'Groq (Llama 3.3 70B - Ultra Rápida)',
+        fn: (sys, usr) => this.callGroq(config.groqKey.trim(), sys, usr)
+      });
+    }
 
-      alert('¡Conexión exitosa con Google Gemini! Tu API Key funciona a la perfección.');
-      // Auto-guardar la clave si funcionó
-      const current = this.getConfig();
-      current.apiKey = apiKey;
-      Store.set('gemini_config', current);
-      this.renderApiKeyStatus();
-    } catch (err) {
-      alert(`Error al conectar con Google Gemini:\n${err.message}\n\nAsegúrate de que la API Key es correcta.`);
-    } finally {
-      if (testBtn) {
-        testBtn.disabled = false;
-        testBtn.textContent = 'Verificar Conexión';
+    // 3º Prioridad: OpenRouter (modelos free)
+    if (config.openRouterKey && config.openRouterKey.trim().length > 8) {
+      queue.push({
+        name: 'OpenRouter (Llama 3.3 Free)',
+        fn: (sys, usr) => this.callOpenRouter(config.openRouterKey.trim(), sys, usr)
+      });
+    }
+
+    // 4º Prioridad: Mistral
+    if (config.mistralKey && config.mistralKey.trim().length > 8) {
+      queue.push({
+        name: 'Mistral AI',
+        fn: (sys, usr) => this.callMistral(config.mistralKey.trim(), sys, usr)
+      });
+    }
+
+    return queue;
+  },
+
+  showLoadingMessage(msg, isFallbackWarning = false) {
+    const textEl = document.getElementById('mail-loading-status-text');
+    const warningBox = document.getElementById('mail-fallback-warning');
+    
+    if (textEl) textEl.textContent = msg;
+    if (warningBox) {
+      if (isFallbackWarning) {
+        warningBox.innerHTML = `
+          <div style="background: #FEF3C7; border: 1px solid #F59E0B; color: #92400E; padding: 8px 12px; border-radius: 6px; font-size: 12px; margin-top: 8px; line-height: 1.4; display: flex; align-items: center; gap: 8px;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+            <span><strong>Aviso:</strong> ${msg}</span>
+          </div>`;
+        warningBox.style.display = 'block';
+      } else {
+        warningBox.style.display = 'none';
       }
     }
   },
 
-  // =========================================================================
-  // GENERACIÓN DE RESPUESTAS CON IA (GOOGLE GEMINI)
-  // =========================================================================
   async generateResponse() {
     const config = this.getConfig();
-    const apiKey = config.apiKey ? config.apiKey.trim() : '';
+    const queue = this.buildQueue(config);
 
-    if (!apiKey) {
-      alert('Para usar la IA necesitas configurar tu API Key de Google.\n\nPuedes introducirla en "Google API Key" arriba a la derecha.');
+    if (queue.length === 0) {
+      alert('No tienes ninguna API Key configurada.\n\nPulsa en "Configurar API Keys" arriba a la derecha para añadir tus claves gratuitas de Google Gemini o Groq.');
       this.toggleConfigDrawer();
-      const input = document.getElementById('mail-api-key-input');
-      if (input) input.focus();
       return;
     }
 
@@ -174,61 +338,62 @@ const MailsModule = {
     const loadingState = document.getElementById('mail-generating-loading');
     const resultBox = document.getElementById('mail-result-box');
     const resultText = document.getElementById('mail-generated-result');
+    const providerBadge = document.getElementById('mail-provider-used-badge');
 
     if (generateBtn) generateBtn.disabled = true;
     if (loadingState) loadingState.style.display = 'flex';
+    if (resultBox) resultBox.style.display = 'none';
 
-    try {
-      const systemPrompt = this.buildSystemPrompt(MOTHER_TRAINING_MAILS, config.customTone);
-      const userMessage = this.buildUserMessage(incomingMail, lang, notes);
+    const systemPrompt = this.buildSystemPrompt(MOTHER_TRAINING_MAILS, config.customTone);
+    const userMessage = this.buildUserMessage(incomingMail, lang, notes);
 
-      const url = `https://generativelanguage.googleapis.com/v1beta/models/${config.model || 'gemini-2.5-flash'}:generateContent?key=${apiKey}`;
+    let successResponse = null;
+    let usedProviderName = null;
+    const failedErrors = [];
 
-      const response = await fetch(url, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          contents: [
-            {
-              role: 'user',
-              parts: [{ text: userMessage }]
-            }
-          ],
-          systemInstruction: {
-            parts: [{ text: systemPrompt }]
-          },
-          generationConfig: {
-            temperature: 0.35,
-            topP: 0.95
-          }
-        })
-      });
+    // Bucle en cascada (fallback)
+    for (let i = 0; i < queue.length; i++) {
+      const current = queue[i];
 
-      if (!response.ok) {
-        const errorBody = await response.json().catch(() => ({}));
-        throw new Error(errorBody.error?.message || `Error del servidor de Google (${response.status})`);
+      if (i > 0) {
+        // Informar al usuario de que se agotaron los tokens de la anterior y tardará unos segundos más
+        this.showLoadingMessage(
+          `La IA anterior agotó su cuota de tokens o no respondió. Cambiando de inteligencia artificial a "${current.name}"... Tardará un poco más en redactar.`,
+          true
+        );
+        // Pequeña pausa para que el navegador renderice la advertencia
+        await new Promise(resolve => setTimeout(resolve, 800));
+      } else {
+        this.showLoadingMessage(`Conectando con ${current.name} para redactar la respuesta...`, false);
       }
 
-      const data = await response.json();
-      const generatedText = data.candidates?.[0]?.content?.parts?.[0]?.text;
-
-      if (!generatedText) {
-        throw new Error('Google no devolvió ningún texto.');
+      try {
+        console.log(`Intentando generar respuesta con: ${current.name}`);
+        successResponse = await current.fn(systemPrompt, userMessage);
+        usedProviderName = current.name;
+        break; // Éxito! Salir del bucle
+      } catch (err) {
+        console.warn(`Error con ${current.name}:`, err.message);
+        failedErrors.push(`${current.name}: ${err.message}`);
       }
+    }
 
-      if (resultText) {
-        resultText.value = generatedText.trim();
+    if (generateBtn) generateBtn.disabled = false;
+    if (loadingState) loadingState.style.display = 'none';
+
+    if (successResponse) {
+      if (resultText) resultText.value = successResponse;
+      if (providerBadge) {
+        providerBadge.textContent = `Generado con: ${usedProviderName}`;
       }
       if (resultBox) {
         resultBox.style.display = 'block';
         resultBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
       }
-    } catch (err) {
-      console.error('Error generando respuesta:', err);
-      alert(`No se pudo generar la respuesta con IA:\n${err.message}`);
-    } finally {
-      if (generateBtn) generateBtn.disabled = false;
-      if (loadingState) loadingState.style.display = 'none';
+    } else {
+      // Si fallaron todas las claves
+      const errorDetails = failedErrors.join('\n• ');
+      alert(`No se pudo generar la respuesta con ninguna de las IAs configuradas.\n\nDetalles:\n• ${errorDetails}\n\nPor favor revisa tus claves o añade claves adicionales en la configuración.`);
     }
   },
 
@@ -322,4 +487,5 @@ Genera ÚNICAMENTE el texto del correo de respuesta listo para enviar, sin preá
 };
 
 window.MailsModule = MailsModule;
+
 
