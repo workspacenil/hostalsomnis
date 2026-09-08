@@ -4,15 +4,15 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Hostal Somnis Workspace</title>
-  <link rel="manifest" href="manifest.json?v=28">
-  <link rel="icon" type="image/png" href="assets/app-icon.png?v=28">
-  <link rel="apple-touch-icon" href="assets/app-icon.png?v=28">
-  <link rel="apple-touch-icon-precomposed" href="assets/app-icon.png?v=28">
+  <link rel="manifest" href="manifest.json?v=29">
+  <link rel="icon" type="image/png" href="assets/app-icon.png?v=29">
+  <link rel="apple-touch-icon" href="assets/app-icon.png?v=29">
+  <link rel="apple-touch-icon-precomposed" href="assets/app-icon.png?v=29">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
   <meta name="apple-mobile-web-app-title" content="Hostal Somnis">
   <meta name="theme-color" content="#000000">
-  <link rel="stylesheet" href="css/styles.css?v=28">
+  <link rel="stylesheet" href="css/styles.css?v=29">
 </head>
 <body>
 
@@ -183,34 +183,12 @@
           </div>
         </div>
 
-        <!-- 2. ZONA INFERIOR: ENTRENAMIENTO Y APRENDIZAJE (CORREOS DE MI MADRE) -->
-        <div class="panel" style="margin-bottom: 40px;">
-          <div class="panel-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
-            <div style="display: flex; align-items: center; gap: 10px;">
-              <span style="font-weight: 600; font-size: 14px;">Entrenamiento de la IA: Correos y Respuestas de mi Madre</span>
-              <span id="mail-training-count-badge" style="background: var(--bg-element); border: 1px solid var(--border-dark); font-size: 11px; padding: 2px 8px; border-radius: 12px; font-weight: 500;"></span>
-            </div>
-            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-              <button type="button" class="btn btn-outline" onclick="MailsModule.exportToJson()" title="Descargar copia de seguridad" style="font-size: 12px; padding: 5px 10px;">
-                💾 Exportar
-              </button>
-              <button type="button" class="btn btn-outline" onclick="MailsModule.openBulkImportModal()" style="font-size: 12px; padding: 5px 10px;">
-                📥 Importar en Bloque
-              </button>
-              <button type="button" class="btn btn-primary" onclick="MailsModule.openAddModal()" style="font-size: 12px; padding: 5px 12px; font-weight: 600;">
-                + Añadir Correo y Respuesta
-              </button>
-            </div>
-          </div>
-          <div class="panel-body">
-            <div style="margin-bottom: 16px; display: flex; gap: 12px; align-items: center;">
-              <div style="flex: 1; position: relative;">
-                <input type="text" id="mail-train-search" class="form-input" placeholder="Buscar entre los correos de entrenamiento..." style="padding-left: 32px;">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: var(--text-muted);"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-              </div>
-            </div>
-
-            <div id="mail-trainings-list"></div>
+        <!-- Indicador de entrenamiento integrado -->
+        <div style="display: flex; align-items: center; justify-content: space-between; padding: 14px 18px; background: var(--bg-sidebar); border: 1px solid var(--border-color); border-radius: var(--radius-md); font-size: 13px; color: var(--text-muted); margin-bottom: 24px;">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--success)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+            <span style="color: var(--text-main); font-weight: 600;">IA entrenada con los correos de tu madre</span>
+            <span>(integrados de forma fija en la aplicación)</span>
           </div>
         </div>
       </section>
@@ -392,68 +370,11 @@
     </main>
   </div>
 
-  <!-- MODAL: AÑADIR/EDITAR EJEMPLO DE ENTRENAMIENTO -->
-  <div class="modal-overlay" id="modal-train-item" style="display: none;">
-    <div class="modal-card" style="max-width: 580px;">
-      <div class="modal-header">
-        <div class="modal-title" id="modal-train-header-text">Añadir Correo y Respuesta de mi Madre</div>
-        <button type="button" class="modal-close" onclick="MailsModule.closeAddModal()">&times;</button>
-      </div>
-      <form onsubmit="MailsModule.saveTrainingItem(event)">
-        <div class="modal-body">
-          <div class="form-group">
-            <label class="form-label" for="train-form-title">Título o Tema del Correo</label>
-            <input type="text" id="train-form-title" class="form-input" placeholder="Ej: Consulta sobre aparcamiento, cuna, check-in tarde..." required>
-          </div>
-          <div class="form-group">
-            <label class="form-label" for="train-form-incoming">📩 Correo recibido del cliente (Pregunta o duda)</label>
-            <textarea id="train-form-incoming" class="form-input" rows="4" placeholder="Pega aquí el texto que envió el cliente..." required style="resize: vertical;"></textarea>
-          </div>
-          <div class="form-group" style="margin-bottom: 0;">
-            <label class="form-label" for="train-form-reply">💬 Respuesta redactada por mi madre (La respuesta modelo)</label>
-            <textarea id="train-form-reply" class="form-input" rows="5" placeholder="Pega aquí la respuesta exacta que dio tu madre con su tono y estilo..." required style="resize: vertical;"></textarea>
-          </div>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-outline" onclick="MailsModule.closeAddModal()">Cancelar</button>
-          <button type="submit" class="btn btn-primary">Guardar en el Entrenamiento</button>
-        </div>
-      </form>
-    </div>
-  </div>
-
-  <!-- MODAL: IMPORTACIÓN EN BLOQUE / MASIVA -->
-  <div class="modal-overlay" id="modal-bulk-import" style="display: none;">
-    <div class="modal-card" style="max-width: 650px;">
-      <div class="modal-header">
-        <div class="modal-title">Importar Múltiples Correos de Golpe</div>
-        <button type="button" class="modal-close" onclick="MailsModule.closeBulkImportModal()">&times;</button>
-      </div>
-      <div class="modal-body">
-        <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 12px;">
-          Pega a continuación tus correos y respuestas. Puedes usar el formato siguiente o pegar un JSON exportado:
-        </p>
-        <div style="background: var(--bg-element); padding: 10px 12px; border-radius: var(--radius-sm); font-size: 11.5px; font-family: monospace; margin-bottom: 12px; color: #374151;">
-CORREO: Hola, tenéis cuna para bebé?<br>
-RESPUESTA: Hola! Sí, tenemos cuna disponible sin suplemento...<br>
----<br>
-CORREO: A qué hora se sirve el desayuno?<br>
-RESPUESTA: Hola! El desayuno se sirve de 8:00 a 10:00...
-        </div>
-        <textarea id="bulk-import-textarea" class="form-input" rows="8" placeholder="Pega aquí todos los correos y respuestas..." style="resize: vertical; font-size: 12.5px;"></textarea>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-outline" onclick="MailsModule.closeBulkImportModal()">Cancelar</button>
-        <button type="button" class="btn btn-primary" onclick="MailsModule.processBulkImport()">Procesar e Importar</button>
-      </div>
-    </div>
-  </div>
-
-  <script src="js/store.js?v=28"></script>
-  <script src="js/app.js?v=28"></script>
-  <script src="js/mails.js?v=28"></script>
-  <script src="js/checkin.js?v=28"></script>
-  <script src="js/codes.js?v=28"></script>
-  <script src="js/settings.js?v=28"></script>
+  <script src="js/store.js?v=29"></script>
+  <script src="js/app.js?v=29"></script>
+  <script src="js/mails.js?v=29"></script>
+  <script src="js/checkin.js?v=29"></script>
+  <script src="js/codes.js?v=29"></script>
+  <script src="js/settings.js?v=29"></script>
 </body>
 </html>
