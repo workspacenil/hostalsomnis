@@ -483,6 +483,103 @@ Genera ÚNICAMENTE el texto del correo de respuesta listo para enviar, sin preá
     const resultBox = document.getElementById('mail-result-box');
     if (textEl) textEl.value = '';
     if (resultBox) resultBox.style.display = 'none';
+  },
+
+  // =========================================================================
+  // ACORDEÓN (MINIMIZAR / EXPANDIR CON FLECHITA)
+  // =========================================================================
+  toggleAccordion(name) {
+    const body = document.getElementById(`accordion-${name}-body`);
+    const arrow = document.getElementById(`arrow-${name}`);
+    if (!body) return;
+
+    const isHidden = body.style.display === 'none';
+    body.style.display = isHidden ? 'block' : 'none';
+    if (arrow) {
+      arrow.style.transform = isHidden ? 'rotate(0deg)' : 'rotate(-90deg)';
+    }
+  },
+
+  // =========================================================================
+  // GENERACIÓN DE CONFIRMACIÓN DE RESERVA CON PLANTILLA E IA
+  // =========================================================================
+  async generateConfirmation() {
+    const input = document.getElementById('confirmacio-input-text').value.trim();
+    if (!input) {
+      alert('Si us plau, enganxa les dades o el correu de la reserva.');
+      document.getElementById('confirmacio-input-text').focus();
+      return;
+    }
+
+    const lang = document.getElementById('confirmacio-lang').value;
+    const config = this.getConfig();
+    const queue = this.buildQueue(config);
+
+    if (queue.length === 0) {
+      alert('No tens cap API Key configurada. Configura-la a dalt a la dreta.');
+      this.toggleConfigDrawer();
+      return;
+    }
+
+    const btn = document.getElementById('btn-generate-confirmacio');
+    const loading = document.getElementById('confirmacio-loading');
+    const resultText = document.getElementById('confirmacio-result-text');
+
+    if (btn) btn.disabled = true;
+    if (loading) loading.style.display = 'flex';
+
+    try {
+      const systemPrompt = `Ets l'assistent oficial d'atenció al client d'Hostal Somnis a Súria (Barcelona).
+La teva tasca és extreure les dades de reserva que t'indica l'usuari i redactar la confirmació oficial de reserva de forma coherent, amable, impecable i elegant, omplint cada camp (nom de l'hoste, dates d'arribada i sortida, habitacions, imports, informació d'arribada i esmorzar).
+Si es reserven diverses habitacions o una sola, adapta la redacció de manera natural i professional.`;
+
+      const userMessage = `Redacta la confirmació de reserva oficial en idioma "${lang}" per a aquestes dades:\n\n"""\n${input}\n"""`;
+
+      let text = null;
+      for (let i = 0; i < queue.length; i++) {
+        try {
+          text = await queue[i].fn(systemPrompt, userMessage);
+          break;
+        } catch (e) {
+          console.warn(`Error confirmació amb ${queue[i].name}:`, e);
+        }
+      }
+
+      if (text) {
+        if (resultText) resultText.value = text;
+      } else {
+        alert('No s\'ha pogut generar la confirmació amb cap de les IAs.');
+      }
+    } finally {
+      if (btn) btn.disabled = false;
+      if (loading) loading.style.display = 'none';
+    }
+  },
+
+  copyConfirmation() {
+    const textEl = document.getElementById('confirmacio-result-text');
+    if (!textEl || !textEl.value) return;
+
+    navigator.clipboard.writeText(textEl.value).then(() => {
+      const btn = document.getElementById('btn-copy-confirmacio');
+      if (btn) {
+        const originalHtml = btn.innerHTML;
+        btn.innerHTML = `
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+          ¡Copiat!
+        `;
+        btn.style.backgroundColor = 'var(--success)';
+        btn.style.borderColor = 'var(--success)';
+        setTimeout(() => {
+          btn.innerHTML = originalHtml;
+          btn.style.backgroundColor = '';
+          btn.style.borderColor = '';
+        }, 2000);
+      }
+    }).catch(err => {
+      console.error('Error al copiar:', err);
+      alert('Error al copiar');
+    });
   }
 };
 

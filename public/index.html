@@ -4,15 +4,15 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Hostal Somnis Workspace</title>
-  <link rel="manifest" href="manifest.json?v=30">
-  <link rel="icon" type="image/png" href="assets/app-icon.png?v=30">
-  <link rel="apple-touch-icon" href="assets/app-icon.png?v=30">
-  <link rel="apple-touch-icon-precomposed" href="assets/app-icon.png?v=30">
+  <link rel="manifest" href="manifest.json?v=31">
+  <link rel="icon" type="image/png" href="assets/app-icon.png?v=31">
+  <link rel="apple-touch-icon" href="assets/app-icon.png?v=31">
+  <link rel="apple-touch-icon-precomposed" href="assets/app-icon.png?v=31">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
   <meta name="apple-mobile-web-app-title" content="Hostal Somnis">
   <meta name="theme-color" content="#000000">
-  <link rel="stylesheet" href="css/styles.css?v=30">
+  <link rel="stylesheet" href="css/styles.css?v=31">
 </head>
 <body>
 
@@ -165,70 +165,155 @@
           </form>
         </div>
 
-        <!-- 1. ZONA SUPERIOR: GENERADOR DE RESPUESTAS A CORREOS -->
-        <div class="panels-grid" style="margin-bottom: 28px;">
-          <!-- Panel de entrada -->
-          <div class="panel">
-            <div class="panel-header" style="display: flex; justify-content: space-between; align-items: center;">
-              <span>1. Correo Recibido del Huésped</span>
-              <span style="font-size: 11px; font-weight: normal; color: var(--text-muted);">Pega la duda o consulta</span>
+        <!-- 1. ACORDEÓN: PREGUNTES I RESPOSTES -->
+        <div class="mail-accordion-section" style="border: 1px solid var(--border-color); border-radius: var(--radius-lg); background: #FFF; margin-bottom: 24px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.03);">
+          <div class="mail-accordion-header" onclick="MailsModule.toggleAccordion('preguntes')" style="padding: 16px 20px; background: var(--bg-sidebar); border-bottom: 1px solid var(--border-color); cursor: pointer; display: flex; justify-content: space-between; align-items: center; user-select: none; transition: background 0.15s;">
+            <div style="display: flex; align-items: center; gap: 12px;">
+              <svg id="arrow-preguntes" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="transition: transform 0.2s ease; transform: rotate(0deg);"><polyline points="6 9 12 15 18 9"></polyline></svg>
+              <div>
+                <span style="font-size: 15px; font-weight: 600; color: var(--text-main);">Preguntes i respostes</span>
+                <span style="font-size: 12px; color: var(--text-muted); margin-left: 8px;">— Respostes a dubtes i preguntes d'hostes</span>
+              </div>
             </div>
-            <div class="panel-body">
-              <div class="form-group">
-                <textarea id="mail-incoming-text" class="form-input" rows="6" placeholder="Pega aquí el correo que te ha enviado el huésped...&#10;&#10;Ejemplo:&#10;Hola, llegaremos el viernes a las 23h. ¿Cómo podemos entrar? ¿Hay sitio para dejar el coche cerca?" style="resize: vertical; font-size: 13.5px; line-height: 1.5;"></textarea>
-              </div>
+            <span style="font-size: 11px; color: var(--text-muted); background: var(--bg-element); padding: 3px 8px; border-radius: 12px;">Clic per minimitzar/expandir</span>
+          </div>
 
-              <div class="form-row">
-                <div class="form-group">
-                  <label class="form-label">Idioma de la Respuesta</label>
-                  <select id="mail-reply-lang" class="form-select">
-                    <option value="auto">🌐 Mismo idioma del cliente (Automático)</option>
-                    <option value="ca">Català</option>
-                    <option value="es">Castellano</option>
-                    <option value="en">English</option>
-                    <option value="fr">Français</option>
-                  </select>
+          <div id="accordion-preguntes-body" style="padding: 20px; display: block;">
+            <div class="panels-grid">
+              <!-- Panel de entrada -->
+              <div class="panel">
+                <div class="panel-header" style="display: flex; justify-content: space-between; align-items: center;">
+                  <span>1. Correu rebut de l'hoste</span>
+                  <span style="font-size: 11px; font-weight: normal; color: var(--text-muted);">Pega la pregunta</span>
+                </div>
+                <div class="panel-body">
+                  <div class="form-group">
+                    <textarea id="mail-incoming-text" class="form-input" rows="6" placeholder="Pega aquí el correu o missatge que ha enviat el client...&#10;&#10;Exemple:&#10;Hola, arribarem divendres a les 23h. Com podem entrar? Hi ha aparcament a prop?" style="resize: vertical; font-size: 13.5px; line-height: 1.5;"></textarea>
+                  </div>
+
+                  <div class="form-row">
+                    <div class="form-group">
+                      <label class="form-label">Idioma de la Resposta</label>
+                      <select id="mail-reply-lang" class="form-select">
+                        <option value="auto">🌐 Mateix idioma del client (Automàtic)</option>
+                        <option value="ca">Català</option>
+                        <option value="es">Castellano</option>
+                        <option value="en">English</option>
+                        <option value="fr">Français</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div class="form-group">
+                    <label class="form-label">Indicacions especials per a aquest correu (Opcional)</label>
+                    <input type="text" id="mail-additional-notes" class="form-input" placeholder="Ex: Indicar que l'esmorzar val 13€, o que sí tenim bressol gratuït...">
+                  </div>
+
+                  <button type="button" id="btn-generate-mail" class="btn btn-primary" onclick="MailsModule.generateResponse()" style="width: 100%; padding: 10px; font-size: 14px; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"></path></svg>
+                    ✨ Generar Resposta amb IA
+                  </button>
+
+                  <div id="mail-generating-loading" style="display: none; flex-direction: column; align-items: center; justify-content: center; gap: 8px; margin-top: 14px; padding: 14px; background: var(--bg-sidebar); border: 1px solid var(--border-color); border-radius: var(--radius-md);">
+                    <div style="display: flex; align-items: center; gap: 10px; font-size: 13px; color: var(--text-main); font-weight: 500;">
+                      <div class="mail-spinner"></div>
+                      <span id="mail-loading-status-text">Connectant amb la IA per redactar la resposta...</span>
+                    </div>
+                    <div id="mail-fallback-warning" style="display: none; width: 100%;"></div>
+                  </div>
                 </div>
               </div>
 
-              <div class="form-group">
-                <label class="form-label">Indicaciones especiales para este correo (Opcional)</label>
-                <input type="text" id="mail-additional-notes" class="form-input" placeholder="Ej: Indicar que el desayuno cuesta 13€, o avisar que no quedan cunas...">
-              </div>
-
-              <button type="button" id="btn-generate-mail" class="btn btn-primary" onclick="MailsModule.generateResponse()" style="width: 100%; padding: 10px; font-size: 14px; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 8px;">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"></path></svg>
-                ✨ Generar Respuesta con IA
-              </button>
-
-              <div id="mail-generating-loading" style="display: none; flex-direction: column; align-items: center; justify-content: center; gap: 8px; margin-top: 14px; padding: 14px; background: var(--bg-sidebar); border: 1px solid var(--border-color); border-radius: var(--radius-md);">
-                <div style="display: flex; align-items: center; gap: 10px; font-size: 13px; color: var(--text-main); font-weight: 500;">
-                  <div class="mail-spinner"></div>
-                  <span id="mail-loading-status-text">Conectando con la IA para redactar la respuesta...</span>
+              <!-- Panel de salida / Respuesta -->
+              <div class="panel">
+                <div class="panel-header" style="display: flex; justify-content: space-between; align-items: center;">
+                  <div>
+                    <span>2. Resposta Generada</span>
+                    <span id="mail-provider-used-badge" style="font-size: 11px; color: var(--text-muted); font-weight: normal; margin-left: 8px;"></span>
+                  </div>
+                  <div style="display: flex; gap: 6px;">
+                    <button type="button" class="btn btn-outline" onclick="MailsModule.clearGenerated()" style="padding: 4px 8px; font-size: 11px;">Netejar</button>
+                    <button type="button" class="btn btn-primary" id="btn-copy-mail" onclick="MailsModule.copyGeneratedMail()" style="display: flex; align-items: center; gap: 6px; padding: 5px 12px; font-size: 12px;">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                      Copiar
+                    </button>
+                  </div>
                 </div>
-                <div id="mail-fallback-warning" style="display: none; width: 100%;"></div>
+                <div class="panel-body" style="display: flex; flex-direction: column; height: 100%; padding: 0;">
+                  <div id="mail-result-box" style="flex: 1; display: flex; flex-direction: column; height: 100%;">
+                    <textarea id="mail-generated-result" style="width: 100%; height: 100%; min-height: 290px; padding: 18px 20px; border: none; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size: 14px; line-height: 1.6; color: #1F2937; background-color: #FAFAFA; resize: vertical; outline: none; border-bottom-left-radius: var(--radius-lg); border-bottom-right-radius: var(--radius-lg);" placeholder="La resposta redactada per la IA apareixerà aquí a punt per revisar, editar o copiar directament..."></textarea>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
+        </div>
 
-          <!-- Panel de salida / Respuesta -->
-          <div class="panel">
-            <div class="panel-header" style="display: flex; justify-content: space-between; align-items: center;">
+        <!-- 2. ACORDEÓN: CONFIRMACIÓ DE RESERVA -->
+        <div class="mail-accordion-section" style="border: 1px solid var(--border-color); border-radius: var(--radius-lg); background: #FFF; margin-bottom: 24px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.03);">
+          <div class="mail-accordion-header" onclick="MailsModule.toggleAccordion('confirmacio')" style="padding: 16px 20px; background: var(--bg-sidebar); border-bottom: 1px solid var(--border-color); cursor: pointer; display: flex; justify-content: space-between; align-items: center; user-select: none; transition: background 0.15s;">
+            <div style="display: flex; align-items: center; gap: 12px;">
+              <svg id="arrow-confirmacio" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="transition: transform 0.2s ease; transform: rotate(0deg);"><polyline points="6 9 12 15 18 9"></polyline></svg>
               <div>
-                <span>2. Respuesta Generada</span>
-                <span id="mail-provider-used-badge" style="font-size: 11px; color: var(--text-muted); font-weight: normal; margin-left: 8px;"></span>
-              </div>
-              <div style="display: flex; gap: 6px;">
-                <button type="button" class="btn btn-outline" onclick="MailsModule.clearGenerated()" style="padding: 4px 8px; font-size: 11px;">Limpiar</button>
-                <button type="button" class="btn btn-primary" id="btn-copy-mail" onclick="MailsModule.copyGeneratedMail()" style="display: flex; align-items: center; gap: 6px; padding: 5px 12px; font-size: 12px;">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
-                  Copiar
-                </button>
+                <span style="font-size: 15px; font-weight: 600; color: var(--text-main);">Confirmació de reserva</span>
+                <span style="font-size: 12px; color: var(--text-muted); margin-left: 8px;">— Omplert automàtic de plantilla oficial amb IA</span>
               </div>
             </div>
-            <div class="panel-body" style="display: flex; flex-direction: column; height: 100%; padding: 0;">
-              <div id="mail-result-box" style="flex: 1; display: flex; flex-direction: column; height: 100%;">
-                <textarea id="mail-generated-result" style="width: 100%; height: 100%; min-height: 290px; padding: 18px 20px; border: none; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size: 14px; line-height: 1.6; color: #1F2937; background-color: #FAFAFA; resize: vertical; outline: none; border-bottom-left-radius: var(--radius-lg); border-bottom-right-radius: var(--radius-lg);" placeholder="La respuesta redactada por la IA aparecerá aquí lista para revisar, editar o copiar directamente..."></textarea>
+            <span style="font-size: 11px; color: var(--text-muted); background: var(--bg-element); padding: 3px 8px; border-radius: 12px;">Clic per minimitzar/expandir</span>
+          </div>
+
+          <div id="accordion-confirmacio-body" style="padding: 20px; display: block;">
+            <div class="panels-grid">
+              <!-- Panel Entrada Datos Reserva -->
+              <div class="panel">
+                <div class="panel-header" style="display: flex; justify-content: space-between; align-items: center;">
+                  <span>Dades de la Reserva o Correu Brut</span>
+                  <span style="font-size: 11px; color: var(--text-muted);">Pega les dades aquí</span>
+                </div>
+                <div class="panel-body">
+                  <div class="form-group">
+                    <textarea id="confirmacio-input-text" class="form-input" rows="8" placeholder="Pega aquí les dades de la reserva (o el correu que t'ha arribat de Booking o del client)...&#10;&#10;Exemple: Nom del client, dates d'entrada i sortida, habitacions, preu, etc." style="resize: vertical; font-size: 13.5px; line-height: 1.5;"></textarea>
+                  </div>
+
+                  <div class="form-group">
+                    <label class="form-label">Idioma del Correu de Confirmació</label>
+                    <select id="confirmacio-lang" class="form-select">
+                      <option value="ca">Català</option>
+                      <option value="es">Castellano</option>
+                      <option value="en">English</option>
+                      <option value="fr">Français</option>
+                    </select>
+                  </div>
+
+                  <button type="button" id="btn-generate-confirmacio" class="btn btn-primary" onclick="MailsModule.generateConfirmation()" style="width: 100%; padding: 10px; font-size: 14px; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                    ✨ Omplir Plantilla amb IA
+                  </button>
+
+                  <div id="confirmacio-loading" style="display: none; flex-direction: column; align-items: center; justify-content: center; gap: 8px; margin-top: 14px; padding: 14px; background: var(--bg-sidebar); border: 1px solid var(--border-color); border-radius: var(--radius-md);">
+                    <div style="display: flex; align-items: center; gap: 10px; font-size: 13px; color: var(--text-main); font-weight: 500;">
+                      <div class="mail-spinner"></div>
+                      <span id="confirmacio-loading-text">La IA està processant les dades i omplint la plantilla...</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Panel Salida Confirmación -->
+              <div class="panel">
+                <div class="panel-header" style="display: flex; justify-content: space-between; align-items: center;">
+                  <span>Correu de Confirmació Llesta</span>
+                  <div style="display: flex; gap: 6px;">
+                    <button type="button" class="btn btn-outline" onclick="document.getElementById('confirmacio-result-text').value=''" style="padding: 4px 8px; font-size: 11px;">Netejar</button>
+                    <button type="button" class="btn btn-primary" id="btn-copy-confirmacio" onclick="MailsModule.copyConfirmation()" style="display: flex; align-items: center; gap: 6px; padding: 5px 12px; font-size: 12px;">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                      Copiar
+                    </button>
+                  </div>
+                </div>
+                <div class="panel-body" style="display: flex; flex-direction: column; height: 100%; padding: 0;">
+                  <textarea id="confirmacio-result-text" style="width: 100%; height: 100%; min-height: 330px; padding: 18px 20px; border: none; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size: 14px; line-height: 1.6; color: #1F2937; background-color: #FAFAFA; resize: vertical; outline: none; border-bottom-left-radius: var(--radius-lg); border-bottom-right-radius: var(--radius-lg);" placeholder="Quan passis la plantilla i enganxis les dades, la IA omplirà tots els buits de forma coherent i redactarà el correu aquí a punt per enviar..."></textarea>
+                </div>
               </div>
             </div>
           </div>
@@ -421,11 +506,11 @@
     </main>
   </div>
 
-  <script src="js/store.js?v=30"></script>
-  <script src="js/app.js?v=30"></script>
-  <script src="js/mails.js?v=30"></script>
-  <script src="js/checkin.js?v=30"></script>
-  <script src="js/codes.js?v=30"></script>
-  <script src="js/settings.js?v=30"></script>
+  <script src="js/store.js?v=31"></script>
+  <script src="js/app.js?v=31"></script>
+  <script src="js/mails.js?v=31"></script>
+  <script src="js/checkin.js?v=31"></script>
+  <script src="js/codes.js?v=31"></script>
+  <script src="js/settings.js?v=31"></script>
 </body>
 </html>
