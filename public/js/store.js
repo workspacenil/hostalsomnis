@@ -61,6 +61,33 @@ const Store = {
     if (!this.get('finances')) {
       this.set('finances', []);
     }
+
+    if (!this.get('mail_trainings')) {
+      this.set('mail_trainings', [
+        {
+          id: 'train-1',
+          date: '2025-01-10',
+          title: 'Aparcamiento y cuna para bebé',
+          incoming: 'Hola, tenemos una reserva para este fin de semana. ¿Hay sitio para aparcar el coche cerca? Y querríamos saber si tenéis cuna para nuestro bebé de 8 meses.',
+          reply: 'Hola! Encantada de saludarte. Sí, justo delante del hostal y en las calles contiguas hay aparcamiento público gratuito y muy tranquilo donde siempre se encuentra sitio fácilmente. En cuanto a la cuna, sí que tenemos cuna de viaje disponible y os la podemos dejar montada y lista en la habitación sin ningún suplemento. Avisadnos si necesitáis cualquier otra cosita. ¡Hasta pronto!'
+        },
+        {
+          id: 'train-2',
+          date: '2025-01-15',
+          title: 'Llegada tarde por la noche',
+          incoming: 'Hola, llegaremos tarde el viernes, probablemente hacia las 23:30h. ¿Habrá problema para hacer el check-in a esa hora?',
+          reply: 'Hola! No hay ningún problema. Nuestro sistema de entrada es totalmente autónomo mediante códigos de seguridad para la puerta y la cajita de llaves. El mismo día de vuestra llegada os mandamos las instrucciones detalladas para que podáis entrar tranquilamente a la hora que lleguéis sin prisas. ¡Buen viaje!'
+        }
+      ]);
+    }
+
+    if (!this.get('gemini_config')) {
+      this.set('gemini_config', {
+        apiKey: '',
+        model: 'gemini-2.5-flash',
+        customTone: 'Responde siempre con el tono amable, cercano, educado y hospitalario de mi madre para Hostal Somnis en Súria. Sé clara, servicial y transmite calidez familiar.'
+      });
+    }
   }
 };
 

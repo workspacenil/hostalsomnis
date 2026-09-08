@@ -4,15 +4,15 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Hostal Somnis Workspace</title>
-  <link rel="manifest" href="manifest.json?v=27">
-  <link rel="icon" type="image/png" href="assets/app-icon.png?v=27">
-  <link rel="apple-touch-icon" href="assets/app-icon.png?v=27">
-  <link rel="apple-touch-icon-precomposed" href="assets/app-icon.png?v=27">
+  <link rel="manifest" href="manifest.json?v=28">
+  <link rel="icon" type="image/png" href="assets/app-icon.png?v=28">
+  <link rel="apple-touch-icon" href="assets/app-icon.png?v=28">
+  <link rel="apple-touch-icon-precomposed" href="assets/app-icon.png?v=28">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
   <meta name="apple-mobile-web-app-title" content="Hostal Somnis">
   <meta name="theme-color" content="#000000">
-  <link rel="stylesheet" href="css/styles.css?v=27">
+  <link rel="stylesheet" href="css/styles.css?v=28">
 </head>
 <body>
 
@@ -42,6 +42,7 @@
       </div>
       
       <nav class="sidebar-nav">
+        <button class="nav-item" data-view="mails">Mails</button>
         <button class="nav-item active" data-view="checkin">Check In 1</button>
         <button class="nav-item" data-view="codigos">Còdigs 2</button>
       </nav>
@@ -68,6 +69,151 @@
           Actualizar versión
         </button>
       </div>
+
+      <!-- VISTA MAILS -->
+      <section id="view-mails" class="view-section">
+        <div class="section-header" style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 12px;">
+          <div>
+            <h2 class="section-title">Mails - Respuestas con IA</h2>
+            <div class="section-subtitle">Genera respuestas al estilo de tu madre usando Google Gemini y la base de ejemplos</div>
+          </div>
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <div id="mail-api-status-badge"></div>
+            <button type="button" class="btn btn-outline" onclick="MailsModule.toggleConfigDrawer()" style="display: flex; align-items: center; gap: 6px; font-size: 12px; padding: 6px 12px;">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+              Google API Key
+            </button>
+          </div>
+        </div>
+
+        <!-- PANEL DESPLEGABLE: CONFIGURACIÓN GOOGLE GEMINI -->
+        <div id="mail-config-drawer" style="display: none; margin-bottom: 24px; padding: 18px 20px; background: #FFF; border: 1px solid var(--border-dark); border-radius: var(--radius-lg); box-shadow: 0 2px 8px rgba(0,0,0,0.04);">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+            <div style="font-weight: 600; font-size: 14px; color: var(--text-main); display: flex; align-items: center; gap: 8px;">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"></path></svg>
+              Configuración de Google Gemini API
+            </div>
+            <button type="button" onclick="MailsModule.toggleConfigDrawer()" style="background: none; border: none; font-size: 18px; cursor: pointer; color: var(--text-muted);">&times;</button>
+          </div>
+          
+          <form onsubmit="MailsModule.saveConfig(event)">
+            <div class="form-group">
+              <label class="form-label" for="mail-api-key-input">Tu Google API Key (Gemini)</label>
+              <div style="display: flex; gap: 8px;">
+                <input type="password" id="mail-api-key-input" class="form-input" placeholder="Pega aquí tu clave: AIzaSy..." style="flex: 1; font-family: monospace;">
+                <button type="button" class="btn btn-outline" id="btn-test-api" onclick="MailsModule.testConnection()" style="white-space: nowrap; font-size: 12px;">Verificar Conexión</button>
+              </div>
+              <div style="font-size: 11.5px; color: var(--text-muted); margin-top: 5px;">
+                ¿No tienes tu API Key? <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener noreferrer" style="color: var(--text-main); font-weight: 500; text-decoration: underline;">Consíguela gratis en Google AI Studio</a>. Se guarda de forma privada en tu navegador.
+              </div>
+            </div>
+
+            <div class="form-group" style="margin-bottom: 14px;">
+              <label class="form-label" for="mail-custom-tone-input">Instrucciones de Tono y Estilo de mi Madre</label>
+              <textarea id="mail-custom-tone-input" class="form-input" rows="2" style="font-size: 12.5px; resize: vertical;" placeholder="Tono familiar, cercano, educado y resolutivo para Hostal Somnis en Súria..."></textarea>
+            </div>
+
+            <div style="display: flex; justify-content: flex-end; gap: 8px;">
+              <button type="button" class="btn btn-outline" onclick="MailsModule.toggleConfigDrawer()">Cerrar</button>
+              <button type="submit" class="btn btn-primary">Guardar Configuración</button>
+            </div>
+          </form>
+        </div>
+
+        <!-- 1. ZONA SUPERIOR: GENERADOR DE RESPUESTAS A CORREOS -->
+        <div class="panels-grid" style="margin-bottom: 28px;">
+          <!-- Panel de entrada -->
+          <div class="panel">
+            <div class="panel-header" style="display: flex; justify-content: space-between; align-items: center;">
+              <span>1. Correo Recibido del Huésped</span>
+              <span style="font-size: 11px; font-weight: normal; color: var(--text-muted);">Pega la duda o consulta</span>
+            </div>
+            <div class="panel-body">
+              <div class="form-group">
+                <textarea id="mail-incoming-text" class="form-input" rows="6" placeholder="Pega aquí el correo que te ha enviado el huésped...&#10;&#10;Ejemplo:&#10;Hola, llegaremos el viernes a las 23h. ¿Cómo podemos entrar? ¿Hay sitio para dejar el coche cerca?" style="resize: vertical; font-size: 13.5px; line-height: 1.5;"></textarea>
+              </div>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label class="form-label">Idioma de la Respuesta</label>
+                  <select id="mail-reply-lang" class="form-select">
+                    <option value="auto">🌐 Mismo idioma del cliente (Automático)</option>
+                    <option value="ca">Català</option>
+                    <option value="es">Castellano</option>
+                    <option value="en">English</option>
+                    <option value="fr">Français</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Indicaciones especiales para este correo (Opcional)</label>
+                <input type="text" id="mail-additional-notes" class="form-input" placeholder="Ej: Indicar que el desayuno cuesta 13€, o avisar que no quedan cunas...">
+              </div>
+
+              <button type="button" id="btn-generate-mail" class="btn btn-primary" onclick="MailsModule.generateResponse()" style="width: 100%; padding: 10px; font-size: 14px; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"></path></svg>
+                ✨ Generar Respuesta con IA
+              </button>
+
+              <div id="mail-generating-loading" style="display: none; align-items: center; justify-content: center; gap: 10px; margin-top: 14px; font-size: 13px; color: var(--text-muted);">
+                <div class="mail-spinner"></div>
+                <span>Google Gemini está redactando con el estilo de tu madre...</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Panel de salida / Respuesta -->
+          <div class="panel">
+            <div class="panel-header" style="display: flex; justify-content: space-between; align-items: center;">
+              <span>2. Respuesta Generada</span>
+              <div style="display: flex; gap: 6px;">
+                <button type="button" class="btn btn-outline" onclick="MailsModule.clearGenerated()" style="padding: 4px 8px; font-size: 11px;">Limpiar</button>
+                <button type="button" class="btn btn-primary" id="btn-copy-mail" onclick="MailsModule.copyGeneratedMail()" style="display: flex; align-items: center; gap: 6px; padding: 5px 12px; font-size: 12px;">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                  Copiar
+                </button>
+              </div>
+            </div>
+            <div class="panel-body" style="display: flex; flex-direction: column; height: 100%; padding: 0;">
+              <div id="mail-result-box" style="flex: 1; display: flex; flex-direction: column; height: 100%;">
+                <textarea id="mail-generated-result" style="width: 100%; height: 100%; min-height: 290px; padding: 18px 20px; border: none; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size: 14px; line-height: 1.6; color: #1F2937; background-color: #FAFAFA; resize: vertical; outline: none; border-bottom-left-radius: var(--radius-lg); border-bottom-right-radius: var(--radius-lg);" placeholder="La respuesta redactada por la IA aparecerá aquí lista para revisar, editar o copiar directamente..."></textarea>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2. ZONA INFERIOR: ENTRENAMIENTO Y APRENDIZAJE (CORREOS DE MI MADRE) -->
+        <div class="panel" style="margin-bottom: 40px;">
+          <div class="panel-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+            <div style="display: flex; align-items: center; gap: 10px;">
+              <span style="font-weight: 600; font-size: 14px;">Entrenamiento de la IA: Correos y Respuestas de mi Madre</span>
+              <span id="mail-training-count-badge" style="background: var(--bg-element); border: 1px solid var(--border-dark); font-size: 11px; padding: 2px 8px; border-radius: 12px; font-weight: 500;"></span>
+            </div>
+            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+              <button type="button" class="btn btn-outline" onclick="MailsModule.exportToJson()" title="Descargar copia de seguridad" style="font-size: 12px; padding: 5px 10px;">
+                💾 Exportar
+              </button>
+              <button type="button" class="btn btn-outline" onclick="MailsModule.openBulkImportModal()" style="font-size: 12px; padding: 5px 10px;">
+                📥 Importar en Bloque
+              </button>
+              <button type="button" class="btn btn-primary" onclick="MailsModule.openAddModal()" style="font-size: 12px; padding: 5px 12px; font-weight: 600;">
+                + Añadir Correo y Respuesta
+              </button>
+            </div>
+          </div>
+          <div class="panel-body">
+            <div style="margin-bottom: 16px; display: flex; gap: 12px; align-items: center;">
+              <div style="flex: 1; position: relative;">
+                <input type="text" id="mail-train-search" class="form-input" placeholder="Buscar entre los correos de entrenamiento..." style="padding-left: 32px;">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: var(--text-muted);"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+              </div>
+            </div>
+
+            <div id="mail-trainings-list"></div>
+          </div>
+        </div>
+      </section>
 
       <!-- VISTA CÒDIGS -->
       <section id="view-codigos" class="view-section">
@@ -246,10 +392,68 @@
     </main>
   </div>
 
-  <script src="js/store.js?v=27"></script>
-  <script src="js/app.js?v=27"></script>
-  <script src="js/checkin.js?v=27"></script>
-  <script src="js/codes.js?v=27"></script>
-  <script src="js/settings.js?v=27"></script>
+  <!-- MODAL: AÑADIR/EDITAR EJEMPLO DE ENTRENAMIENTO -->
+  <div class="modal-overlay" id="modal-train-item" style="display: none;">
+    <div class="modal-card" style="max-width: 580px;">
+      <div class="modal-header">
+        <div class="modal-title" id="modal-train-header-text">Añadir Correo y Respuesta de mi Madre</div>
+        <button type="button" class="modal-close" onclick="MailsModule.closeAddModal()">&times;</button>
+      </div>
+      <form onsubmit="MailsModule.saveTrainingItem(event)">
+        <div class="modal-body">
+          <div class="form-group">
+            <label class="form-label" for="train-form-title">Título o Tema del Correo</label>
+            <input type="text" id="train-form-title" class="form-input" placeholder="Ej: Consulta sobre aparcamiento, cuna, check-in tarde..." required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="train-form-incoming">📩 Correo recibido del cliente (Pregunta o duda)</label>
+            <textarea id="train-form-incoming" class="form-input" rows="4" placeholder="Pega aquí el texto que envió el cliente..." required style="resize: vertical;"></textarea>
+          </div>
+          <div class="form-group" style="margin-bottom: 0;">
+            <label class="form-label" for="train-form-reply">💬 Respuesta redactada por mi madre (La respuesta modelo)</label>
+            <textarea id="train-form-reply" class="form-input" rows="5" placeholder="Pega aquí la respuesta exacta que dio tu madre con su tono y estilo..." required style="resize: vertical;"></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline" onclick="MailsModule.closeAddModal()">Cancelar</button>
+          <button type="submit" class="btn btn-primary">Guardar en el Entrenamiento</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: IMPORTACIÓN EN BLOQUE / MASIVA -->
+  <div class="modal-overlay" id="modal-bulk-import" style="display: none;">
+    <div class="modal-card" style="max-width: 650px;">
+      <div class="modal-header">
+        <div class="modal-title">Importar Múltiples Correos de Golpe</div>
+        <button type="button" class="modal-close" onclick="MailsModule.closeBulkImportModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 12px;">
+          Pega a continuación tus correos y respuestas. Puedes usar el formato siguiente o pegar un JSON exportado:
+        </p>
+        <div style="background: var(--bg-element); padding: 10px 12px; border-radius: var(--radius-sm); font-size: 11.5px; font-family: monospace; margin-bottom: 12px; color: #374151;">
+CORREO: Hola, tenéis cuna para bebé?<br>
+RESPUESTA: Hola! Sí, tenemos cuna disponible sin suplemento...<br>
+---<br>
+CORREO: A qué hora se sirve el desayuno?<br>
+RESPUESTA: Hola! El desayuno se sirve de 8:00 a 10:00...
+        </div>
+        <textarea id="bulk-import-textarea" class="form-input" rows="8" placeholder="Pega aquí todos los correos y respuestas..." style="resize: vertical; font-size: 12.5px;"></textarea>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline" onclick="MailsModule.closeBulkImportModal()">Cancelar</button>
+        <button type="button" class="btn btn-primary" onclick="MailsModule.processBulkImport()">Procesar e Importar</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/store.js?v=28"></script>
+  <script src="js/app.js?v=28"></script>
+  <script src="js/mails.js?v=28"></script>
+  <script src="js/checkin.js?v=28"></script>
+  <script src="js/codes.js?v=28"></script>
+  <script src="js/settings.js?v=28"></script>
 </body>
 </html>
