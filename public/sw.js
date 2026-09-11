@@ -1,4 +1,4 @@
-const CACHE_NAME = 'hostal-somnis-v27';
+const CACHE_NAME = 'hostal-somnis-v33';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
@@ -46,8 +46,8 @@ self.addEventListener('activate', (event) => {
 
 // Interceptar peticiones para funcionar offline (Network First, fallback to Cache)
 self.addEventListener('fetch', (event) => {
-  // Ignorar peticiones a la API si estamos intentando usar el backend
-  if (event.request.url.includes('/api/')) {
+  // Ignorar peticiones a la API y archivos multimedia de gran tamaño (streaming de vídeo)
+  if (event.request.url.includes('/api/') || event.request.url.endsWith('.mp4')) {
     return;
   }
 

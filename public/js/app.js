@@ -134,6 +134,92 @@ const App = {
   }
 };
 
+/**
+ * PANTALLA DE CARGA CON VÍDEO (SPLASH INTRO)
+ */
+const SplashModule = {
+  dismissed: false,
+
+  init() {
+    const splash = document.getElementById('splash-screen');
+    const video = document.getElementById('splash-video');
+    if (!splash) return;
+
+    if (!video) {
+      this.dismiss();
+      return;
+    }
+
+    // Al finalizar el vídeo normalmente
+    video.addEventListener('ended', () => {
+      this.dismiss();
+    });
+
+    // En caso de error de reproducción o carga del archivo
+    video.addEventListener('error', () => {
+      this.dismiss();
+    });
+
+    // Permitir saltar con la tecla Escape
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        this.dismiss();
+      }
+    });
+
+    // Iniciar reproducción (muted para garantizar autoplay en todos los navegadores móviles y escritorio)
+    video.muted = true;
+    const playPromise = video.play();
+    if (playPromise !== undefined) {
+      playPromise.catch((err) => {
+        console.warn('Autoplay bloqueado o demorado:', err);
+        // Fallback de seguridad si no puede reproducir
+        setTimeout(() => this.dismiss(), 2000);
+      });
+    }
+
+    // Temporizador de seguridad máximo (4.6s) para garantizar que nunca se quede bloqueada
+    setTimeout(() => {
+      this.dismiss();
+    }, 4600);
+  },
+
+  toggleAudio() {
+    const video = document.getElementById('splash-video');
+    const label = document.getElementById('splash-sound-label');
+    const icon = document.getElementById('splash-sound-icon');
+    if (!video) return;
+    video.muted = !video.muted;
+    if (icon) {
+      icon.textContent = video.muted ? '🔇' : '🔊';
+    }
+    if (label) {
+      label.textContent = video.muted ? 'Activar sonido' : 'Silenciar';
+    }
+  },
+
+  dismiss() {
+    if (this.dismissed) return;
+    this.dismissed = true;
+
+    const splash = document.getElementById('splash-screen');
+    const video = document.getElementById('splash-video');
+    if (splash) {
+      splash.classList.add('splash-fade-out');
+      setTimeout(() => {
+        splash.style.display = 'none';
+        if (video) {
+          try { video.pause(); } catch(e) {}
+        }
+      }, 600);
+    }
+  }
+};
+
+window.SplashModule = SplashModule;
+
 document.addEventListener('DOMContentLoaded', () => {
+  SplashModule.init();
   App.init();
 });
+

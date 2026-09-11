@@ -12,9 +12,40 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
   <meta name="apple-mobile-web-app-title" content="Hostal Somnis">
   <meta name="theme-color" content="#000000">
-  <link rel="stylesheet" href="css/styles.css?v=31">
+  <link rel="stylesheet" href="css/styles.css?v=33">
 </head>
 <body>
+
+  <!-- PANTALLA DE CARGA / SPLASH SCREEN CON VÍDEO -->
+  <div id="splash-screen" class="splash-screen">
+    <div class="splash-container">
+      <video id="splash-video" class="splash-video" playsinline muted autoplay preload="auto">
+        <source src="assets/loading-video.mp4" type="video/mp4">
+        <source src="assets/Logo_reveal_animation_instructions_20260912012041.mp4" type="video/mp4">
+      </video>
+      <div class="splash-controls">
+        <button type="button" class="splash-btn" onclick="SplashModule.toggleAudio()" title="Activar/Silenciar sonido">
+          <span id="splash-sound-icon">🔇</span> <span id="splash-sound-label">Activar sonido</span>
+        </button>
+        <button type="button" class="splash-btn" onclick="SplashModule.dismiss()" title="Saltar animación de carga">
+          Saltar intro &rarr;
+        </button>
+      </div>
+    </div>
+  </div>
+  <script>
+    // Iniciar vídeo de inmediato en cuanto se procesa el HTML
+    (function() {
+      try {
+        var v = document.getElementById('splash-video');
+        if (v) {
+          v.muted = true;
+          var p = v.play();
+          if (p !== undefined) { p.catch(function(){}); }
+        }
+      } catch(e) {}
+    })();
+  </script>
 
   <!-- PANTALLA DE LOGIN -->
   <div id="login-screen" style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; width: 100vw; background-color: #F9FAFB; position: absolute; top: 0; left: 0; z-index: 9999;">
@@ -582,11 +613,11 @@
     </main>
   </div>
 
-  <script src="js/store.js?v=31"></script>
-  <script src="js/app.js?v=31"></script>
-  <script src="js/mails.js?v=32"></script>
-  <script src="js/checkin.js?v=31"></script>
-  <script src="js/codes.js?v=31"></script>
-  <script src="js/settings.js?v=31"></script>
+  <script src="js/store.js?v=33"></script>
+  <script src="js/app.js?v=33"></script>
+  <script src="js/mails.js?v=33"></script>
+  <script src="js/checkin.js?v=33"></script>
+  <script src="js/codes.js?v=33"></script>
+  <script src="js/settings.js?v=33"></script>
 </body>
 </html>
