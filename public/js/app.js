@@ -167,6 +167,12 @@ const SplashModule = {
       }
     });
 
+    // Sincronizar dinámicamente el color de fondo exacto renderizado por el reproductor
+    const handleSyncBg = () => this.syncBgColor();
+    video.addEventListener('loadeddata', handleSyncBg);
+    video.addEventListener('play', handleSyncBg);
+    video.addEventListener('timeupdate', handleSyncBg, { once: true });
+
     // Iniciar reproducción (muted para garantizar autoplay en todos los navegadores móviles y escritorio)
     video.muted = true;
     const playPromise = video.play();
@@ -182,6 +188,28 @@ const SplashModule = {
     setTimeout(() => {
       this.dismiss();
     }, 4600);
+  },
+
+  syncBgColor() {
+    try {
+      const video = document.getElementById('splash-video');
+      const splash = document.getElementById('splash-screen');
+      const container = document.querySelector('.splash-container');
+      if (!video || !splash) return;
+
+      const canvas = document.createElement('canvas');
+      canvas.width = 16;
+      canvas.height = 16;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(video, 0, 0, 16, 16);
+      const p = ctx.getImageData(2, 2, 1, 1).data;
+      if (p && p.length >= 3 && p[0] > 200) {
+        const color = `rgb(${p[0]}, ${p[1]}, ${p[2]})`;
+        splash.style.backgroundColor = color;
+        if (container) container.style.backgroundColor = color;
+        video.style.backgroundColor = color;
+      }
+    } catch (e) {}
   },
 
   toggleAudio() {
