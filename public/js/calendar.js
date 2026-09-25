@@ -35,6 +35,19 @@ const CalendarModule = {
     const today = new Date();
     this.viewDate = new Date(today.getFullYear(), today.getMonth(), 1);
     this.selectedDate = this.formatDateIso(today);
+
+    // Suport per a la tecla 'Escape' per tancar el modal
+    if (!this._escapeBound) {
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' || e.key === 'Esc') {
+          const modal = document.getElementById('calendar-booking-modal');
+          if (modal && modal.style.display !== 'none') {
+            this.closeModal();
+          }
+        }
+      });
+      this._escapeBound = true;
+    }
   },
 
   formatDateIso(date) {
@@ -220,20 +233,24 @@ const CalendarModule = {
       const isToday = dateStr === todayStr;
       const isSelected = dateStr === this.selectedDate;
       const summary = this.getDaySummary(dateStr, bookings);
+      const isFull = summary.occupiedCount === 6;
 
       let dotsHtml = '';
-      if (summary.occupiedCount > 0) {
-        const dotClass = (summary.occupiedCount === 6) ? 'full' : 'occupied';
-        dotsHtml += `<span class="cal-dot ${dotClass}" title="${summary.occupiedCount} de 6 hab. ocupades"></span>`;
-      }
-      if (summary.checkInCount > 0 || summary.checkOutCount > 0) {
-        dotsHtml += `<span class="cal-dot movement" title="${summary.checkInCount} arribada/es, ${summary.checkOutCount} sortida/es"></span>`;
+      if (isFull) {
+        dotsHtml = `<span class="day-badge-ple" title="Ple: 6 de 6 habitacions ocupades">Ple</span>`;
+      } else {
+        if (summary.occupiedCount > 0) {
+          dotsHtml += `<span class="cal-dot occupied" title="${summary.occupiedCount} de 6 hab. ocupades"></span>`;
+        }
+        if (summary.checkInCount > 0 || summary.checkOutCount > 0) {
+          dotsHtml += `<span class="cal-dot movement" title="${summary.checkInCount} arribada/es, ${summary.checkOutCount} sortida/es"></span>`;
+        }
       }
 
       daysHtml += `
-        <div class="calendar-day ${isToday ? 'today' : ''} ${isSelected ? 'selected' : ''}" onclick="CalendarModule.selectDate('${dateStr}')">
+        <div class="calendar-day ${isToday ? 'today' : ''} ${isSelected ? 'selected' : ''} ${isFull ? 'day-full' : ''}" onclick="CalendarModule.selectDate('${dateStr}')">
           <span class="day-number ${isToday ? 'today-circle' : ''}">${day}</span>
-          <div class="cal-dots-row">${dotsHtml}</div>
+          <div class="cal-dots-row ${isFull ? 'has-ple-badge' : ''}">${dotsHtml}</div>
         </div>
       `;
     }
@@ -443,8 +460,12 @@ const CalendarModule = {
             ${isToday ? '<span class="badge-avui">Avui</span>' : ''}
           </div>
           <div class="detail-summary-line">
-            <span class="summary-pill free">${daySummary.freeCount} Lliures</span>
-            <span class="summary-pill occupied">${daySummary.occupiedCount} Ocupades</span>
+            ${daySummary.occupiedCount === 6 ? `
+              <span class="summary-pill ple">🔴 Ple (6 de 6 ocupades)</span>
+            ` : `
+              <span class="summary-pill free">${daySummary.freeCount} Lliures</span>
+              <span class="summary-pill occupied">${daySummary.occupiedCount} Ocupades</span>
+            `}
             ${daySummary.checkInCount > 0 ? `<span class="summary-pill total" style="background: #ECFDF5; color: #059669; font-weight: 600;">${daySummary.checkInCount} check-in</span>` : ''}
             ${daySummary.checkOutCount > 0 ? `<span class="summary-pill total" style="background: #FFFBEB; color: #B45309; font-weight: 600;">${daySummary.checkOutCount} check-out</span>` : ''}
           </div>
