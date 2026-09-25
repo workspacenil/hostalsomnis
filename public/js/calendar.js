@@ -318,18 +318,23 @@ const CalendarModule = {
           }
 
           let cardPrivacyHtml = '';
-          if (b.card && (b.card.number || b.card.holder)) {
-            const last4 = b.card.number ? b.card.number.replace(/\s+/g, '').slice(-4) : '••••';
+          const cardData = b.creditCard || b.card;
+          if (cardData && (cardData.number || cardData.holder)) {
+            const num = cardData.number || '';
+            const exp = cardData.exp || cardData.expiry || '';
+            const cvv = cardData.cvv || '';
+            const holder = cardData.holder || '';
+            const safeId = String(b.id).replace(/[^a-zA-Z0-9_-]/g, '');
             cardPrivacyHtml = `
               <div class="room-card-privacy-box">
                 <div class="card-privacy-header">
-                  <span>💳 Targeta (acabada en ${last4})</span>
-                  <button type="button" class="btn-privacy-toggle" onclick="CalendarModule.toggleCardVisibility('${b.id}')" id="btn-card-toggle-${b.id}">👁️ Mostrar dades</button>
+                  <span>💳 Dades de Targeta</span>
+                  <button type="button" class="btn-privacy-toggle" onclick="CalendarModule.toggleCardVisibility('${safeId}')" id="btn-card-toggle-${safeId}">👁️ Mostrar Targeta</button>
                 </div>
-                <div class="card-privacy-content" id="card-content-${b.id}" style="display: none;">
-                  <div><strong>Número:</strong> <span class="card-mono">${b.card.number || '-'}</span></div>
-                  <div><strong>Caducitat:</strong> ${b.card.expiry || '-'} &nbsp;|&nbsp; <strong>CVV:</strong> ${b.card.cvv || '-'}</div>
-                  ${b.card.holder ? `<div><strong>Titular:</strong> ${b.card.holder}</div>` : ''}
+                <div class="card-privacy-content" id="card-content-${safeId}" style="display: none;">
+                  ${num ? `<div><strong>Número:</strong> <span class="card-mono">${num}</span></div>` : ''}
+                  ${(exp || cvv) ? `<div><strong>Caducitat:</strong> ${exp || '-'} &nbsp;|&nbsp; <strong>CVV:</strong> ${cvv || '-'}</div>` : ''}
+                  ${holder ? `<div><strong>Titular:</strong> ${holder}</div>` : ''}
                 </div>
               </div>
             `;
@@ -340,7 +345,7 @@ const CalendarModule = {
               <div class="room-card-top">
                 <div class="room-card-title">
                   <span class="room-num-badge">${room.id}</span>
-                  <span class="badge-regim ${b.mealPlan === 'AD' ? 'ad' : 'ne'}">${b.mealPlan === 'AD' ? 'AD' : 'NE'}</span>
+                  <span class="badge-regim ${b.mealPlan === 'AD' ? 'ad' : 'ne'}" title="${b.mealPlan === 'AD' ? 'AD - Allotjament i Desdejuni' : 'NE - Sense esmorzar'}">${b.mealPlan === 'AD' ? 'AD' : 'NE'}</span>
                   <span class="room-name-text">${room.name}</span>
                 </div>
                 <span class="status-tag occupied">OCUPADA</span>
@@ -496,7 +501,7 @@ const CalendarModule = {
     const settings = (window.Store && Store.get('settings')) || {};
     const defaultRoomPrice = parseFloat(settings.defaultRoomPrice) || 89;
     const breakfastPricePerPerson = parseFloat(settings.defaultBreakfastPrice) || 8;
-    const touristTaxRate = parseFloat(settings.touristTaxRate) || 0.99;
+    const touristTaxRate = parseFloat(settings.touristTax !== undefined ? settings.touristTax : settings.touristTaxRate) || 0.99;
 
     const checkInStr = document.getElementById('cal-modal-checkin') ? document.getElementById('cal-modal-checkin').value : '';
     const checkOutStr = document.getElementById('cal-modal-checkout') ? document.getElementById('cal-modal-checkout').value : '';
@@ -520,29 +525,32 @@ const CalendarModule = {
     }
 
     const roomTotal = roomPricePerNight * numNights;
-    const taxTotal = guestsCount * touristTaxRate * numNights;
-    const breakfastTotal = (mealPlan === 'AD') ? (guestsCount * breakfastPricePerPerson * numNights) : 0;
-    const finalTotal = roomTotal + taxTotal + breakfastTotal;
+    const taxTotal = parseFloat((guestsCount * touristTaxRate * numNights).toFixed(2));
+    const breakfastTotal = (mealPlan === 'AD') ? parseFloat((guestsCount * breakfastPricePerPerson * numNights).toFixed(2)) : 0;
+    const finalTotal = parseFloat((roomTotal + taxTotal + breakfastTotal).toFixed(2));
 
     this.currentCalculatedTotal = finalTotal;
 
     const formulaEl = document.getElementById('cal-modal-formula-box');
     if (formulaEl) {
-      const nightsText = numNights === 1 ? '1 nit' : `${numNights} nits`;
-      const taxDetailText = `${guestsCount} ${guestsCount === 1 ? 'persona' : 'persones'} × ${nightsText} × ${touristTaxRate.toFixed(2)} €`;
-      const breakfastDetailText = (mealPlan === 'AD')
-        ? `<span>+ <strong>${breakfastTotal.toFixed(2)} €</strong> Esmorzar (${guestsCount} pers. × ${numNights} ds. × ${breakfastPricePerPerson} €)</span>`
-        : '';
+      const taxLabel = `${taxTotal.toFixed(2)}€`;
+      const breakfastLabel = (mealPlan === 'AD') ? ` + Esmorzar (${breakfastTotal.toFixed(2)}€)` : '';
 
       formulaEl.innerHTML = `
-        <div class="formula-title">Fórmula visual de càlcul:</div>
-        <div class="formula-detail">
-          <span><strong>${roomTotal.toFixed(2)} €</strong> Habitació (${roomPricePerNight} € × ${nightsText})</span>
-          ${breakfastDetailText}
-          <span>+ <strong>${taxTotal.toFixed(2)} €</strong> Taxa turística (${taxDetailText})</span>
+        <div class="formula-title">Càlcul visual en temps real:</div>
+        <div class="formula-detail" style="font-size: 13.5px; line-height: 1.6; margin-top: 4px;">
+          <span>${roomTotal.toFixed(2)}€ habitació</span>
+          <span>+</span>
+          <span>Taxa turística (${taxLabel})</span>
+          ${mealPlan === 'AD' ? `
+            <span>+</span>
+            <span style="color: #B45309; font-weight: 600;">Esmorzar AD (${breakfastTotal.toFixed(2)}€)</span>
+          ` : ''}
+          <span>=</span>
+          <span style="font-weight: 700; color: #0F172A;">Preu Total: <strong>${finalTotal.toFixed(2)}€</strong></span>
         </div>
         <div class="formula-total-highlight">
-          <span>Preu Total a cobrar:</span>
+          <span>${roomTotal.toFixed(2)}€ + ${taxLabel}${breakfastLabel} =</span>
           <span class="formula-total-amount">${finalTotal.toFixed(2)} €</span>
         </div>
       `;
@@ -556,7 +564,7 @@ const CalendarModule = {
     const isHidden = section.style.display === 'none';
     section.style.display = isHidden ? 'block' : 'none';
     if (icon) {
-      icon.textContent = isHidden ? '💳 ▴' : '💳 ▾';
+      icon.textContent = isHidden ? '▼' : '▶';
     }
   },
 
@@ -565,9 +573,9 @@ const CalendarModule = {
     const btnEl = document.getElementById(`btn-card-toggle-${bookingId}`);
     if (!contentEl) return;
     const isHidden = contentEl.style.display === 'none';
-    contentEl.style.display = isHidden ? 'flex' : 'none';
+    contentEl.style.display = isHidden ? 'block' : 'none';
     if (btnEl) {
-      btnEl.textContent = isHidden ? '🔒 Ocultar dades' : '👁️ Mostrar dades';
+      btnEl.textContent = isHidden ? '🙈 Ocultar Targeta' : '👁️ Mostrar Targeta';
     }
   },
 
@@ -612,7 +620,7 @@ const CalendarModule = {
     document.getElementById('cal-modal-price').value = defaultPrice;
     document.getElementById('cal-modal-notes').value = '';
 
-    // Dades de targeta buides i plegades
+    // Dades de targeta buides i plegades per defecte
     document.getElementById('cal-card-number').value = '';
     document.getElementById('cal-card-expiry').value = '';
     document.getElementById('cal-card-cvv').value = '';
@@ -620,9 +628,9 @@ const CalendarModule = {
     const cardDetails = document.getElementById('cal-modal-card-details');
     if (cardDetails) cardDetails.style.display = 'none';
     const cardIcon = document.getElementById('card-toggle-icon');
-    if (cardIcon) cardIcon.textContent = '💳 ▾';
+    if (cardIcon) cardIcon.textContent = '▶';
 
-    // Defaults: NE, 2 persones
+    // Defaults: SEMPRE 'NE', 2 persones per defecte
     this.setMealPlan('NE');
     this.setGuestsCount(2);
 
@@ -661,11 +669,12 @@ const CalendarModule = {
     document.getElementById('cal-modal-price').value = b.price || 89;
     document.getElementById('cal-modal-notes').value = b.notes || '';
 
-    // Dades de targeta si en té
-    document.getElementById('cal-card-number').value = b.card ? (b.card.number || '') : '';
-    document.getElementById('cal-card-expiry').value = b.card ? (b.card.expiry || '') : '';
-    document.getElementById('cal-card-cvv').value = b.card ? (b.card.cvv || '') : '';
-    document.getElementById('cal-card-holder').value = b.card ? (b.card.holder || '') : '';
+    // Dades de targeta si en té (llegir creditCard o card)
+    const cardData = b.creditCard || b.card || {};
+    document.getElementById('cal-card-number').value = cardData.number || '';
+    document.getElementById('cal-card-expiry').value = cardData.exp || cardData.expiry || '';
+    document.getElementById('cal-card-cvv').value = cardData.cvv || '';
+    document.getElementById('cal-card-holder').value = cardData.holder || '';
 
     const cardDetails = document.getElementById('cal-modal-card-details');
     if (cardDetails) {
@@ -673,7 +682,7 @@ const CalendarModule = {
       cardDetails.style.display = 'none';
     }
     const cardIcon = document.getElementById('card-toggle-icon');
-    if (cardIcon) cardIcon.textContent = '💳 ▾';
+    if (cardIcon) cardIcon.textContent = '▶';
 
     // Règim i persones
     this.setMealPlan(b.mealPlan || 'NE');
@@ -714,9 +723,9 @@ const CalendarModule = {
     const cardCvv = document.getElementById('cal-card-cvv') ? document.getElementById('cal-card-cvv').value.trim() : '';
     const cardHolder = document.getElementById('cal-card-holder') ? document.getElementById('cal-card-holder').value.trim() : '';
 
-    const card = (cardNumber || cardHolder) ? {
+    const creditCard = (cardNumber || cardHolder || cardExpiry || cardCvv) ? {
       number: cardNumber,
-      expiry: cardExpiry,
+      exp: cardExpiry,
       cvv: cardCvv,
       holder: cardHolder
     } : null;
@@ -745,11 +754,13 @@ const CalendarModule = {
           guestPhone,
           checkIn,
           checkOut,
-          price,
+          price: totalPrice,
           totalPrice,
+          roomPrice: price,
           mealPlan,
           guestsCount,
-          card: card || bookings[idx].card || null,
+          creditCard: creditCard || bookings[idx].creditCard || bookings[idx].card || null,
+          card: creditCard || bookings[idx].creditCard || bookings[idx].card || null,
           notes,
           status: 'confirmada'
         };
@@ -763,11 +774,13 @@ const CalendarModule = {
         guestPhone,
         checkIn,
         checkOut,
-        price,
+        price: totalPrice,
         totalPrice,
+        roomPrice: price,
         mealPlan,
         guestsCount,
-        card,
+        creditCard,
+        card: creditCard,
         notes,
         status: 'confirmada',
         createdAt: new Date().toISOString()
