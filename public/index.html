@@ -12,7 +12,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
   <meta name="apple-mobile-web-app-title" content="Hostal Somnis">
   <meta name="theme-color" content="#000000">
-  <link rel="stylesheet" href="css/styles.css?v=39">
+  <link rel="stylesheet" href="css/styles.css?v=40">
 </head>
 <body>
 
@@ -74,9 +74,9 @@
       
       <nav class="sidebar-nav">
         <button class="nav-item" data-view="mails">Mails</button>
-        <button class="nav-item active" data-view="checkin">Check In 1</button>
+        <button class="nav-item" data-view="checkin">Check In 1</button>
         <button class="nav-item" data-view="codigos">Còdigs 2</button>
-        <button class="nav-item" data-view="calendari">Calendari</button>
+        <button class="nav-item active" data-view="calendari">Calendari</button>
       </nav>
 
       <div class="sidebar-footer" onclick="App.switchView('ajustes')" style="cursor: pointer; display: flex; align-items: center; justify-content: space-between; margin-top: auto; padding: 12px 8px; border-radius: 6px; transition: background 0.2s;" onmouseover="this.style.background='var(--bg-element)'" onmouseout="this.style.background='transparent'">
@@ -557,7 +557,7 @@
       </section>
 
       <!-- VISTA CHECK-IN -->
-      <section id="view-checkin" class="view-section active">
+      <section id="view-checkin" class="view-section">
         <div class="section-header">
           <h2 class="section-title">Check In 1</h2>
           <div class="section-subtitle">Mensaje para enviar el enlace de check-in online antes de la llegada</div>
@@ -626,7 +626,7 @@
         </div>
       </section>
       <!-- VISTA CALENDARI -->
-      <section id="view-calendari" class="view-section">
+      <section id="view-calendari" class="view-section active">
         <div class="section-header">
           <h2 class="section-title">Calendari d'Ocupació</h2>
           <div class="section-subtitle">Disponibilitat i reserves de les 6 habitacions de Hostal Somnis</div>
@@ -675,7 +675,7 @@
   </div>
 
   <!-- MODAL EDITAR / CREAR RESERVA -->
-  <div id="calendar-booking-modal" class="modal-overlay" style="display: none;">
+  <div id="calendar-booking-modal" class="modal-overlay" style="display: none;" onclick="if(event.target === this) CalendarModule.closeModal()">
     <div class="modal-content-box">
       <div class="modal-header-bar">
         <h3 id="cal-modal-title" class="modal-title-text">Nova Reserva</h3>
@@ -788,22 +788,22 @@
         </div>
 
         <div class="modal-footer-btns">
-          <button type="button" id="cal-modal-delete-btn" class="btn btn-outline" style="color: var(--danger); border-color: var(--danger);" onclick="CalendarModule.deleteCurrentBooking()">Eliminar Reserva</button>
-          <div style="display: flex; gap: 8px; margin-left: auto;">
-            <button type="button" class="btn btn-outline" onclick="CalendarModule.closeModal()">Cancel·lar</button>
-            <button type="submit" class="btn btn-primary">Desar Reserva</button>
+          <button type="button" id="cal-modal-delete-btn" class="btn btn-outline" style="color: #DC2626; border-color: #FCA5A5; background: #FEF2F2;" onclick="CalendarModule.deleteCurrentBooking()">Eliminar</button>
+          <div style="display: flex; gap: 10px; margin-left: auto;">
+            <button type="button" class="btn btn-outline" onclick="CalendarModule.closeModal()">Desfer</button>
+            <button type="submit" class="btn btn-primary" style="font-weight: 600; min-width: 100px;">Guardar</button>
           </div>
         </div>
       </form>
     </div>
   </div>
 
-  <script src="js/store.js?v=39"></script>
-  <script src="js/calendar.js?v=39"></script>
-  <script src="js/app.js?v=39"></script>
-  <script src="js/mails.js?v=39"></script>
-  <script src="js/checkin.js?v=39"></script>
-  <script src="js/codes.js?v=39"></script>
-  <script src="js/settings.js?v=39"></script>
+  <script src="js/store.js?v=40"></script>
+  <script src="js/calendar.js?v=40"></script>
+  <script src="js/app.js?v=40"></script>
+  <script src="js/mails.js?v=40"></script>
+  <script src="js/checkin.js?v=40"></script>
+  <script src="js/codes.js?v=40"></script>
+  <script src="js/settings.js?v=40"></script>
 </body>
 </html>

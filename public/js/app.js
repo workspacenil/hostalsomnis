@@ -74,8 +74,8 @@ const App = {
     if (window.SettingsModule) SettingsModule.init();
     if (window.CalendarModule) CalendarModule.init();
     
-    // Cargar la vista por defecto (checkin primero)
-    this.switchView('checkin');
+    // Cargar la vista por defecto (calendari primero)
+    this.switchView('calendari');
   },
 
   // Gestión del sidebar responsivo
