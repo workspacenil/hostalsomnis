@@ -24,35 +24,59 @@ const Store = {
     }
   },
 
+  // Habitacions oficials reals de Hostal Somnis (Súria)
+  DEFAULT_ROOMS: [
+    { id: '101', name: 'Habitació 101' },
+    { id: '102', name: 'Habitació 102' },
+    { id: '201', name: 'Habitació 201' },
+    { id: '202', name: 'Habitació 202' },
+    { id: '301', name: 'Habitació 301' },
+    { id: '302', name: 'Habitació 302' }
+  ],
+
   // Inicializar con datos de prueba si está vacío
   initDefaults() {
-    if (!this.get('settings')) {
+    const currentSettings = this.get('settings');
+    if (!currentSettings) {
       this.set('settings', {
         hostalName: 'Hostal Somnis',
         city: 'Súria',
         postalCode: '08260',
-        rooms: [
-          { id: 'hab-1', name: 'Habitación 1 - Doble' },
-          { id: 'hab-2', name: 'Habitación 2 - Matrimonial' },
-          { id: 'hab-3', name: 'Habitación 3 - Doble' },
-          { id: 'hab-4', name: 'Habitación 4 - Individual' }
-        ],
+        rooms: this.DEFAULT_ROOMS,
         icloud: { enabled: false }
       });
+    } else if (!currentSettings.rooms || currentSettings.rooms.length !== 6 || (currentSettings.rooms[0] && currentSettings.rooms[0].name && currentSettings.rooms[0].name.includes('(Planta')) || (currentSettings.rooms[0] && currentSettings.rooms[0].id === 'hab-1')) {
+      // Actualitzar automàticament a les 6 habitacions reals
+      currentSettings.rooms = this.DEFAULT_ROOMS;
+      this.set('settings', currentSettings);
     }
 
     if (!this.get('bookings')) {
       const today = new Date();
       const tmrw = new Date(today); tmrw.setDate(tmrw.getDate() + 2);
+      const past = new Date(today); past.setDate(past.getDate() - 1);
+      const future = new Date(today); future.setDate(future.getDate() + 3);
       this.set('bookings', [
         {
-          id: 'res-ejemplo-1',
-          guestName: 'Marta Soler (Ejemplo)',
-          room: 'Habitación 1 - Doble',
+          id: 'res-101',
+          guestName: 'Marta Soler i Vila',
+          guestPhone: '+34 612 345 678',
+          room: '101',
           checkIn: today.toISOString().split('T')[0],
           checkOut: tmrw.toISOString().split('T')[0],
-          price: 120,
-          paymentMethod: 'Pendiente',
+          price: 130,
+          paymentMethod: 'Targeta',
+          status: 'confirmada'
+        },
+        {
+          id: 'res-201',
+          guestName: 'Carles Puiggròs',
+          guestPhone: '+34 689 112 233',
+          room: '201',
+          checkIn: past.toISOString().split('T')[0],
+          checkOut: future.toISOString().split('T')[0],
+          price: 240,
+          paymentMethod: 'Bizum',
           status: 'confirmada'
         }
       ]);

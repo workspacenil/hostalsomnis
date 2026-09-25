@@ -547,5 +547,586 @@ body {
   border-color: #111827;
 }
 
+/* ==========================================================================
+   ESTILS DEL CALENDARI I HABITACIONS - HOSTAL SOMNIS
+   ========================================================================== */
+.calendar-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.calendar-card {
+  background: var(--bg-app);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+}
+
+.calendar-header-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.calendar-month-display {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.calendar-month-display h3 {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text-main);
+  letter-spacing: -0.3px;
+}
+
+.calendar-btn-group {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.cal-nav-btn {
+  background: var(--bg-element);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 6px 14px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-main);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.cal-nav-btn:hover {
+  background: var(--bg-hover);
+  border-color: var(--border-dark);
+}
+
+.calendar-weekdays-row {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 8px;
+  margin-bottom: 8px;
+  text-align: center;
+}
+
+.weekday-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 6px 0;
+}
+
+.calendar-days-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 8px;
+}
+
+.calendar-day {
+  background: #FFFFFF;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  min-height: 82px;
+  padding: 8px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: all 0.15s ease;
+  user-select: none;
+}
+
+.calendar-day:hover {
+  border-color: #9CA3AF;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+  transform: translateY(-1px);
+}
+
+.calendar-day.empty {
+  background: transparent;
+  border-color: transparent;
+  cursor: default;
+  box-shadow: none;
+  min-height: 82px;
+}
+.calendar-day.empty:hover {
+  transform: none;
+  border-color: transparent;
+}
+
+.calendar-day.today {
+  border-color: #2563EB;
+  border-width: 2px;
+  background-color: #F8FAFC;
+}
+
+.calendar-day.selected {
+  outline: 2px solid #111827;
+  outline-offset: 1px;
+  background-color: #F3F4F6;
+}
+
+.calendar-day-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.day-number {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-main);
+}
+
+.day-today-tag {
+  font-size: 10px;
+  font-weight: 700;
+  color: #2563EB;
+  background: #EFF6FF;
+  padding: 1px 6px;
+  border-radius: 4px;
+}
+
+.calendar-day-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 6px;
+}
+
+.day-occupancy-pill {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: #FEF3C7;
+  color: #B45309;
+}
+
+.day-occupancy-pill.full {
+  background: #FEE2E2;
+  color: #B91C1C;
+}
+
+.day-movement-dot {
+  font-size: 11px;
+  font-weight: 700;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.day-movement-dot.in {
+  background: #ECFDF5;
+  color: #059669;
+}
+
+.day-movement-dot.out {
+  background: #F1F5F9;
+  color: #475569;
+}
+
+.day-movement-dot.in-out {
+  background: #EFF6FF;
+  color: #1D4ED8;
+}
+
+/* PANNELL DE DETALL DEL DIA */
+.calendar-detail-panel {
+  background: var(--bg-app);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+}
+
+.calendar-detail-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.detail-date-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text-main);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.badge-avui {
+  font-size: 11px;
+  font-weight: 700;
+  color: #FFFFFF;
+  background: #2563EB;
+  padding: 2px 8px;
+  border-radius: 12px;
+}
+
+.detail-summary-line {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.summary-pill {
+  font-size: 12px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 20px;
+}
+
+.summary-pill.free {
+  background: #ECFDF5;
+  color: #065F46;
+}
+
+.summary-pill.occupied {
+  background: #FFFBEB;
+  color: #92400E;
+}
+
+.summary-pill.total {
+  background: var(--bg-element);
+  color: var(--text-muted);
+}
+
+.calendar-movements-box {
+  background: #F8FAFC;
+  border: 1px solid #E2E8F0;
+  border-radius: var(--radius-md);
+  padding: 14px 16px;
+  margin-bottom: 20px;
+}
+
+.movements-title {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #64748B;
+  margin-bottom: 10px;
+  letter-spacing: 0.5px;
+}
+
+.movements-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.movement-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  color: #1E293B;
+  padding: 6px 10px;
+  border-radius: 6px;
+  background: #FFFFFF;
+  border: 1px solid #E2E8F0;
+}
+
+.movement-item.in {
+  border-left: 3px solid #10B981;
+}
+
+.movement-item.out {
+  border-left: 3px solid #64748B;
+}
+
+.movement-phone {
+  margin-left: 8px;
+  color: #6B7280;
+  font-size: 12px;
+}
+
+/* PLANTES I HABITACIONS */
+.calendar-floors-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.floor-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.floor-header {
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  letter-spacing: 0.5px;
+  padding-bottom: 4px;
+  border-bottom: 1px dashed var(--border-color);
+}
+
+.floor-rooms-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 14px;
+}
+
+.room-status-card {
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  background: #FFFFFF;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  transition: all 0.15s ease;
+}
+
+.room-status-card.free {
+  border-color: #A7F3D0;
+  background: #F0FDF4;
+}
+
+.room-status-card.occupied {
+  border-color: #FDE68A;
+  background: #FFFDF5;
+}
+
+.room-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.room-card-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.room-num-badge {
+  font-size: 14px;
+  font-weight: 700;
+  background: #111827;
+  color: #FFFFFF;
+  padding: 2px 8px;
+  border-radius: 6px;
+}
+
+.room-num-badge.free {
+  background: #059669;
+}
+
+.room-name-text {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-main);
+}
+
+.status-tag {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.status-tag.free {
+  background: #D1FAE5;
+  color: #047857;
+}
+
+.status-tag.occupied {
+  background: #FEF3C7;
+  color: #B45309;
+}
+
+.room-card-body {
+  font-size: 13px;
+  color: var(--text-main);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+}
+
+.guest-name {
+  font-size: 15px;
+  font-weight: 600;
+  color: #111827;
+}
+
+.booking-dates {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.guest-contact, .guest-notes {
+  font-size: 12px;
+  color: #4B5563;
+}
+
+.free-message {
+  font-size: 13px;
+  color: #047857;
+  font-style: italic;
+  padding: 8px 0;
+}
+
+.free-checkout-note {
+  font-size: 12px;
+  color: #6B7280;
+}
+
+.room-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(0,0,0,0.05);
+}
+
+.action-tag {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.action-tag.in {
+  background: #ECFDF5;
+  color: #059669;
+}
+
+.action-tag.out {
+  background: #F1F5F9;
+  color: #475569;
+}
+
+.btn-room-action {
+  background: #FFFFFF;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  padding: 4px 10px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-main);
+  cursor: pointer;
+  margin-left: auto;
+  transition: all 0.15s ease;
+}
+
+.btn-room-action:hover {
+  background: var(--bg-element);
+}
+
+.btn-room-action.new {
+  color: #047857;
+  border-color: #A7F3D0;
+  background: #FFFFFF;
+  font-weight: 600;
+}
+
+.btn-room-action.new:hover {
+  background: #ECFDF5;
+}
+
+/* MODAL DE RESERVA */
+.modal-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(2px);
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+
+.modal-content-box {
+  background: #FFFFFF;
+  border-radius: var(--radius-lg);
+  width: 100%;
+  max-width: 480px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+  border: 1px solid var(--border-color);
+  overflow: hidden;
+  animation: modalPop 0.15s ease-out;
+}
+
+@keyframes modalPop {
+  from { opacity: 0; transform: scale(0.96); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.modal-header-bar {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal-title-text {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+.btn-close-modal {
+  background: transparent;
+  border: none;
+  font-size: 20px;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+
+.btn-close-modal:hover {
+  background: var(--bg-element);
+  color: var(--text-main);
+}
+
+.modal-body-form {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.modal-footer-btns {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 10px;
+  padding-top: 14px;
+  border-top: 1px solid var(--border-color);
+}
+
 
 

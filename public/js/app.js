@@ -72,6 +72,7 @@ const App = {
     if (window.CheckinModule) CheckinModule.init();
     if (window.CodesModule) CodesModule.init();
     if (window.SettingsModule) SettingsModule.init();
+    if (window.CalendarModule) CalendarModule.init();
     
     // Cargar la vista por defecto (checkin primero)
     this.switchView('checkin');
@@ -127,6 +128,8 @@ const App = {
       CheckinModule.render();
     } else if (viewName === 'ajustes' && window.SettingsModule) {
       SettingsModule.render();
+    } else if (viewName === 'calendari' && window.CalendarModule) {
+      CalendarModule.render();
     }
 
     // Scroll arriba
