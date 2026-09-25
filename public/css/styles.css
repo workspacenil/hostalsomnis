@@ -1340,117 +1340,124 @@ body {
 }
 
 /* ==========================================================================
-   RESPONSIVE MOBIL PER AL CALENDARI (<= 768px i <= 480px)
+   RESPONSIVE MÒBIL CALENDARI (@media max-width: 640px)
    ========================================================================== */
-@media (max-width: 768px) {
+@media (max-width: 640px) {
+  .main-content {
+    padding: 16px 10px;
+  }
+
+  /* Padding dels cards reduït */
   .calendar-card {
     padding: 12px 8px;
   }
 
   .calendar-header-bar {
-    margin-bottom: 12px;
-    gap: 8px;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+    margin-bottom: 14px;
+  }
+
+  .calendar-month-display {
+    justify-content: center;
   }
 
   .calendar-month-display h3 {
-    font-size: 17px;
+    font-size: 18px;
+  }
+
+  /* Botons de canvi de mes ben separats i fàcils de prémer */
+  .calendar-btn-group {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+    width: 100%;
   }
 
   .cal-nav-btn {
-    min-height: 40px;
-    padding: 6px 12px;
+    flex: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 6px;
     font-size: 13px;
+    font-weight: 600;
+    min-height: 42px;
   }
 
+  /* Graella de capçalera i graella de dies amb gap uniforme de 3px */
   .calendar-weekdays-row {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
     gap: 3px;
     margin-bottom: 4px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .calendar-days-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 3px;
+    width: 100%;
+    box-sizing: border-box;
   }
 
   .weekday-label {
     font-size: 11px;
-    padding: 4px 0;
+    padding: 3px 0;
   }
 
-  .calendar-days-grid {
-    gap: 3px;
-  }
-
+  /* Cel·les de dies exactament idèntiques en mida */
   .calendar-day {
-    padding: 4px 2px 2px 2px;
-    border-radius: 4px;
+    padding: 4px;
+    min-height: unset;
+    height: auto;
     aspect-ratio: 1 / 1;
+    box-sizing: border-box;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
   }
 
   .day-number {
     font-size: 12px;
-    width: 20px;
-    height: 20px;
+    width: 22px;
+    height: 22px;
   }
 
+  .cal-dots-row,
   .calendar-day-dots {
     height: 6px;
+    min-height: 6px;
+    max-height: 6px;
     gap: 2px;
+    margin-top: auto;
     margin-bottom: 2px;
   }
 
+  .cal-dot,
   .day-dot {
     width: 4px;
     height: 4px;
   }
 
+  /* Panell de detall (#calendar-detail-panel): targetes en 1 sola columna ampla */
   .calendar-detail-panel {
-    padding: 16px 12px;
+    padding: 14px 12px;
+  }
+
+  .floor-rooms-grid {
+    grid-template-columns: 1fr !important;
+    gap: 10px;
   }
 
   .detail-date-title {
     font-size: 16px;
     flex-wrap: wrap;
-  }
-
-  .floor-rooms-grid {
-    grid-template-columns: 1fr;
-  }
-}
-
-@media (max-width: 480px) {
-  .main-content {
-    padding: 16px 8px;
-  }
-
-  .calendar-card {
-    padding: 8px 4px;
-  }
-
-  .calendar-weekdays-row {
-    gap: 2px;
-  }
-
-  .calendar-days-grid {
-    gap: 2px;
-  }
-
-  .calendar-day {
-    padding: 2px 1px 1px 1px;
-    border-radius: 3px;
-    aspect-ratio: 1 / 1;
-  }
-
-  .day-number {
-    font-size: 11px;
-    width: 18px;
-    height: 18px;
-  }
-
-  .calendar-day-dots {
-    height: 5px;
-    gap: 1.5px;
-    margin-bottom: 1px;
-  }
-
-  .day-dot {
-    width: 3.5px;
-    height: 3.5px;
   }
 }
 
