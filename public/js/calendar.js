@@ -366,7 +366,22 @@ const CalendarModule = {
                 </div>
                 ${guestPhone ? `
                   <div class="guest-contact">
-                    Telèfon: <a href="tel:${guestPhone}" style="color: var(--text-main); font-weight: 500; text-decoration: underline;">${guestPhone}</a>
+                    📞 Telèfon: <a href="tel:${guestPhone}" style="color: var(--text-main); font-weight: 500; text-decoration: underline;">${guestPhone}</a>
+                  </div>
+                ` : ''}
+                ${(b.guestEmail || b.email) ? `
+                  <div class="guest-contact">
+                    ✉️ Mail: <a href="mailto:${b.guestEmail || b.email}" style="color: var(--text-main); text-decoration: underline;">${b.guestEmail || b.email}</a>
+                  </div>
+                ` : ''}
+                ${b.dni ? `
+                  <div class="guest-contact">
+                    🪪 DNI/Passaport: <strong>${b.dni}</strong>
+                  </div>
+                ` : ''}
+                ${b.address ? `
+                  <div class="guest-contact">
+                    📍 Adreça: <span>${b.address}</span>
                   </div>
                 ` : ''}
                 ${b.notes ? `
@@ -374,6 +389,7 @@ const CalendarModule = {
                     📝 ${b.notes}
                   </div>
                 ` : ''}
+                <button type="button" class="btn btn-mail-confirm" id="cal-btn-copy-mail-${b.id}" onclick="CalendarModule.copyConfirmationMail('${b.id}', this)" style="margin-top: 8px;">📧 Copiar Mail de Confirmació</button>
                 ${cardPrivacyHtml}
               </div>
 
@@ -628,6 +644,9 @@ const CalendarModule = {
     document.getElementById('cal-modal-room').value = roomId || '101';
     document.getElementById('cal-modal-guest').value = '';
     document.getElementById('cal-modal-phone').value = '';
+    if (document.getElementById('cal-modal-dni')) document.getElementById('cal-modal-dni').value = '';
+    if (document.getElementById('cal-modal-email')) document.getElementById('cal-modal-email').value = '';
+    if (document.getElementById('cal-modal-address')) document.getElementById('cal-modal-address').value = '';
     
     // CheckIn seleccionat, CheckOut per defecte l'endemà
     const inDate = dateStr || this.selectedDate || this.formatDateIso(new Date());
@@ -682,7 +701,10 @@ const CalendarModule = {
     }
     document.getElementById('cal-modal-room').value = matchedRoomId;
     document.getElementById('cal-modal-guest').value = b.guestName || '';
-    document.getElementById('cal-modal-phone').value = b.guestPhone || '';
+    document.getElementById('cal-modal-phone').value = b.guestPhone || b.phone || '';
+    if (document.getElementById('cal-modal-dni')) document.getElementById('cal-modal-dni').value = b.dni || b.guestDni || '';
+    if (document.getElementById('cal-modal-email')) document.getElementById('cal-modal-email').value = b.guestEmail || b.email || '';
+    if (document.getElementById('cal-modal-address')) document.getElementById('cal-modal-address').value = b.guestAddress || b.address || '';
     document.getElementById('cal-modal-checkin').value = b.checkIn || '';
     document.getElementById('cal-modal-checkout').value = b.checkOut || '';
     document.getElementById('cal-modal-price').value = b.price || 89;
@@ -727,6 +749,9 @@ const CalendarModule = {
     const roomId = document.getElementById('cal-modal-room').value;
     const guestName = document.getElementById('cal-modal-guest').value.trim();
     const guestPhone = document.getElementById('cal-modal-phone').value.trim();
+    const dni = document.getElementById('cal-modal-dni') ? document.getElementById('cal-modal-dni').value.trim() : '';
+    const email = document.getElementById('cal-modal-email') ? document.getElementById('cal-modal-email').value.trim() : '';
+    const address = document.getElementById('cal-modal-address') ? document.getElementById('cal-modal-address').value.trim() : '';
     const checkIn = document.getElementById('cal-modal-checkin').value;
     const checkOut = document.getElementById('cal-modal-checkout').value;
     const price = parseFloat(document.getElementById('cal-modal-price').value) || 89;
@@ -771,6 +796,11 @@ const CalendarModule = {
           room: roomId,
           guestName,
           guestPhone,
+          phone: guestPhone,
+          dni,
+          email,
+          guestEmail: email,
+          address,
           checkIn,
           checkOut,
           price: totalPrice,
@@ -791,6 +821,11 @@ const CalendarModule = {
         room: roomId,
         guestName,
         guestPhone,
+        phone: guestPhone,
+        dni,
+        email,
+        guestEmail: email,
+        address,
         checkIn,
         checkOut,
         price: totalPrice,
@@ -831,6 +866,121 @@ const CalendarModule = {
 
     this.closeModal();
     this.render();
+  },
+
+  buildConfirmationMailText(bookingData) {
+    const guest = bookingData.guestName || 'Hoste';
+    const room = bookingData.room || '101';
+    const checkIn = bookingData.checkIn || '';
+    const checkOut = bookingData.checkOut || '';
+    const guests = bookingData.guestsCount || 2;
+    const mealPlanText = bookingData.mealPlan === 'AD' ? 'AD - Allotjament i Desdejuni (Esmorzar inclòs)' : 'NE - Només Allotjament (Sense esmorzar)';
+    const total = bookingData.totalPrice ? `${parseFloat(bookingData.totalPrice).toFixed(2)} €` : (bookingData.price ? `${bookingData.price} €` : '');
+
+    let extraDetails = '';
+    if (bookingData.dni) extraDetails += `🪪 DNI / Passaport: ${bookingData.dni}\n`;
+    if (bookingData.guestPhone || bookingData.phone) extraDetails += `📞 Telèfon mòbil: ${bookingData.guestPhone || bookingData.phone}\n`;
+    if (bookingData.guestEmail || bookingData.email) extraDetails += `✉️ Correu electrònic: ${bookingData.guestEmail || bookingData.email}\n`;
+    if (bookingData.address) extraDetails += `📍 Adreça: ${bookingData.address}\n`;
+    if (bookingData.notes) extraDetails += `📝 Observacions: ${bookingData.notes}\n`;
+
+    return `CONFIRMACIÓ DE RESERVA — HOSTAL SOMNIS
+
+Hola ${guest}, moltes gràcies per la vostra confiança i per triar Hostal Somnis!
+
+A continuació us detallem la informació confirmada de la vostra estada:
+
+🏨 Habitació: Habitació ${room}
+📅 Data d'Entrada (Check-in): ${checkIn} (a partir de les 13:00h PM)
+📅 Data de Sortida (Check-out): ${checkOut} (abans de les 11:30h AM)
+👥 Nombre de Persones: ${guests} ${guests === 1 ? 'persona' : 'persones'}
+🍽️ Règim: ${mealPlanText}
+💶 Preu Total: ${total} (taxa turística de 0,99€/pers. per nit inclosa)
+${extraDetails ? '\n' + extraDetails : ''}
+Instruccions d'Arribada i Accés:
+El mateix dia de l'arribada us facilitarem les indicacions d'accés autònom i l'enllaç per al registre online si fos necessari. Si a la vostra arribada la porta principal està tancada, podeu trucar al tel. 659 900 549 i us atendrem d'immediat.
+
+Dades de Contacte:
+Hostal Somnis
+C/ Major, 47 — Súria
+Telèfons: 973 626 041 / 659 900 549
+Correu: info@hostalsomnis.com
+Web: www.hostalsomnis.com
+
+Esperem que gaudiu d'una molt bona estada!`;
+  },
+
+  copyConfirmationMail(bookingId, btnEl) {
+    const bookings = (window.Store && Store.get('bookings')) || [];
+    const b = bookings.find(item => item.id === bookingId);
+    if (!b) return;
+
+    const text = this.buildConfirmationMailText(b);
+    this._copyToClipboardWithFeedback(text, btnEl);
+  },
+
+  copyModalConfirmationMail(btnEl) {
+    const guestName = (document.getElementById('cal-modal-guest') || {}).value || '';
+    const room = (document.getElementById('cal-modal-room') || {}).value || '101';
+    const checkIn = (document.getElementById('cal-modal-checkin') || {}).value || '';
+    const checkOut = (document.getElementById('cal-modal-checkout') || {}).value || '';
+    const mealPlan = (document.getElementById('cal-modal-mealplan') || {}).value || 'NE';
+    const guestsCount = parseInt((document.getElementById('cal-modal-guests') || {}).value, 10) || 2;
+    const dni = (document.getElementById('cal-modal-dni') || {}).value || '';
+    const phone = (document.getElementById('cal-modal-phone') || {}).value || '';
+    const email = (document.getElementById('cal-modal-email') || {}).value || '';
+    const address = (document.getElementById('cal-modal-address') || {}).value || '';
+    const notes = (document.getElementById('cal-modal-notes') || {}).value || '';
+    const totalPrice = this.currentCalculatedTotal || parseFloat((document.getElementById('cal-modal-price') || {}).value) || 89;
+
+    const bookingData = {
+      guestName: guestName || 'Hoste',
+      room,
+      checkIn,
+      checkOut,
+      mealPlan,
+      guestsCount,
+      dni,
+      phone,
+      guestPhone: phone,
+      email,
+      guestEmail: email,
+      address,
+      notes,
+      totalPrice
+    };
+
+    const text = this.buildConfirmationMailText(bookingData);
+    this._copyToClipboardWithFeedback(text, btnEl);
+  },
+
+  _copyToClipboardWithFeedback(text, btnEl) {
+    const fallbackCopy = () => {
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      try { document.execCommand('copy'); } catch(e){}
+      document.body.removeChild(ta);
+    };
+
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).catch(() => fallbackCopy());
+    } else {
+      fallbackCopy();
+    }
+
+    if (btnEl) {
+      const origHtml = btnEl.innerHTML;
+      btnEl.innerHTML = '✓ Copiat al porta-retalls!';
+      btnEl.classList.add('copied');
+      setTimeout(() => {
+        btnEl.innerHTML = origHtml;
+        btnEl.classList.remove('copied');
+      }, 3000);
+    }
   }
 };
 

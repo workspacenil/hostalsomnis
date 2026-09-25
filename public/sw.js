@@ -1,4 +1,4 @@
-const CACHE_NAME = 'hostal-somnis-v40';
+const CACHE_NAME = 'hostal-somnis-v41';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
