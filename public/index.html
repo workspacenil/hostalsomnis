@@ -76,6 +76,7 @@
         <button class="nav-item" data-view="mails">Mails</button>
         <button class="nav-item active" data-view="checkin">Check In 1</button>
         <button class="nav-item" data-view="codigos">Còdigs 2</button>
+        <button class="nav-item" data-view="calendari">Calendari</button>
       </nav>
 
       <div class="sidebar-footer" onclick="App.switchView('ajustes')" style="cursor: pointer; display: flex; align-items: center; justify-content: space-between; margin-top: auto; padding: 12px 8px; border-radius: 6px; transition: background 0.2s;" onmouseover="this.style.background='var(--bg-element)'" onmouseout="this.style.background='transparent'">
@@ -610,14 +611,125 @@
           </div>
         </div>
       </section>
+      <!-- VISTA CALENDARI -->
+      <section id="view-calendari" class="view-section">
+        <div class="section-header">
+          <h2 class="section-title">Calendari d'Ocupació</h2>
+          <div class="section-subtitle">Disponibilitat i reserves de les 6 habitacions de Hostal Somnis</div>
+        </div>
+
+        <div class="calendar-layout">
+          <!-- CARD CALENDARI MENSUAL -->
+          <div class="calendar-card">
+            <div class="calendar-header-bar">
+              <div class="calendar-month-display">
+                <h3 id="calendar-month-title">Setembre 2026</h3>
+              </div>
+              <div class="calendar-btn-group">
+                <button class="cal-nav-btn" onclick="CalendarModule.prevMonth()" title="Mes anterior">
+                  <span>◀</span> Anterior
+                </button>
+                <button class="cal-nav-btn" onclick="CalendarModule.goToToday()" title="Anar al dia d'avui" style="font-weight: 600;">
+                  Avui
+                </button>
+                <button class="cal-nav-btn" onclick="CalendarModule.nextMonth()" title="Mes següent">
+                  Següent <span>▶</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- DIES DE LA SETMANA -->
+            <div class="calendar-weekdays-row">
+              <div class="weekday-label">Dl</div>
+              <div class="weekday-label">Dt</div>
+              <div class="weekday-label">Dc</div>
+              <div class="weekday-label">Dj</div>
+              <div class="weekday-label">Dv</div>
+              <div class="weekday-label">Ds</div>
+              <div class="weekday-label">Dg</div>
+            </div>
+
+            <!-- GRAELLA DE DIES -->
+            <div class="calendar-days-grid" id="calendar-days-grid"></div>
+          </div>
+
+          <!-- DETALL DEL DIA SELECCIONAT -->
+          <div class="calendar-detail-panel" id="calendar-day-detail"></div>
+        </div>
+      </section>
     </main>
   </div>
 
-  <script src="js/store.js?v=34"></script>
-  <script src="js/app.js?v=34"></script>
-  <script src="js/mails.js?v=34"></script>
-  <script src="js/checkin.js?v=34"></script>
-  <script src="js/codes.js?v=34"></script>
-  <script src="js/settings.js?v=34"></script>
+  <!-- MODAL EDITAR / CREAR RESERVA -->
+  <div id="calendar-booking-modal" class="modal-overlay" style="display: none;">
+    <div class="modal-content-box">
+      <div class="modal-header-bar">
+        <h3 id="cal-modal-title" class="modal-title-text">Nova Reserva</h3>
+        <button type="button" class="btn-close-modal" onclick="CalendarModule.closeModal()">&times;</button>
+      </div>
+      <form id="form-cal-booking" onsubmit="CalendarModule.saveModalBooking(event)" class="modal-body-form">
+        <input type="hidden" id="cal-modal-id">
+
+        <div class="form-group">
+          <label class="form-label">Habitació</label>
+          <select id="cal-modal-room" class="form-input" style="padding: 8px;">
+            <option value="101">Habitació 101 (Planta 1)</option>
+            <option value="102">Habitació 102 (Planta 1)</option>
+            <option value="201">Habitació 201 (Planta 2)</option>
+            <option value="202">Habitació 202 (Planta 2)</option>
+            <option value="301">Habitació 301 (Planta 3)</option>
+            <option value="302">Habitació 302 (Planta 3)</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Nom i cognoms de l'hoste *</label>
+          <input type="text" id="cal-modal-guest" class="form-input" placeholder="Ex: Maria Rovira" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Telèfon de contacte</label>
+          <input type="tel" id="cal-modal-phone" class="form-input" placeholder="+34 600 000 000">
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+          <div class="form-group">
+            <label class="form-label">Data entrada (Check-in) *</label>
+            <input type="date" id="cal-modal-checkin" class="form-input" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Data sortida (Check-out) *</label>
+            <input type="date" id="cal-modal-checkout" class="form-input" required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Preu total (€)</label>
+          <input type="number" id="cal-modal-price" class="form-input" placeholder="0" min="0" step="any">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Observacions / Notes</label>
+          <textarea id="cal-modal-notes" class="form-input" rows="2" placeholder="Arribada tard, bressol, etc."></textarea>
+        </div>
+
+        <div class="modal-footer-btns">
+          <button type="button" id="cal-modal-delete-btn" class="btn btn-outline" style="color: var(--danger); border-color: var(--danger);" onclick="CalendarModule.deleteCurrentBooking()">Eliminar Reserva</button>
+          <div style="display: flex; gap: 8px; margin-left: auto;">
+            <button type="button" class="btn btn-outline" onclick="CalendarModule.closeModal()">Cancel·lar</button>
+            <button type="submit" class="btn btn-primary">Desar Reserva</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="js/store.js?v=37"></script>
+  <script src="js/app.js?v=37"></script>
+  <script src="js/mails.js?v=37"></script>
+  <script src="js/checkin.js?v=37"></script>
+  <script src="js/codes.js?v=37"></script>
+  <script src="js/settings.js?v=37"></script>
+  <script src="js/calendar.js?v=37"></script>
 </body>
 </html>
