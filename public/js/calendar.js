@@ -237,7 +237,7 @@ const CalendarModule = {
 
       let dotsHtml = '';
       if (isFull) {
-        dotsHtml = `<span class="day-badge-ple" title="Ple: 6 de 6 habitacions ocupades">Ple</span>`;
+        dotsHtml = `<span class="day-badge-ple day-occupancy-pill full-red" title="Ple: 6 de 6 habitacions ocupades">Ple</span>`;
       } else {
         if (summary.occupiedCount > 0) {
           dotsHtml += `<span class="cal-dot occupied" title="${summary.occupiedCount} de 6 hab. ocupades"></span>`;
@@ -443,10 +443,25 @@ const CalendarModule = {
       `).join('');
 
       movementsHtml = `
-        <div class="calendar-movements-box">
-          <div class="movements-title">Moviments previstos pel dia</div>
+        <div class="calendar-movements-box" id="calendar-movements-box">
+          <div class="movements-title" style="display: flex; justify-content: space-between; align-items: center;">
+            <span>Moviments previstos pel dia</span>
+            ${daySummary.occupiedCount === 6 ? `<span class="day-occupancy-pill full-red" style="font-size: 11px; padding: 2px 8px; border-radius: 12px;">Ple</span>` : ''}
+          </div>
           <div class="movements-list">
             ${itemsList}
+          </div>
+        </div>
+      `;
+    } else if (daySummary.occupiedCount === 6) {
+      movementsHtml = `
+        <div class="calendar-movements-box" id="calendar-movements-box">
+          <div class="movements-title" style="display: flex; justify-content: space-between; align-items: center;">
+            <span>Estat del dia</span>
+            <span class="day-occupancy-pill full-red" style="font-size: 11px; padding: 2px 8px; border-radius: 12px;">Ple</span>
+          </div>
+          <div style="font-size: 13px; color: #DC2626; font-weight: 600; padding: 4px 0;">
+            Hostal al 100% d'ocupació (6 de 6 habitacions ocupades).
           </div>
         </div>
       `;
@@ -461,7 +476,7 @@ const CalendarModule = {
           </div>
           <div class="detail-summary-line">
             ${daySummary.occupiedCount === 6 ? `
-              <span class="summary-pill ple">🔴 Ple (6 de 6 ocupades)</span>
+              <span class="summary-pill ple day-occupancy-pill full-red">Ple</span>
             ` : `
               <span class="summary-pill free">${daySummary.freeCount} Lliures</span>
               <span class="summary-pill occupied">${daySummary.occupiedCount} Ocupades</span>
