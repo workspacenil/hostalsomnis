@@ -801,8 +801,14 @@ const CalendarModule = {
       bookings.push(newBooking);
     }
 
+    const savedBooking = id ? bookings.find(b => b.id === id) : newBooking;
+
     if (window.Store) {
       Store.set('bookings', bookings);
+    }
+
+    if (window.CloudSync && savedBooking) {
+      CloudSync.pushBooking(savedBooking).catch(err => console.warn('Error sincronitzant reserva amb el núvol:', err));
     }
 
     this.closeModal();
@@ -816,11 +822,16 @@ const CalendarModule = {
       return;
     }
 
+    const bookingToDeleteId = this.currentEditBookingId;
     let bookings = (window.Store && Store.get('bookings')) || [];
-    bookings = bookings.filter(b => b.id !== this.currentEditBookingId);
+    bookings = bookings.filter(b => b.id !== bookingToDeleteId);
 
     if (window.Store) {
       Store.set('bookings', bookings);
+    }
+
+    if (window.CloudSync && bookingToDeleteId) {
+      CloudSync.removeBooking(bookingToDeleteId).catch(err => console.warn('Error eliminant reserva del núvol:', err));
     }
 
     this.closeModal();

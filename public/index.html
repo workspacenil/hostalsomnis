@@ -12,7 +12,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
   <meta name="apple-mobile-web-app-title" content="Hostal Somnis">
   <meta name="theme-color" content="#000000">
-  <link rel="stylesheet" href="css/styles.css?v=43">
+  <link rel="stylesheet" href="css/styles.css?v=44">
 </head>
 <body>
 
@@ -623,6 +623,66 @@
               </form>
             </div>
           </div>
+
+          <!-- PANELL SINCRONITZACIÓ AL NÚVOL SUPABASE -->
+          <div class="panel">
+            <div class="panel-header" style="display: flex; justify-content: space-between; align-items: center;">
+              <span>☁️ Sincronització al Núvol (Mòbil i Ordinador - Supabase)</span>
+              <div id="supabase-status-indicator" style="font-size: 12px; font-weight: normal;"></div>
+            </div>
+            <div class="panel-body">
+              <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 14px; line-height: 1.4;">
+                Connecta el teu projecte gratuït de <strong>Supabase</strong> perquè qualsevol reserva creada o modificada al mòbil o l'ordinador s'actualitzi automàticament en temps real a tots els dispositius.
+              </p>
+
+              <div class="form-group">
+                <label class="form-label" for="settings-supabase-url">URL del Projecte Supabase</label>
+                <input type="url" id="settings-supabase-url" class="form-input" placeholder="https://xxxxxxxx.supabase.co" autocomplete="off" spellcheck="false">
+                <span style="font-size: 11px; color: var(--text-muted);">Exemple: https://xyzcompany.supabase.co (Project Settings &rarr; API)</span>
+              </div>
+
+              <div class="form-group" style="margin-top: 12px;">
+                <label class="form-label" for="settings-supabase-key">Clau Anònima Pública (anon / public key)</label>
+                <input type="password" id="settings-supabase-key" class="form-input" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." autocomplete="off" spellcheck="false">
+                <span style="font-size: 11px; color: var(--text-muted);">Clau segura d'accés anònim per al navegador client (Project Settings &rarr; API &rarr; anon key).</span>
+              </div>
+
+              <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; margin-bottom: 20px;">
+                <button type="button" id="btn-test-supabase" class="btn btn-primary" onclick="SettingsModule.testAndSaveSupabase()" style="background: #2563EB; border-color: #2563EB; font-weight: 600;">
+                  ⚡ Provar i Connectar Núvol
+                </button>
+                <button type="button" class="btn btn-outline" onclick="SettingsModule.syncLocalToCloud()" title="Pujar dades locals al núvol">
+                  ⬆️ Pujar dades locals
+                </button>
+                <button type="button" class="btn btn-outline" style="color: #DC2626; border-color: #FCA5A5; background: #FEF2F2;" onclick="SettingsModule.disconnectSupabase()">
+                  Desconnectar
+                </button>
+              </div>
+
+              <!-- CAIXA SQL AMB BOTÓ DE COPIAR EN 1 CLIC -->
+              <div style="background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 8px; padding: 14px; margin-top: 12px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                  <span style="font-size: 12px; font-weight: 600; color: #1E293B;">Instruccions Supabase (Només 1 cop):</span>
+                </div>
+                <p style="font-size: 12px; color: #475569; margin-bottom: 10px; line-height: 1.35;">
+                  Crea la taula a Supabase anant a <strong>SQL Editor</strong> &rarr; <strong>New query</strong> &rarr; Enganxa aquest codi i fes clic a <strong>Run</strong>:
+                </p>
+                <button type="button" id="btn-copy-supabase-sql" class="btn btn-outline" onclick="SettingsModule.copySupabaseSql(this)" style="width: 100%; margin-bottom: 8px; font-weight: 600; background: #FFFFFF; font-size: 13px;">
+                  📋 Copiar SQL de creació de taula (1 clic)
+                </button>
+                <pre style="background: #0F172A; color: #E2E8F0; padding: 10px 12px; border-radius: 6px; font-size: 11px; max-height: 120px; overflow-y: auto; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; line-height: 1.4; margin: 0; white-space: pre-wrap;">CREATE TABLE IF NOT EXISTS bookings (
+  id TEXT PRIMARY KEY,
+  data JSONB NOT NULL,
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+ALTER TABLE bookings ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Accés lliure Hostal" ON bookings FOR ALL USING (true) WITH CHECK (true);
+
+ALTER PUBLICATION supabase_realtime ADD TABLE bookings;</pre>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
       <!-- VISTA CALENDARI -->
@@ -807,12 +867,14 @@
     </div>
   </div>
 
-  <script src="js/store.js?v=43"></script>
-  <script src="js/calendar.js?v=43"></script>
-  <script src="js/app.js?v=43"></script>
-  <script src="js/mails.js?v=43"></script>
-  <script src="js/checkin.js?v=43"></script>
-  <script src="js/codes.js?v=43"></script>
-  <script src="js/settings.js?v=43"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/store.js?v=44"></script>
+  <script src="js/cloud.js?v=44"></script>
+  <script src="js/calendar.js?v=44"></script>
+  <script src="js/app.js?v=44"></script>
+  <script src="js/mails.js?v=44"></script>
+  <script src="js/checkin.js?v=44"></script>
+  <script src="js/codes.js?v=44"></script>
+  <script src="js/settings.js?v=44"></script>
 </body>
 </html>

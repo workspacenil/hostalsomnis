@@ -68,6 +68,7 @@ const App = {
     this.setupNavigation();
     
     // Inicializar submódulos si existen
+    if (window.CloudSync) CloudSync.init();
     if (window.MailsModule) MailsModule.init();
     if (window.CheckinModule) CheckinModule.init();
     if (window.CodesModule) CodesModule.init();
