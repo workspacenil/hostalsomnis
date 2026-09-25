@@ -12,6 +12,21 @@ const App = {
     this.checkAuth();
   },
 
+  // Configuració de seguretat criptogràfica (sense contrasenyes visibles a GitHub)
+  AUTH_SALT: 'hostal_somnis_suria_salt_2026',
+  AUTH_HASH: '7a442fa2731403f2390c1679d37a9dd733f9016e5cca9866542ecb923186ea37',
+
+  async computeHash(text) {
+    if (window.crypto && window.crypto.subtle) {
+      const enc = new TextEncoder();
+      const data = enc.encode(this.AUTH_SALT + text);
+      const hashBuffer = await window.crypto.subtle.digest('SHA-256', data);
+      const hashArray = Array.from(new Uint8Array(hashBuffer));
+      return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+    }
+    return null;
+  },
+
   checkAuth() {
     // Revisar si ya ha iniciado sesión antes
     const isAuthed = Store.get('auth_granted', false);
@@ -23,16 +38,26 @@ const App = {
     }
   },
 
-  handleLogin(e) {
-    e.preventDefault();
-    const pwd = document.getElementById('login-password').value;
-    if (pwd === 'N2530g..35') {
-      Store.set('auth_granted', true);
-      this.showApp();
-    } else {
-      const err = document.getElementById('login-error');
+  async handleLogin(e) {
+    if (e && e.preventDefault) e.preventDefault();
+    const pwdInput = document.getElementById('login-password');
+    const pwd = pwdInput ? pwdInput.value : '';
+    const err = document.getElementById('login-error');
+
+    try {
+      const hash = await this.computeHash(pwd);
+      if (hash && hash === this.AUTH_HASH) {
+        Store.set('auth_granted', true);
+        Store.set('auth_token', hash);
+        if (err) err.style.display = 'none';
+        this.showApp();
+      } else {
+        if (err) err.style.display = 'block';
+        if (pwdInput) pwdInput.value = '';
+      }
+    } catch (errCatch) {
+      console.error('Error verificant credencials:', errCatch);
       if (err) err.style.display = 'block';
-      document.getElementById('login-password').value = '';
     }
   },
 
@@ -184,10 +209,10 @@ const SplashModule = {
       });
     }
 
-    // Temporizador de seguridad máximo (4.6s) para garantizar que nunca se quede bloqueada
+    // Temporitzador de seguretat màxim (2.6s) després d'escurçar el vídeo a 2s
     setTimeout(() => {
       this.dismiss();
-    }, 4600);
+    }, 2600);
   },
 
   syncBgColor() {
