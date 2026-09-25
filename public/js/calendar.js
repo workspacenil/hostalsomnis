@@ -206,10 +206,9 @@ const CalendarModule = {
       const prevDate = new Date(year, month - 1, prevDayNum);
       const prevDateStr = this.formatDateIso(prevDate);
       daysHtml += `
-        <div class="calendar-day empty" onclick="CalendarModule.selectDate('${prevDateStr}')" style="cursor: pointer; opacity: 0.35;">
-          <div class="calendar-day-header">
-            <span class="day-number">${prevDayNum}</span>
-          </div>
+        <div class="calendar-day other-month" onclick="CalendarModule.selectDate('${prevDateStr}')">
+          <span class="day-number">${prevDayNum}</span>
+          <div class="cal-dots-row"></div>
         </div>
       `;
     }
@@ -222,34 +221,19 @@ const CalendarModule = {
       const isSelected = dateStr === this.selectedDate;
       const summary = this.getDaySummary(dateStr, bookings);
 
-      let movementDotHtml = '';
-      if (summary.checkInCount > 0 && summary.checkOutCount > 0) {
-        movementDotHtml = `<span class="day-movement-dot in-out" title="${summary.checkInCount} check-in / ${summary.checkOutCount} check-out">⇅</span>`;
-      } else if (summary.checkInCount > 0) {
-        movementDotHtml = `<span class="day-movement-dot in" title="${summary.checkInCount} arribada/es">↓</span>`;
-      } else if (summary.checkOutCount > 0) {
-        movementDotHtml = `<span class="day-movement-dot out" title="${summary.checkOutCount} sortida/es">↑</span>`;
-      }
-
-      let occupancyPillHtml = '';
+      let dotsHtml = '';
       if (summary.occupiedCount > 0) {
-        occupancyPillHtml = `
-          <span class="day-occupancy-pill ${summary.occupiedCount === 6 ? 'full' : ''}">
-            ${summary.occupiedCount} hab.
-          </span>
-        `;
+        const dotClass = (summary.occupiedCount === 6) ? 'full' : 'occupied';
+        dotsHtml += `<span class="cal-dot ${dotClass}" title="${summary.occupiedCount} de 6 hab. ocupades"></span>`;
+      }
+      if (summary.checkInCount > 0 || summary.checkOutCount > 0) {
+        dotsHtml += `<span class="cal-dot movement" title="${summary.checkInCount} arribada/es, ${summary.checkOutCount} sortida/es"></span>`;
       }
 
       daysHtml += `
         <div class="calendar-day ${isToday ? 'today' : ''} ${isSelected ? 'selected' : ''}" onclick="CalendarModule.selectDate('${dateStr}')">
-          <div class="calendar-day-header">
-            <span class="day-number">${day}</span>
-            ${isToday ? '<span class="day-today-tag">Avui</span>' : ''}
-          </div>
-          <div class="calendar-day-footer">
-            ${occupancyPillHtml}
-            ${movementDotHtml}
-          </div>
+          <span class="day-number ${isToday ? 'today-circle' : ''}">${day}</span>
+          <div class="cal-dots-row">${dotsHtml}</div>
         </div>
       `;
     }
@@ -261,10 +245,9 @@ const CalendarModule = {
       const nextDate = new Date(year, month + 1, nextDay);
       const nextDateStr = this.formatDateIso(nextDate);
       daysHtml += `
-        <div class="calendar-day empty" onclick="CalendarModule.selectDate('${nextDateStr}')" style="cursor: pointer; opacity: 0.35;">
-          <div class="calendar-day-header">
-            <span class="day-number">${nextDay}</span>
-          </div>
+        <div class="calendar-day other-month" onclick="CalendarModule.selectDate('${nextDateStr}')">
+          <span class="day-number">${nextDay}</span>
+          <div class="cal-dots-row"></div>
         </div>
       `;
     }
