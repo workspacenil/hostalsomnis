@@ -371,6 +371,7 @@ const CalendarModule = {
 
               <div class="room-card-footer">
                 ${badgesHtml || '<span></span>'}
+                <button type="button" class="btn-room-action" style="color: #4338CA; font-weight: 600;" onclick="CalendarModule.openCodesFromBooking('${b.id}')">🔑 Còdigs</button>
                 <button type="button" class="btn-room-action" onclick="CalendarModule.openEditBooking('${b.id}')">
                   Veure / Modificar
                 </button>
@@ -508,6 +509,40 @@ const CalendarModule = {
     this.recalculatePriceFormula();
   },
 
+  setBedType(type, autoAssign = true) {
+    const input = document.getElementById('cal-modal-bedtype');
+    if (input) input.value = type || 'individual';
+    const btnMat = document.getElementById('btn-bed-matrimoni');
+    const btnInd = document.getElementById('btn-bed-individual');
+    if (btnMat) btnMat.classList.toggle('active', type === 'matrimoni');
+    if (btnInd) btnInd.classList.toggle('active', type !== 'matrimoni');
+
+    if (autoAssign && type === 'matrimoni') {
+      const checkIn = document.getElementById('cal-modal-checkin') ? document.getElementById('cal-modal-checkin').value : '';
+      const checkOut = document.getElementById('cal-modal-checkout') ? document.getElementById('cal-modal-checkout').value : '';
+      const roomSelect = document.getElementById('cal-modal-room');
+      if (roomSelect) {
+        if (this.isRoomFree('302', checkIn, checkOut, this.currentEditBookingId)) {
+          roomSelect.value = '302';
+        } else if (this.isRoomFree('101', checkIn, checkOut, this.currentEditBookingId)) {
+          roomSelect.value = '101';
+        }
+      }
+    }
+  },
+
+  isRoomFree(roomId, checkIn, checkOut, excludeBookingId = null) {
+    if (!checkIn || !checkOut) return true;
+    const bookings = (window.Store && Store.get('bookings')) || [];
+    return !bookings.some(b => {
+      const st = (b.status || '').toLowerCase();
+      if (st === 'cancelada' || st === 'cancel·lada') return false;
+      if (excludeBookingId && b.id === excludeBookingId) return false;
+      if (!this.matchesRoom(b, roomId)) return false;
+      return (b.checkIn < checkOut && b.checkOut > checkIn);
+    });
+  },
+
   recalculatePriceFormula() {
     const settings = (window.Store && Store.get('settings')) || {};
     const defaultRoomPrice = parseFloat(settings.defaultRoomPrice) || 89;
@@ -599,6 +634,7 @@ const CalendarModule = {
     // Defaults: SEMPRE 'NE', 2 persones per defecte
     this.setMealPlan('NE');
     this.setGuestsCount(2);
+    this.setBedType('individual', false);
 
     const delBtn = document.getElementById('cal-modal-delete-btn');
     if (delBtn) delBtn.style.display = 'none';
@@ -641,6 +677,7 @@ const CalendarModule = {
     // Règim i persones
     this.setMealPlan(b.mealPlan || 'NE');
     this.setGuestsCount(b.guestsCount || 2);
+    this.setBedType(b.bedType || 'individual', false);
 
     const delBtn = document.getElementById('cal-modal-delete-btn');
     if (delBtn) delBtn.style.display = 'inline-block';
@@ -674,6 +711,8 @@ const CalendarModule = {
     const mealPlan = mealPlanEl ? mealPlanEl.value : 'NE';
     const guestsEl = document.getElementById('cal-modal-guests');
     const guestsCount = guestsEl ? (parseInt(guestsEl.value, 10) || 2) : 2;
+    const bedTypeEl = document.getElementById('cal-modal-bedtype');
+    const bedType = bedTypeEl ? bedTypeEl.value : 'individual';
 
     if (!guestName || !checkIn || !checkOut) {
       alert('Si us plau, omple el nom de l\'hoste i les dates d\'entrada i sortida.');
@@ -711,6 +750,7 @@ const CalendarModule = {
           roomPrice: price,
           mealPlan,
           guestsCount,
+          bedType,
           notes,
           status: 'confirmada'
         };
@@ -736,6 +776,7 @@ const CalendarModule = {
         roomPrice: price,
         mealPlan,
         guestsCount,
+        bedType,
         notes,
         status: 'confirmada',
         createdAt: new Date().toISOString()
@@ -904,6 +945,33 @@ www.hostalsomnis.com`;
 
   copyModalConfirmationMail(btnEl) {
     this.copyConfirmationMail();
+  },
+
+  openCodesFromBooking(bookingId) {
+    let bookingData = null;
+    if (bookingId) {
+      const bookings = (window.Store && Store.get('bookings')) || [];
+      bookingData = bookings.find(item => item.id === bookingId);
+    } else {
+      const roomEl = document.getElementById('cal-modal-room');
+      const mealPlanEl = document.getElementById('cal-modal-mealplan');
+      const guestEl = document.getElementById('cal-modal-guest');
+      bookingData = {
+        room: roomEl ? roomEl.value : '101',
+        mealPlan: mealPlanEl ? mealPlanEl.value : 'NE',
+        guestName: guestEl ? guestEl.value : ''
+      };
+    }
+
+    this.closeModal();
+
+    if (window.App && typeof App.switchView === 'function') {
+      App.switchView('codigos');
+    }
+
+    if (window.CodesModule && typeof CodesModule.loadFromBooking === 'function') {
+      CodesModule.loadFromBooking(bookingData || {});
+    }
   }
 };
 
