@@ -751,11 +751,6 @@
           <input type="text" id="cal-modal-address" class="form-input" placeholder="Carrer, Ciutat, CP">
         </div>
 
-        <!-- BOTÓ COPIAR MAIL DE CONFIRMACIÓ AL MODAL -->
-        <div>
-          <button type="button" class="btn btn-copy-mail" id="cal-btn-copy-mail" onclick="CalendarModule.copyConfirmationMail()" style="background: #EFF6FF; color: #1D4ED8; border: 1px solid #BFDBFE; font-weight: 600; padding: 8px 14px; border-radius: 6px; cursor: pointer; display: flex; align-items: center; gap: 6px; margin-top: 8px;">📋 Copiar Mail de Confirmació</button>
-        </div>
-
         <!-- NOMBRE DE PERSONES (1 O 2 PERSONES) -->
         <div class="form-group">
           <label class="form-label">Nombre de Persones</label>
@@ -772,11 +767,11 @@
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
           <div class="form-group">
             <label class="form-label">Data entrada (Check-in) *</label>
-            <input type="date" id="cal-modal-checkin" class="form-input" required onchange="CalendarModule.recalculatePriceFormula()">
+            <input type="date" id="cal-modal-checkin" class="form-input" required onchange="CalendarModule.onModalDatesChange()">
           </div>
           <div class="form-group">
             <label class="form-label">Data sortida (Check-out) *</label>
-            <input type="date" id="cal-modal-checkout" class="form-input" required onchange="CalendarModule.recalculatePriceFormula()">
+            <input type="date" id="cal-modal-checkout" class="form-input" required onchange="CalendarModule.onModalDatesChange()">
           </div>
         </div>
 
@@ -802,7 +797,7 @@
         <div style="display: flex; align-items: center; gap: 8px;">
           <button type="button" id="cal-modal-delete-btn" class="btn btn-outline" style="color: #DC2626; border-color: #FCA5A5; background: #FEF2F2;" onclick="CalendarModule.deleteCurrentBooking()">Eliminar</button>
           <button type="button" id="cal-modal-copy-btn" class="btn btn-mail-confirm" onclick="CalendarModule.copyModalConfirmationMail(this)" title="Copiar confirmació completa al porta-retalls">📧 Copiar Mail</button>
-          <button type="button" class="btn btn-outline" id="cal-btn-go-codes" onclick="CalendarModule.openCodesFromBooking()" style="font-weight: 600; color: #4338CA; border-color: #C7D2FE; background: #EEF2FF;">🔑 Còdigs</button>
+          <button type="button" class="btn btn-codes-quick" id="cal-btn-go-codes" onclick="CalendarModule.openCodesFromBooking()" title="Obrir Còdigs amb les dades d'aquesta reserva">🔑 Còdigs</button>
         </div>
         <div style="display: flex; gap: 10px; margin-left: auto;">
           <button type="button" class="btn btn-outline" id="cal-modal-cancel-btn" onclick="CalendarModule.closeModal()" style="font-weight: 600; padding: 10px 18px;">Desfer</button>
