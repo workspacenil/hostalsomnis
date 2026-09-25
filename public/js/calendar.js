@@ -371,7 +371,7 @@ const CalendarModule = {
 
               <div class="room-card-footer">
                 ${badgesHtml || '<span></span>'}
-                <button type="button" class="btn-room-action" style="color: #4338CA; font-weight: 600;" onclick="CalendarModule.openCodesFromBooking('${b.id}')">🔑 Còdigs</button>
+                <button type="button" class="btn-room-action btn-codes-quick" onclick="CalendarModule.openCodesFromBooking('${b.id}')">🔑 Còdigs</button>
                 <button type="button" class="btn-room-action" onclick="CalendarModule.openEditBooking('${b.id}')">
                   Veure / Modificar
                 </button>
@@ -518,17 +518,30 @@ const CalendarModule = {
     if (btnInd) btnInd.classList.toggle('active', type !== 'matrimoni');
 
     if (autoAssign && type === 'matrimoni') {
-      const checkIn = document.getElementById('cal-modal-checkin') ? document.getElementById('cal-modal-checkin').value : '';
-      const checkOut = document.getElementById('cal-modal-checkout') ? document.getElementById('cal-modal-checkout').value : '';
-      const roomSelect = document.getElementById('cal-modal-room');
-      if (roomSelect) {
-        if (this.isRoomFree('302', checkIn, checkOut, this.currentEditBookingId)) {
-          roomSelect.value = '302';
-        } else if (this.isRoomFree('101', checkIn, checkOut, this.currentEditBookingId)) {
-          roomSelect.value = '101';
-        }
+      this.autoAssignMatrimoniRoom();
+    }
+  },
+
+  autoAssignMatrimoniRoom() {
+    const checkIn = document.getElementById('cal-modal-checkin') ? document.getElementById('cal-modal-checkin').value : '';
+    const checkOut = document.getElementById('cal-modal-checkout') ? document.getElementById('cal-modal-checkout').value : '';
+    const roomSelect = document.getElementById('cal-modal-room');
+    if (roomSelect) {
+      if (this.isRoomFree('302', checkIn, checkOut, this.currentEditBookingId)) {
+        roomSelect.value = '302';
+      } else if (this.isRoomFree('101', checkIn, checkOut, this.currentEditBookingId)) {
+        roomSelect.value = '101';
       }
     }
+  },
+
+  onModalDatesChange() {
+    const bedTypeEl = document.getElementById('cal-modal-bedtype');
+    const bedType = bedTypeEl ? bedTypeEl.value : 'individual';
+    if (bedType === 'matrimoni') {
+      this.autoAssignMatrimoniRoom();
+    }
+    this.recalculatePriceFormula();
   },
 
   isRoomFree(roomId, checkIn, checkOut, excludeBookingId = null) {
@@ -541,6 +554,10 @@ const CalendarModule = {
       if (!this.matchesRoom(b, roomId)) return false;
       return (b.checkIn < checkOut && b.checkOut > checkIn);
     });
+  },
+
+  isRoomAvailable(roomId, checkIn, checkOut, excludeBookingId = null) {
+    return this.isRoomFree(roomId, checkIn, checkOut, excludeBookingId);
   },
 
   recalculatePriceFormula() {
@@ -972,6 +989,22 @@ www.hostalsomnis.com`;
     if (window.CodesModule && typeof CodesModule.loadFromBooking === 'function') {
       CodesModule.loadFromBooking(bookingData || {});
     }
+
+    setTimeout(() => {
+      const porta = document.getElementById('codigos-porta');
+      if (porta) {
+        porta.focus();
+        porta.select();
+      }
+    }, 150);
+  },
+
+  goToCodesFromModal() {
+    this.openCodesFromBooking();
+  },
+
+  goToCodes(bookingId) {
+    this.openCodesFromBooking(bookingId);
   }
 };
 
