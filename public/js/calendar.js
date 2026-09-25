@@ -317,11 +317,30 @@ const CalendarModule = {
             badgesHtml += `<span class="action-tag out">📤 Sortida prèvia: ${status.checkOutBooking.guestName || 'Hoste'}</span>`;
           }
 
+          let cardPrivacyHtml = '';
+          if (b.card && (b.card.number || b.card.holder)) {
+            const last4 = b.card.number ? b.card.number.replace(/\s+/g, '').slice(-4) : '••••';
+            cardPrivacyHtml = `
+              <div class="room-card-privacy-box">
+                <div class="card-privacy-header">
+                  <span>💳 Targeta (acabada en ${last4})</span>
+                  <button type="button" class="btn-privacy-toggle" onclick="CalendarModule.toggleCardVisibility('${b.id}')" id="btn-card-toggle-${b.id}">👁️ Mostrar dades</button>
+                </div>
+                <div class="card-privacy-content" id="card-content-${b.id}" style="display: none;">
+                  <div><strong>Número:</strong> <span class="card-mono">${b.card.number || '-'}</span></div>
+                  <div><strong>Caducitat:</strong> ${b.card.expiry || '-'} &nbsp;|&nbsp; <strong>CVV:</strong> ${b.card.cvv || '-'}</div>
+                  ${b.card.holder ? `<div><strong>Titular:</strong> ${b.card.holder}</div>` : ''}
+                </div>
+              </div>
+            `;
+          }
+
           roomsCardsHtml += `
             <div class="room-status-card occupied">
               <div class="room-card-top">
                 <div class="room-card-title">
                   <span class="room-num-badge">${room.id}</span>
+                  <span class="badge-regim ${b.mealPlan === 'AD' ? 'ad' : 'ne'}">${b.mealPlan === 'AD' ? 'AD' : 'NE'}</span>
                   <span class="room-name-text">${room.name}</span>
                 </div>
                 <span class="status-tag occupied">OCUPADA</span>
@@ -333,8 +352,12 @@ const CalendarModule = {
                   ${guestName}
                 </div>
                 <div class="booking-dates">
-                  Estada: <strong>${checkIn}</strong> al <strong>${checkOut}</strong>
-                  ${price ? ` &bull; <strong>${price}</strong>` : ''}
+                  📅 Estada: <strong>${checkIn}</strong> al <strong>${checkOut}</strong>
+                  ${b.guestsCount ? ` &bull; 👥 <strong>${b.guestsCount} pers.</strong>` : ''}
+                </div>
+                <div style="font-size: 12px; color: #4B5563; margin-top: 2px;">
+                  🍽️ Règim: <strong>${b.mealPlan === 'AD' ? 'AD (Allotjament i Desdejuni)' : 'NE (Sense esmorzar)'}</strong>
+                  ${b.totalPrice ? ` &bull; 💶 Total: <strong>${parseFloat(b.totalPrice).toFixed(2)} €</strong>` : (price ? ` &bull; 💶 <strong>${price}</strong>` : '')}
                 </div>
                 ${guestPhone ? `
                   <div class="guest-contact">
@@ -346,6 +369,7 @@ const CalendarModule = {
                     📝 ${b.notes}
                   </div>
                 ` : ''}
+                ${cardPrivacyHtml}
               </div>
 
               <div class="room-card-footer">
@@ -447,11 +471,130 @@ const CalendarModule = {
     `;
   },
 
+  // Mètodes de gestió de règim, persones, fórmula i targeta
+  setMealPlan(plan) {
+    const input = document.getElementById('cal-modal-mealplan');
+    if (input) input.value = plan;
+    const btnNe = document.getElementById('btn-pill-ne');
+    const btnAd = document.getElementById('btn-pill-ad');
+    if (btnNe) btnNe.classList.toggle('active', plan === 'NE');
+    if (btnAd) btnAd.classList.toggle('active', plan === 'AD');
+    this.recalculatePriceFormula();
+  },
+
+  setGuestsCount(count) {
+    const input = document.getElementById('cal-modal-guests');
+    if (input) input.value = count;
+    const btn1 = document.getElementById('btn-pill-pers-1');
+    const btn2 = document.getElementById('btn-pill-pers-2');
+    if (btn1) btn1.classList.toggle('active', count === 1);
+    if (btn2) btn2.classList.toggle('active', count === 2);
+    this.recalculatePriceFormula();
+  },
+
+  recalculatePriceFormula() {
+    const settings = (window.Store && Store.get('settings')) || {};
+    const defaultRoomPrice = parseFloat(settings.defaultRoomPrice) || 89;
+    const breakfastPricePerPerson = parseFloat(settings.defaultBreakfastPrice) || 8;
+    const touristTaxRate = parseFloat(settings.touristTaxRate) || 0.99;
+
+    const checkInStr = document.getElementById('cal-modal-checkin') ? document.getElementById('cal-modal-checkin').value : '';
+    const checkOutStr = document.getElementById('cal-modal-checkout') ? document.getElementById('cal-modal-checkout').value : '';
+    const priceInputEl = document.getElementById('cal-modal-price');
+    const roomPriceInput = priceInputEl ? parseFloat(priceInputEl.value) : NaN;
+    const roomPricePerNight = isNaN(roomPriceInput) ? defaultRoomPrice : roomPriceInput;
+
+    const mealPlanEl = document.getElementById('cal-modal-mealplan');
+    const mealPlan = mealPlanEl ? mealPlanEl.value : 'NE';
+    const guestsEl = document.getElementById('cal-modal-guests');
+    const guestsCount = guestsEl ? (parseInt(guestsEl.value, 10) || 2) : 2;
+
+    let numNights = 1;
+    if (checkInStr && checkOutStr) {
+      const dIn = this.parseDate(checkInStr);
+      const dOut = this.parseDate(checkOutStr);
+      const diffTime = dOut.getTime() - dIn.getTime();
+      if (diffTime > 0) {
+        numNights = Math.max(1, Math.round(diffTime / (1000 * 60 * 60 * 24)));
+      }
+    }
+
+    const roomTotal = roomPricePerNight * numNights;
+    const taxTotal = guestsCount * touristTaxRate * numNights;
+    const breakfastTotal = (mealPlan === 'AD') ? (guestsCount * breakfastPricePerPerson * numNights) : 0;
+    const finalTotal = roomTotal + taxTotal + breakfastTotal;
+
+    this.currentCalculatedTotal = finalTotal;
+
+    const formulaEl = document.getElementById('cal-modal-formula-box');
+    if (formulaEl) {
+      const nightsText = numNights === 1 ? '1 nit' : `${numNights} nits`;
+      const taxDetailText = `${guestsCount} ${guestsCount === 1 ? 'persona' : 'persones'} × ${nightsText} × ${touristTaxRate.toFixed(2)} €`;
+      const breakfastDetailText = (mealPlan === 'AD')
+        ? `<span>+ <strong>${breakfastTotal.toFixed(2)} €</strong> Esmorzar (${guestsCount} pers. × ${numNights} ds. × ${breakfastPricePerPerson} €)</span>`
+        : '';
+
+      formulaEl.innerHTML = `
+        <div class="formula-title">Fórmula visual de càlcul:</div>
+        <div class="formula-detail">
+          <span><strong>${roomTotal.toFixed(2)} €</strong> Habitació (${roomPricePerNight} € × ${nightsText})</span>
+          ${breakfastDetailText}
+          <span>+ <strong>${taxTotal.toFixed(2)} €</strong> Taxa turística (${taxDetailText})</span>
+        </div>
+        <div class="formula-total-highlight">
+          <span>Preu Total a cobrar:</span>
+          <span class="formula-total-amount">${finalTotal.toFixed(2)} €</span>
+        </div>
+      `;
+    }
+  },
+
+  toggleModalCardSection() {
+    const section = document.getElementById('cal-modal-card-details');
+    const icon = document.getElementById('card-toggle-icon');
+    if (!section) return;
+    const isHidden = section.style.display === 'none';
+    section.style.display = isHidden ? 'block' : 'none';
+    if (icon) {
+      icon.textContent = isHidden ? '💳 ▴' : '💳 ▾';
+    }
+  },
+
+  toggleCardVisibility(bookingId) {
+    const contentEl = document.getElementById(`card-content-${bookingId}`);
+    const btnEl = document.getElementById(`btn-card-toggle-${bookingId}`);
+    if (!contentEl) return;
+    const isHidden = contentEl.style.display === 'none';
+    contentEl.style.display = isHidden ? 'flex' : 'none';
+    if (btnEl) {
+      btnEl.textContent = isHidden ? '🔒 Ocultar dades' : '👁️ Mostrar dades';
+    }
+  },
+
+  formatCardNumber(input) {
+    if (!input) return;
+    let val = input.value.replace(/\D/g, '').substring(0, 16);
+    val = val.replace(/(.{4})/g, '$1 ').trim();
+    input.value = val;
+  },
+
+  formatExpiry(input) {
+    if (!input) return;
+    let val = input.value.replace(/\D/g, '').substring(0, 4);
+    if (val.length >= 3) {
+      val = val.substring(0, 2) + '/' + val.substring(2);
+    }
+    input.value = val;
+  },
+
   // Modal de creació / edició
   openNewBooking(roomId, dateStr) {
     this.currentEditBookingId = null;
     const modal = document.getElementById('calendar-booking-modal');
     if (!modal) return;
+
+    const settings = (window.Store && Store.get('settings')) || {};
+    const defaultPrice = settings.defaultRoomPrice || 89;
 
     document.getElementById('cal-modal-title').textContent = 'Nova Reserva';
     document.getElementById('cal-modal-id').value = '';
@@ -466,13 +609,28 @@ const CalendarModule = {
     
     document.getElementById('cal-modal-checkin').value = inDate;
     document.getElementById('cal-modal-checkout').value = this.formatDateIso(nextDate);
-    document.getElementById('cal-modal-price').value = '';
+    document.getElementById('cal-modal-price').value = defaultPrice;
     document.getElementById('cal-modal-notes').value = '';
-    
+
+    // Dades de targeta buides i plegades
+    document.getElementById('cal-card-number').value = '';
+    document.getElementById('cal-card-expiry').value = '';
+    document.getElementById('cal-card-cvv').value = '';
+    document.getElementById('cal-card-holder').value = '';
+    const cardDetails = document.getElementById('cal-modal-card-details');
+    if (cardDetails) cardDetails.style.display = 'none';
+    const cardIcon = document.getElementById('card-toggle-icon');
+    if (cardIcon) cardIcon.textContent = '💳 ▾';
+
+    // Defaults: NE, 2 persones
+    this.setMealPlan('NE');
+    this.setGuestsCount(2);
+
     const delBtn = document.getElementById('cal-modal-delete-btn');
     if (delBtn) delBtn.style.display = 'none';
 
     modal.style.display = 'flex';
+    this.recalculatePriceFormula();
   },
 
   openEditBooking(bookingId) {
@@ -500,13 +658,32 @@ const CalendarModule = {
     document.getElementById('cal-modal-phone').value = b.guestPhone || '';
     document.getElementById('cal-modal-checkin').value = b.checkIn || '';
     document.getElementById('cal-modal-checkout').value = b.checkOut || '';
-    document.getElementById('cal-modal-price').value = b.price || '';
+    document.getElementById('cal-modal-price').value = b.price || 89;
     document.getElementById('cal-modal-notes').value = b.notes || '';
+
+    // Dades de targeta si en té
+    document.getElementById('cal-card-number').value = b.card ? (b.card.number || '') : '';
+    document.getElementById('cal-card-expiry').value = b.card ? (b.card.expiry || '') : '';
+    document.getElementById('cal-card-cvv').value = b.card ? (b.card.cvv || '') : '';
+    document.getElementById('cal-card-holder').value = b.card ? (b.card.holder || '') : '';
+
+    const cardDetails = document.getElementById('cal-modal-card-details');
+    if (cardDetails) {
+      // Plegat per defecte per seguretat
+      cardDetails.style.display = 'none';
+    }
+    const cardIcon = document.getElementById('card-toggle-icon');
+    if (cardIcon) cardIcon.textContent = '💳 ▾';
+
+    // Règim i persones
+    this.setMealPlan(b.mealPlan || 'NE');
+    this.setGuestsCount(b.guestsCount || 2);
 
     const delBtn = document.getElementById('cal-modal-delete-btn');
     if (delBtn) delBtn.style.display = 'inline-block';
 
     modal.style.display = 'flex';
+    this.recalculatePriceFormula();
   },
 
   closeModal() {
@@ -524,8 +701,25 @@ const CalendarModule = {
     const guestPhone = document.getElementById('cal-modal-phone').value.trim();
     const checkIn = document.getElementById('cal-modal-checkin').value;
     const checkOut = document.getElementById('cal-modal-checkout').value;
-    const price = parseFloat(document.getElementById('cal-modal-price').value) || 0;
+    const price = parseFloat(document.getElementById('cal-modal-price').value) || 89;
     const notes = document.getElementById('cal-modal-notes').value.trim();
+
+    const mealPlanEl = document.getElementById('cal-modal-mealplan');
+    const mealPlan = mealPlanEl ? mealPlanEl.value : 'NE';
+    const guestsEl = document.getElementById('cal-modal-guests');
+    const guestsCount = guestsEl ? (parseInt(guestsEl.value, 10) || 2) : 2;
+
+    const cardNumber = document.getElementById('cal-card-number') ? document.getElementById('cal-card-number').value.trim() : '';
+    const cardExpiry = document.getElementById('cal-card-expiry') ? document.getElementById('cal-card-expiry').value.trim() : '';
+    const cardCvv = document.getElementById('cal-card-cvv') ? document.getElementById('cal-card-cvv').value.trim() : '';
+    const cardHolder = document.getElementById('cal-card-holder') ? document.getElementById('cal-card-holder').value.trim() : '';
+
+    const card = (cardNumber || cardHolder) ? {
+      number: cardNumber,
+      expiry: cardExpiry,
+      cvv: cardCvv,
+      holder: cardHolder
+    } : null;
 
     if (!guestName || !checkIn || !checkOut) {
       alert('Si us plau, omple el nom de l\'hoste i les dates d\'entrada i sortida.');
@@ -537,6 +731,7 @@ const CalendarModule = {
       return;
     }
 
+    const totalPrice = this.currentCalculatedTotal || price;
     const bookings = (window.Store && Store.get('bookings')) || [];
 
     if (id) {
@@ -551,6 +746,10 @@ const CalendarModule = {
           checkIn,
           checkOut,
           price,
+          totalPrice,
+          mealPlan,
+          guestsCount,
+          card: card || bookings[idx].card || null,
           notes,
           status: 'confirmada'
         };
@@ -565,6 +764,10 @@ const CalendarModule = {
         checkIn,
         checkOut,
         price,
+        totalPrice,
+        mealPlan,
+        guestsCount,
+        card,
         notes,
         status: 'confirmada',
         createdAt: new Date().toISOString()

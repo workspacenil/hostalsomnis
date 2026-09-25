@@ -42,13 +42,33 @@ const Store = {
         hostalName: 'Hostal Somnis',
         city: 'Súria',
         postalCode: '08260',
+        defaultRoomPrice: 89,
+        defaultBreakfastPrice: 8,
+        touristTaxRate: 0.99,
         rooms: this.DEFAULT_ROOMS,
         icloud: { enabled: false }
       });
-    } else if (!currentSettings.rooms || currentSettings.rooms.length !== 6 || (currentSettings.rooms[0] && currentSettings.rooms[0].name && currentSettings.rooms[0].name.includes('(Planta')) || (currentSettings.rooms[0] && currentSettings.rooms[0].id === 'hab-1')) {
-      // Actualitzar automàticament a les 6 habitacions reals
-      currentSettings.rooms = this.DEFAULT_ROOMS;
-      this.set('settings', currentSettings);
+    } else {
+      let updated = false;
+      if (!currentSettings.rooms || currentSettings.rooms.length !== 6 || (currentSettings.rooms[0] && currentSettings.rooms[0].name && currentSettings.rooms[0].name.includes('(Planta')) || (currentSettings.rooms[0] && currentSettings.rooms[0].id === 'hab-1')) {
+        currentSettings.rooms = this.DEFAULT_ROOMS;
+        updated = true;
+      }
+      if (!currentSettings.defaultRoomPrice) {
+        currentSettings.defaultRoomPrice = 89;
+        updated = true;
+      }
+      if (!currentSettings.defaultBreakfastPrice) {
+        currentSettings.defaultBreakfastPrice = 8;
+        updated = true;
+      }
+      if (!currentSettings.touristTaxRate) {
+        currentSettings.touristTaxRate = 0.99;
+        updated = true;
+      }
+      if (updated) {
+        this.set('settings', currentSettings);
+      }
     }
 
     if (!this.get('bookings')) {

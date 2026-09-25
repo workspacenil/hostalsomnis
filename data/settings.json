@@ -8,6 +8,9 @@
   "province": "Barcelona",
   "phone": "+34 600 000 000",
   "email": "info@hostalsomnis.cat",
+  "defaultRoomPrice": 89,
+  "defaultBreakfastPrice": 8,
+  "touristTaxRate": 0.99,
   "rooms": [
     {
       "id": "101",
