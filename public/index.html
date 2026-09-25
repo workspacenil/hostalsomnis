@@ -12,7 +12,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
   <meta name="apple-mobile-web-app-title" content="Hostal Somnis">
   <meta name="theme-color" content="#000000">
-  <link rel="stylesheet" href="css/styles.css?v=40">
+  <link rel="stylesheet" href="css/styles.css?v=41">
 </head>
 <body>
 
@@ -711,14 +711,35 @@
           </div>
         </div>
 
+        <!-- DADES DE L'HOSTE PER SEPARAT -->
         <div class="form-group">
           <label class="form-label">Nom i cognoms de l'hoste *</label>
           <input type="text" id="cal-modal-guest" class="form-input" placeholder="Ex: Maria Rovira" required>
         </div>
 
         <div class="form-group">
-          <label class="form-label">Telèfon de contacte</label>
-          <input type="tel" id="cal-modal-phone" class="form-input" placeholder="+34 600 000 000">
+          <label class="form-label">DNI / NIE / Passaport</label>
+          <input type="text" id="cal-modal-dni" class="form-input" placeholder="12345678Z">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Telèfon mòbil</label>
+          <input type="tel" id="cal-modal-phone" class="form-input" placeholder="600 000 000">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Correu electrònic</label>
+          <input type="email" id="cal-modal-email" class="form-input" placeholder="client@exemple.com">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Adreça completa</label>
+          <input type="text" id="cal-modal-address" class="form-input" placeholder="Carrer, Ciutat, CP">
+        </div>
+
+        <!-- BOTÓ COPIAR MAIL DE CONFIRMACIÓ AL MODAL -->
+        <div>
+          <button type="button" class="btn btn-copy-mail" id="cal-btn-copy-mail" onclick="CalendarModule.copyConfirmationMail()" style="background: #EFF6FF; color: #1D4ED8; border: 1px solid #BFDBFE; font-weight: 600; padding: 8px 14px; border-radius: 6px; cursor: pointer; display: flex; align-items: center; gap: 6px; margin-top: 8px;">📋 Copiar Mail de Confirmació</button>
         </div>
 
         <!-- NOMBRE DE PERSONES (1 O 2 PERSONES) -->
@@ -786,24 +807,25 @@
             </div>
           </div>
         </div>
-
-        <div class="modal-footer-btns">
-          <button type="button" id="cal-modal-delete-btn" class="btn btn-outline" style="color: #DC2626; border-color: #FCA5A5; background: #FEF2F2;" onclick="CalendarModule.deleteCurrentBooking()">Eliminar</button>
-          <div style="display: flex; gap: 10px; margin-left: auto;">
-            <button type="button" class="btn btn-outline" onclick="CalendarModule.closeModal()">Desfer</button>
-            <button type="submit" class="btn btn-primary" id="cal-modal-save-btn" style="font-weight: 600; min-width: 100px;">Guardar</button>
-          </div>
-        </div>
       </form>
+
+      <!-- PEU DE FINESTRA FIX -->
+      <div class="modal-footer-bar">
+        <button type="button" id="cal-modal-delete-btn" class="btn btn-outline" style="color: #DC2626; border-color: #FCA5A5; background: #FEF2F2;" onclick="CalendarModule.deleteCurrentBooking()">Eliminar</button>
+        <div style="display: flex; gap: 10px; margin-left: auto;">
+          <button type="button" class="btn btn-outline" id="cal-modal-cancel-btn" onclick="CalendarModule.closeModal()" style="font-weight: 600; padding: 10px 18px;">Desfer</button>
+          <button type="button" class="btn btn-primary" id="cal-modal-save-btn" onclick="CalendarModule.submitModalForm()" style="font-weight: 700; padding: 10px 22px; min-width: 110px; background: #059669; border-color: #059669;">Guardar</button>
+        </div>
+      </div>
     </div>
   </div>
 
-  <script src="js/store.js?v=40"></script>
-  <script src="js/calendar.js?v=40"></script>
-  <script src="js/app.js?v=40"></script>
-  <script src="js/mails.js?v=40"></script>
-  <script src="js/checkin.js?v=40"></script>
-  <script src="js/codes.js?v=40"></script>
-  <script src="js/settings.js?v=40"></script>
+  <script src="js/store.js?v=41"></script>
+  <script src="js/calendar.js?v=41"></script>
+  <script src="js/app.js?v=41"></script>
+  <script src="js/mails.js?v=41"></script>
+  <script src="js/checkin.js?v=41"></script>
+  <script src="js/codes.js?v=41"></script>
+  <script src="js/settings.js?v=41"></script>
 </body>
 </html>
