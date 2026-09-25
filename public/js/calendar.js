@@ -317,29 +317,6 @@ const CalendarModule = {
             badgesHtml += `<span class="action-tag out">📤 Sortida prèvia: ${status.checkOutBooking.guestName || 'Hoste'}</span>`;
           }
 
-          let cardPrivacyHtml = '';
-          const cardData = b.creditCard || b.card;
-          if (cardData && (cardData.number || cardData.holder)) {
-            const num = cardData.number || '';
-            const exp = cardData.exp || cardData.expiry || '';
-            const cvv = cardData.cvv || '';
-            const holder = cardData.holder || '';
-            const safeId = String(b.id).replace(/[^a-zA-Z0-9_-]/g, '');
-            cardPrivacyHtml = `
-              <div class="room-card-privacy-box">
-                <div class="card-privacy-header">
-                  <span>💳 Dades de Targeta</span>
-                  <button type="button" class="btn-privacy-toggle" onclick="CalendarModule.toggleCardVisibility('${safeId}')" id="btn-card-toggle-${safeId}">👁️ Mostrar Targeta</button>
-                </div>
-                <div class="card-privacy-content" id="card-content-${safeId}" style="display: none;">
-                  ${num ? `<div><strong>Número:</strong> <span class="card-mono">${num}</span></div>` : ''}
-                  ${(exp || cvv) ? `<div><strong>Caducitat:</strong> ${exp || '-'} &nbsp;|&nbsp; <strong>CVV:</strong> ${cvv || '-'}</div>` : ''}
-                  ${holder ? `<div><strong>Titular:</strong> ${holder}</div>` : ''}
-                </div>
-              </div>
-            `;
-          }
-
           roomsCardsHtml += `
             <div class="room-status-card occupied">
               <div class="room-card-top">
@@ -390,7 +367,6 @@ const CalendarModule = {
                   </div>
                 ` : ''}
                 <button type="button" class="btn btn-mail-confirm" id="cal-btn-copy-mail-${b.id}" onclick="CalendarModule.copyConfirmationMail('${b.id}', this)" style="margin-top: 8px;">📧 Copiar Mail de Confirmació</button>
-                ${cardPrivacyHtml}
               </div>
 
               <div class="room-card-footer">
@@ -511,7 +487,7 @@ const CalendarModule = {
     `;
   },
 
-  // Mètodes de gestió de règim, persones, fórmula i targeta
+  // Mètodes de gestió de règim, persones i fórmula
   setMealPlan(plan) {
     const input = document.getElementById('cal-modal-mealplan');
     if (input) input.value = plan;
@@ -592,44 +568,6 @@ const CalendarModule = {
     }
   },
 
-  toggleModalCardSection() {
-    const section = document.getElementById('cal-modal-card-details');
-    const icon = document.getElementById('card-toggle-icon');
-    if (!section) return;
-    const isHidden = section.style.display === 'none';
-    section.style.display = isHidden ? 'block' : 'none';
-    if (icon) {
-      icon.textContent = isHidden ? '▼' : '▶';
-    }
-  },
-
-  toggleCardVisibility(bookingId) {
-    const contentEl = document.getElementById(`card-content-${bookingId}`);
-    const btnEl = document.getElementById(`btn-card-toggle-${bookingId}`);
-    if (!contentEl) return;
-    const isHidden = contentEl.style.display === 'none';
-    contentEl.style.display = isHidden ? 'block' : 'none';
-    if (btnEl) {
-      btnEl.textContent = isHidden ? '🙈 Ocultar Targeta' : '👁️ Mostrar Targeta';
-    }
-  },
-
-  formatCardNumber(input) {
-    if (!input) return;
-    let val = input.value.replace(/\D/g, '').substring(0, 16);
-    val = val.replace(/(.{4})/g, '$1 ').trim();
-    input.value = val;
-  },
-
-  formatExpiry(input) {
-    if (!input) return;
-    let val = input.value.replace(/\D/g, '').substring(0, 4);
-    if (val.length >= 3) {
-      val = val.substring(0, 2) + '/' + val.substring(2);
-    }
-    input.value = val;
-  },
-
   // Modal de creació / edició
   openNewBooking(roomId, dateStr) {
     this.currentEditBookingId = null;
@@ -657,16 +595,6 @@ const CalendarModule = {
     document.getElementById('cal-modal-checkout').value = this.formatDateIso(nextDate);
     document.getElementById('cal-modal-price').value = defaultPrice;
     document.getElementById('cal-modal-notes').value = '';
-
-    // Dades de targeta buides i plegades per defecte
-    document.getElementById('cal-card-number').value = '';
-    document.getElementById('cal-card-expiry').value = '';
-    document.getElementById('cal-card-cvv').value = '';
-    document.getElementById('cal-card-holder').value = '';
-    const cardDetails = document.getElementById('cal-modal-card-details');
-    if (cardDetails) cardDetails.style.display = 'none';
-    const cardIcon = document.getElementById('card-toggle-icon');
-    if (cardIcon) cardIcon.textContent = '▶';
 
     // Defaults: SEMPRE 'NE', 2 persones per defecte
     this.setMealPlan('NE');
@@ -710,21 +638,6 @@ const CalendarModule = {
     document.getElementById('cal-modal-price').value = b.price || 89;
     document.getElementById('cal-modal-notes').value = b.notes || '';
 
-    // Dades de targeta si en té (llegir creditCard o card)
-    const cardData = b.creditCard || b.card || {};
-    document.getElementById('cal-card-number').value = cardData.number || '';
-    document.getElementById('cal-card-expiry').value = cardData.exp || cardData.expiry || '';
-    document.getElementById('cal-card-cvv').value = cardData.cvv || '';
-    document.getElementById('cal-card-holder').value = cardData.holder || '';
-
-    const cardDetails = document.getElementById('cal-modal-card-details');
-    if (cardDetails) {
-      // Plegat per defecte per seguretat
-      cardDetails.style.display = 'none';
-    }
-    const cardIcon = document.getElementById('card-toggle-icon');
-    if (cardIcon) cardIcon.textContent = '▶';
-
     // Règim i persones
     this.setMealPlan(b.mealPlan || 'NE');
     this.setGuestsCount(b.guestsCount || 2);
@@ -762,18 +675,6 @@ const CalendarModule = {
     const guestsEl = document.getElementById('cal-modal-guests');
     const guestsCount = guestsEl ? (parseInt(guestsEl.value, 10) || 2) : 2;
 
-    const cardNumber = document.getElementById('cal-card-number') ? document.getElementById('cal-card-number').value.trim() : '';
-    const cardExpiry = document.getElementById('cal-card-expiry') ? document.getElementById('cal-card-expiry').value.trim() : '';
-    const cardCvv = document.getElementById('cal-card-cvv') ? document.getElementById('cal-card-cvv').value.trim() : '';
-    const cardHolder = document.getElementById('cal-card-holder') ? document.getElementById('cal-card-holder').value.trim() : '';
-
-    const creditCard = (cardNumber || cardHolder || cardExpiry || cardCvv) ? {
-      number: cardNumber,
-      exp: cardExpiry,
-      cvv: cardCvv,
-      holder: cardHolder
-    } : null;
-
     if (!guestName || !checkIn || !checkOut) {
       alert('Si us plau, omple el nom de l\'hoste i les dates d\'entrada i sortida.');
       return;
@@ -810,8 +711,6 @@ const CalendarModule = {
           roomPrice: price,
           mealPlan,
           guestsCount,
-          creditCard: creditCard || bookings[idx].creditCard || bookings[idx].card || null,
-          card: creditCard || bookings[idx].creditCard || bookings[idx].card || null,
           notes,
           status: 'confirmada'
         };
@@ -837,8 +736,6 @@ const CalendarModule = {
         roomPrice: price,
         mealPlan,
         guestsCount,
-        creditCard,
-        card: creditCard,
         notes,
         status: 'confirmada',
         createdAt: new Date().toISOString()
