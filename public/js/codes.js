@@ -265,6 +265,78 @@ Hostal Somnis`;
       document.body.removeChild(tempTextArea);
       alert('¡Mensaje copiado al portapapeles!');
     }
+  },
+
+  loadFromBooking(bookingData) {
+    if (!bookingData) return;
+
+    // 1. Netejar el contenidor d'habitacions
+    const container = document.getElementById('habitaciones-container');
+    if (container) {
+      container.innerHTML = '';
+
+      // Determinar habitació exacta de la reserva (ex: '302' o '101')
+      const rawRoom = String(bookingData.room || bookingData.roomId || '101');
+      let targetRoom = '101';
+      for (const r of ['101', '102', '201', '202', '301', '302']) {
+        if (rawRoom.includes(r)) {
+          targetRoom = r;
+          break;
+        }
+      }
+
+      const row = document.createElement('div');
+      row.className = 'habitacion-row';
+      row.style.cssText = 'display: flex; gap: 8px; align-items: center;';
+      row.innerHTML = `
+        <select class="form-select habitacion-select" style="flex: 1;">
+          <option value="101" ${targetRoom === '101' ? 'selected' : ''}>Habitació 101</option>
+          <option value="102" ${targetRoom === '102' ? 'selected' : ''}>Habitació 102</option>
+          <option value="201" ${targetRoom === '201' ? 'selected' : ''}>Habitació 201</option>
+          <option value="202" ${targetRoom === '202' ? 'selected' : ''}>Habitació 202</option>
+          <option value="301" ${targetRoom === '301' ? 'selected' : ''}>Habitació 301</option>
+          <option value="302" ${targetRoom === '302' ? 'selected' : ''}>Habitació 302</option>
+        </select>
+      `;
+      container.appendChild(row);
+    }
+
+    // 2. Gestionar l'esmorzar
+    const esmorzarCb = document.getElementById('codigos-esmorzar');
+    if (esmorzarCb) {
+      esmorzarCb.checked = true;
+    }
+    const esmorzarOptions = document.getElementById('esmorzar-options');
+    if (esmorzarOptions) {
+      esmorzarOptions.style.display = 'block';
+    }
+
+    const radioRecordar = document.getElementById('esmorzar-recordar');
+    const radioOfrecer = document.getElementById('esmorzar-ofrecer');
+
+    if (bookingData.mealPlan === 'AD') {
+      if (radioRecordar) radioRecordar.checked = true;
+    } else {
+      if (radioOfrecer) radioOfrecer.checked = true;
+      const settings = (window.Store && Store.get('settings')) || {};
+      const defaultBreakfastPrice = settings.defaultBreakfastPrice || 8;
+      const precioInput = document.getElementById('esmorzar-precio');
+      if (precioInput) {
+        precioInput.value = defaultBreakfastPrice;
+      }
+    }
+
+    // 3. Posar el focus automàticament a #codigos-porta
+    const portaInput = document.getElementById('codigos-porta');
+    if (portaInput) {
+      setTimeout(() => {
+        portaInput.focus();
+        portaInput.select();
+      }, 100);
+    }
+
+    // 4. Executar generateText() perquè el missatge es generi a l'instant
+    this.generateText();
   }
 };
 
