@@ -1128,5 +1128,193 @@ body {
   border-top: 1px solid var(--border-color);
 }
 
+/* ==========================================================================
+   MILLORES CALENDARI: RÈGIM AD/NE, SELECTOR PILLS, FÓRMULA I TARGETA
+   ========================================================================== */
+/* BADGE RÈGIM (AD / NE) */
+.badge-regim {
+  font-size: 11px;
+  font-weight: 800;
+  padding: 2px 7px;
+  border-radius: 4px;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  display: inline-flex;
+  align-items: center;
+}
+
+.badge-regim.ad {
+  background: #FEF3C7;
+  color: #B45309;
+  border: 1px solid #FCD34D;
+}
+
+.badge-regim.ne {
+  background: #F3F4F6;
+  color: #4B5563;
+  border: 1px solid #E5E7EB;
+}
+
+/* SELECTOR PILLS */
+.pill-selector-group {
+  display: flex;
+  gap: 8px;
+  width: 100%;
+}
+
+.pill-btn {
+  flex: 1;
+  padding: 8px 12px;
+  border: 1px solid var(--border-color);
+  background: var(--bg-element);
+  color: var(--text-main);
+  border-radius: var(--radius-md);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  text-align: center;
+}
+
+.pill-btn:hover {
+  background: var(--bg-hover);
+}
+
+.pill-btn.active {
+  background: #111827;
+  color: #FFFFFF;
+  border-color: #111827;
+  font-weight: 600;
+}
+
+/* CAIXA DE FÓRMULA DE PREUS I TAXA */
+.price-formula-box {
+  background: #F8FAFC;
+  border: 1px solid #E2E8F0;
+  border-radius: var(--radius-md);
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.formula-title {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #64748B;
+  letter-spacing: 0.5px;
+}
+
+.formula-detail {
+  font-size: 13px;
+  color: #334155;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.formula-total-highlight {
+  margin-top: 4px;
+  padding-top: 8px;
+  border-top: 1px dashed #CBD5E1;
+  font-size: 14px;
+  font-weight: 700;
+  color: #0F172A;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.formula-total-amount {
+  font-size: 18px;
+  font-weight: 800;
+  color: #059669;
+}
+
+/* BLOC PLEGABLE DE TARGETA DE CRÈDIT */
+.card-collapsible-section {
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  background: #FAFAFA;
+  overflow: hidden;
+}
+
+.card-toggle-btn {
+  width: 100%;
+  background: transparent;
+  border: none;
+  padding: 10px 14px;
+  text-align: left;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-main);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  transition: background 0.15s ease;
+}
+
+.card-toggle-btn:hover {
+  background: var(--bg-hover);
+}
+
+.card-collapsible-content {
+  padding: 0 14px 14px 14px;
+  background: #FFFFFF;
+  border-top: 1px solid var(--border-color);
+}
+
+/* CAIXA PRIVADESA TARGETA EN TARGETA HABITACIÓ */
+.room-card-privacy-box {
+  background: #F8FAFC;
+  border: 1px solid #E2E8F0;
+  border-radius: 6px;
+  padding: 8px 10px;
+  margin-top: 6px;
+  font-size: 12px;
+}
+
+.card-privacy-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-weight: 600;
+  color: #334155;
+}
+
+.btn-privacy-toggle {
+  background: #FFFFFF;
+  border: 1px solid #CBD5E1;
+  border-radius: 4px;
+  padding: 2px 8px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #2563EB;
+  cursor: pointer;
+}
+
+.btn-privacy-toggle:hover {
+  background: #EFF6FF;
+}
+
+.card-privacy-content {
+  margin-top: 8px;
+  padding-top: 6px;
+  border-top: 1px dashed #E2E8F0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  color: #1E293B;
+}
+
+.card-mono {
+  font-family: monospace;
+  font-weight: 600;
+  letter-spacing: 1px;
+}
+
 
 

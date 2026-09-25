@@ -603,6 +603,20 @@
                   <label class="form-label">Ubicación</label>
                   <input type="text" id="settings-city" class="form-input" value="Súria">
                 </div>
+                <div class="form-row" style="margin-top: 14px;">
+                  <div class="form-group">
+                    <label class="form-label">Preu per defecte de l'habitació (€)</label>
+                    <input type="number" id="settings-default-room-price" class="form-input" step="any" inputmode="decimal" value="89">
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Preu per defecte de l'esmorzar per persona (€)</label>
+                    <input type="number" id="settings-default-breakfast-price" class="form-input" step="any" inputmode="decimal" value="8">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Taxa turística per persona (€)</label>
+                  <input type="number" id="settings-tourist-tax" class="form-input" step="0.01" inputmode="decimal" value="0.99">
+                </div>
                 <div style="margin-top: 16px;">
                   <button type="submit" class="btn btn-primary">Guardar Ajustes</button>
                 </div>
@@ -669,6 +683,8 @@
       </div>
       <form id="form-cal-booking" onsubmit="CalendarModule.saveModalBooking(event)" class="modal-body-form">
         <input type="hidden" id="cal-modal-id">
+        <input type="hidden" id="cal-modal-mealplan" value="NE">
+        <input type="hidden" id="cal-modal-guests" value="2">
 
         <div class="form-group">
           <label class="form-label">Habitació</label>
@@ -682,6 +698,19 @@
           </select>
         </div>
 
+        <!-- RÈGIM D'ESMORZAR (AD / NE) -->
+        <div class="form-group">
+          <label class="form-label">Règim d'Esmorzar</label>
+          <div class="pill-selector-group">
+            <button type="button" class="pill-btn active" id="btn-pill-ne" onclick="CalendarModule.setMealPlan('NE')">
+              NE - Sense esmorzar
+            </button>
+            <button type="button" class="pill-btn" id="btn-pill-ad" onclick="CalendarModule.setMealPlan('AD')">
+              AD - Amb esmorzar
+            </button>
+          </div>
+        </div>
+
         <div class="form-group">
           <label class="form-label">Nom i cognoms de l'hoste *</label>
           <input type="text" id="cal-modal-guest" class="form-input" placeholder="Ex: Maria Rovira" required>
@@ -692,25 +721,70 @@
           <input type="tel" id="cal-modal-phone" class="form-input" placeholder="+34 600 000 000">
         </div>
 
+        <!-- NOMBRE DE PERSONES (1 O 2 PERSONES) -->
+        <div class="form-group">
+          <label class="form-label">Nombre de Persones</label>
+          <div class="pill-selector-group">
+            <button type="button" class="pill-btn" id="btn-pill-pers-1" onclick="CalendarModule.setGuestsCount(1)">
+              1 Persona
+            </button>
+            <button type="button" class="pill-btn active" id="btn-pill-pers-2" onclick="CalendarModule.setGuestsCount(2)">
+              2 Persones
+            </button>
+          </div>
+        </div>
+
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
           <div class="form-group">
             <label class="form-label">Data entrada (Check-in) *</label>
-            <input type="date" id="cal-modal-checkin" class="form-input" required>
+            <input type="date" id="cal-modal-checkin" class="form-input" required onchange="CalendarModule.recalculatePriceFormula()">
           </div>
           <div class="form-group">
             <label class="form-label">Data sortida (Check-out) *</label>
-            <input type="date" id="cal-modal-checkout" class="form-input" required>
+            <input type="date" id="cal-modal-checkout" class="form-input" required onchange="CalendarModule.recalculatePriceFormula()">
           </div>
         </div>
 
         <div class="form-group">
-          <label class="form-label">Preu total (€)</label>
-          <input type="number" id="cal-modal-price" class="form-input" placeholder="0" min="0" step="any">
+          <label class="form-label">Preu Habitació (€ per nit)</label>
+          <input type="number" id="cal-modal-price" class="form-input" placeholder="89" value="89" min="0" step="any" inputmode="decimal" oninput="CalendarModule.recalculatePriceFormula()">
+        </div>
+
+        <!-- FÓRMULA VISUAL DE PREU, TAXA TURÍSTICA I TOTAL -->
+        <div class="price-formula-box" id="cal-modal-formula-box">
+          <!-- Es calcula en temps real -->
         </div>
 
         <div class="form-group">
           <label class="form-label">Observacions / Notes</label>
           <textarea id="cal-modal-notes" class="form-input" rows="2" placeholder="Arribada tard, bressol, etc."></textarea>
+        </div>
+
+        <!-- APARTAT TARGETA DE CRÈDIT (DESPLEGABLE / PLEGABLE) -->
+        <div class="card-collapsible-section">
+          <button type="button" class="card-toggle-btn" id="cal-card-toggle-btn" onclick="CalendarModule.toggleModalCardSection()">
+            <span id="card-toggle-icon">▶</span> 💳 Dades de Targeta de Crèdit (Opcional)
+          </button>
+          <div id="cal-modal-card-details" class="card-collapsible-content" style="display: none;">
+            <div class="form-group" style="margin-top: 10px;">
+              <label class="form-label">Número de Targeta</label>
+              <input type="text" id="cal-card-number" class="form-input" placeholder="•••• •••• •••• ••••" maxlength="19" autocomplete="off" oninput="CalendarModule.formatCardNumber(this)">
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px;">
+              <div class="form-group">
+                <label class="form-label">Caducitat (MM/AA)</label>
+                <input type="text" id="cal-card-expiry" class="form-input" placeholder="MM/AA" maxlength="5" autocomplete="off" oninput="CalendarModule.formatExpiry(this)">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Codi Seguretat (CVV)</label>
+                <input type="password" id="cal-card-cvv" class="form-input" placeholder="•••" maxlength="4" autocomplete="off">
+              </div>
+            </div>
+            <div class="form-group" style="margin-top: 10px;">
+              <label class="form-label">Titular de la Targeta</label>
+              <input type="text" id="cal-card-holder" class="form-input" placeholder="Nom que figura a la targeta" autocomplete="off">
+            </div>
+          </div>
         </div>
 
         <div class="modal-footer-btns">
@@ -724,9 +798,9 @@
     </div>
   </div>
 
-  <script src="js/store.js?v=37"></script>
-  <script src="js/calendar.js?v=37"></script>
-  <script src="js/app.js?v=37"></script>
+  <script src="js/store.js?v=38"></script>
+  <script src="js/calendar.js?v=38"></script>
+  <script src="js/app.js?v=38"></script>
   <script src="js/mails.js?v=37"></script>
   <script src="js/checkin.js?v=37"></script>
   <script src="js/codes.js?v=37"></script>
