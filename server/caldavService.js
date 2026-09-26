@@ -249,7 +249,7 @@ class CalDavService {
             icloudUid: uid,
             icloudUrl: href ? this.resolveUrl(calendarUrl, href) : '',
             guestName: guestName || summary,
-            room: room || 'Habitación 1 - Doble',
+            room: room || 'Habitació 101',
             checkIn: startDate,
             checkOut: endDate,
             summary: summary,
@@ -280,7 +280,7 @@ class CalDavService {
     const allText = `${summary} ${description}`;
     const roomMatch = allText.match(/(Habitación\s*\d+|Hab\s*\d+|Doble|Individual|Matrimonial)/i);
     if (roomMatch) return roomMatch[1];
-    return 'Habitación 1 - Doble';
+    return 'Habitació 101';
   }
 
   // 3. Crear o actualizar un evento en iCloud

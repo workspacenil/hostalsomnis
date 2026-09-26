@@ -117,8 +117,8 @@ const CalendarModule = {
     if (bRoom.includes(roomId)) return true;
 
     const legacyMap = {
-      'hab-1': '101', 'hab-2': '102', 'hab-3': '201', 'hab-4': '202',
-      'Habitación 1': '101', 'Habitación 2': '102', 'Habitación 3': '201', 'Habitación 4': '202'
+      'hab-1': '101', 'hab-2': '102', 'hab-3': '201', 'hab-4': '202', 'hab-5': '301', 'hab-6': '302',
+      'Habitación 1': '101', 'Habitación 2': '102', 'Habitación 3': '201', 'Habitación 4': '202', 'Habitación 5': '301', 'Habitación 6': '302'
     };
     for (const [legacy, mapped] of Object.entries(legacyMap)) {
       if (mapped === roomId && bRoom.includes(legacy)) return true;
@@ -477,10 +477,11 @@ const CalendarModule = {
           </div>
           <div class="detail-summary-line">
             ${daySummary.occupiedCount === 6 ? `
-              <span class="summary-pill ple day-occupancy-pill full-red">Ple</span>
+              <span class="summary-pill ple day-occupancy-pill full-red">Hostal Ple (6 de 6)</span>
             ` : `
-              <span class="summary-pill free">${daySummary.freeCount} Lliures</span>
-              <span class="summary-pill occupied">${daySummary.occupiedCount} Ocupades</span>
+              <span class="summary-pill total" style="font-weight: 700; background: #F1F5F9; color: #334155;">6 Habitacions</span>
+              <span class="summary-pill free">${daySummary.freeCount} Lliures de 6</span>
+              <span class="summary-pill occupied">${daySummary.occupiedCount} Ocupades de 6</span>
             `}
             ${daySummary.checkInCount > 0 ? `<span class="summary-pill total" style="background: #ECFDF5; color: #059669; font-weight: 600;">${daySummary.checkInCount} check-in</span>` : ''}
             ${daySummary.checkOutCount > 0 ? `<span class="summary-pill total" style="background: #FFFBEB; color: #B45309; font-weight: 600;">${daySummary.checkOutCount} check-out</span>` : ''}

@@ -39,7 +39,7 @@ router.post('/', async (req, res) => {
       guestName: guestName.trim(),
       guestPhone: guestPhone ? guestPhone.trim() : '',
       guestEmail: guestEmail ? guestEmail.trim() : '',
-      room: room || 'Habitación 1 - Doble',
+      room: room || 'Habitació 101',
       checkIn,
       checkOut,
       price: parseFloat(price) || 0,
