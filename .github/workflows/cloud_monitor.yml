@@ -1,0 +1,27 @@
+name: 24/7 Cloud Security & Health Monitor
+
+on:
+  schedule:
+    - cron: '*/20 * * * *'
+  workflow_dispatch:
+
+concurrency:
+  group: 'cloud-security-monitor'
+  cancel-in-progress: false
+
+jobs:
+  cloud_security_audit:
+    name: Cloud Security & Health Check
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Run Cloud Security & Health Check
+        run: node scripts/cloud_security_check.js
