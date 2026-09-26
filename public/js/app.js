@@ -121,8 +121,6 @@ const App = {
     // Refrescar contenido según vista
     if (viewName === 'mails' && window.MailsModule) {
       MailsModule.render();
-    } else if (viewName === 'finanzas' && window.FinancesModule) {
-      FinancesModule.render();
     } else if (viewName === 'codigos' && window.CodesModule) {
       CodesModule.render();
     } else if (viewName === 'checkin' && window.CheckinModule) {

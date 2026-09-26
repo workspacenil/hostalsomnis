@@ -18,7 +18,7 @@ const DEFAULT_SETTINGS = {
   hostalName: 'Hostal Somnis',
   legalName: 'Hostal Somnis Súria',
   nif: 'B-12345678',
-  address: 'Carrer Major, 12',
+  address: 'C. Diputació, 29',
   city: 'Súria',
   postalCode: '08260',
   province: 'Barcelona',

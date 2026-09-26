@@ -1,13 +1,19 @@
 {
-  "name": "Hostal Somnis - Gestión",
+  "name": "Hostal Somnis - Gestió de Reserves",
   "short_name": "Hostal Somnis",
-  "description": "Aplicación de gestión sencilla para Hostal Somnis en Súria.",
+  "description": "Aplicació de gestió de reserves per a Hostal Somnis a Súria (Barcelona).",
   "start_url": "./index.html",
   "display": "standalone",
-  "background_color": "#000000",
-  "theme_color": "#000000",
+  "background_color": "#FFFFFF",
+  "theme_color": "#111827",
   "orientation": "portrait",
   "icons": [
+    {
+      "src": "assets/app-icon.png?v=27",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
     {
       "src": "assets/app-icon.png?v=27",
       "sizes": "512x512",

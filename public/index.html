@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Hostal Somnis Workspace</title>
+  <title>Hostal Somnis — Gestió de Reserves</title>
+  <meta name="description" content="Aplicació de gestió interna per a Hostal Somnis a Súria (Barcelona). Calendari de reserves, check-in, codis d'accés i mails amb IA.">
   <link rel="manifest" href="manifest.json?v=31">
   <link rel="icon" type="image/png" href="assets/app-icon.png?v=31">
   <link rel="apple-touch-icon" href="assets/app-icon.png?v=31">
@@ -935,5 +936,19 @@ ALTER PUBLICATION supabase_realtime ADD TABLE bookings;</pre>
   <script src="js/checkin.js?v=51"></script>
   <script src="js/codes.js?v=51"></script>
   <script src="js/settings.js?v=51"></script>
+  <!-- Registre del Service Worker per a funcionament offline PWA -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', function() {
+        navigator.serviceWorker.register('./sw.js')
+          .then(function(reg) {
+            console.log('Service Worker registrat correctament:', reg.scope);
+          })
+          .catch(function(err) {
+            console.warn('Error en registrar Service Worker:', err);
+          });
+      });
+    }
+  </script>
 </body>
 </html>

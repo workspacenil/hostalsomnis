@@ -538,9 +538,9 @@ Moltes gràcies per la vostra confiança.
 Cordialment.
 
 Hostal Somnis
-C/Major, 47
-25580 Esterri d'Àneu
-Tel. 973 626 041 - 659 900 549
+C. Diputació, 29
+08260 Súria (Barcelona)
+Tel. 659 900 549
 www.hostalsomnis.com
 
 Condicions de pagament: 50% en el moment d’efectuar la reserva (pagament no reemborsable) i 50% 30 dies abans de la data d’arribada. A partir del [DATA_LIMIT_CANCEL_LACIO] reserva no reemborsable.`
@@ -579,9 +579,9 @@ Muchas gracias por vuestra confianza.
 Cordialmente.
 
 Hostal Somnis
-C/Major, 47
-25580 Esterri d'Àneu
-Tel. 973 626 041 - 659 900 549
+C. Diputació, 29
+08260 Súria (Barcelona)
+Tel. 659 900 549
 www.hostalsomnis.com
 
 Condiciones de pago: 50% en el momento de efectuar la reserva (pago no reembolsable) y 50% 30 días antes de la fecha de llegada. A partir del [FECHA_LIMITE_CANCELACION] reserva no reembolsable.`
@@ -620,9 +620,9 @@ Thank you very much for your trust.
 Kind regards.
 
 Hostal Somnis
-C/Major, 47
-25580 Esterri d'Àneu
-Tel. +34 973 626 041 - +34 659 900 549
+C. Diputació, 29
+08260 Súria (Barcelona)
+Tel. +34 659 900 549
 www.hostalsomnis.com
 
 Payment conditions: 50% upon booking (non-refundable deposit) and 50% 30 days before arrival. From [CANCELLATION_DEADLINE_DATE], the reservation is non-refundable.`
@@ -661,9 +661,9 @@ Merci beaucoup pour votre confiance.
 Cordialement.
 
 Hostal Somnis
-C/Major, 47
-25580 Esterri d'Àneu
-Tél. +34 973 626 041 - +34 659 900 549
+C. Diputació, 29
+08260 Súria (Barcelona)
+Tél. +34 659 900 549
 www.hostalsomnis.com
 
 Conditions de paiement : 50% au moment de la réservation (acompte non remboursable) et 50% 30 jours avant la date d'arrivée. À partir du [DATE_LIMITE_ANNULATION] réservation non remboursable.`
@@ -754,7 +754,7 @@ Conditions de paiement : 50% au moment de la réservation (acompte non remboursa
         dateInstruction = `Si a les notes de la reserva s'especifica una data no reemborsable o data d'arribada (habitualment 30 dies abans de la sortida/arribada), formata-la correctament en ${langName} i insereix-la. Si no se n'indica cap, deixa el format adequat segons la plantilla.`;
       }
 
-      const systemPrompt = `Ets l'assistent oficial d'Hostal Somnis a Esterri d'Àneu (Pallars Sobirà, Lleida).
+      const systemPrompt = `Ets l'assistent oficial d'Hostal Somnis a Súria (Barcelona, comarca del Bages).
 La teva missió és generar la confirmació oficial de reserva omplint exactament la plantilla oficial d'Hostal Somnis a partir de les notes o dades que ha escrit la propietària (la mare).
 
 REGLES CRÍTIQUES DE REDACCIÓ I TRADUCCIÓ:
