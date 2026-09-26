@@ -46,7 +46,12 @@ const Store = {
         defaultBreakfastPrice: 8,
         touristTaxRate: 0.99,
         rooms: this.DEFAULT_ROOMS,
-        icloud: { enabled: false }
+        icloud: { enabled: false },
+        supabase: {
+          url: 'https://jzehbzjcwbahldmattbt.supabase.co',
+          anonKey: 'sb_publishable_AKIgnEw9PT2Sknj4WnaqoQ_dC1z7zNv',
+          key: 'sb_publishable_AKIgnEw9PT2Sknj4WnaqoQ_dC1z7zNv'
+        }
       });
     } else {
       let updated = false;
@@ -64,6 +69,14 @@ const Store = {
       }
       if (!currentSettings.touristTaxRate) {
         currentSettings.touristTaxRate = 0.99;
+        updated = true;
+      }
+      if (!currentSettings.supabase || !currentSettings.supabase.url || !(currentSettings.supabase.anonKey || currentSettings.supabase.key)) {
+        currentSettings.supabase = {
+          url: 'https://jzehbzjcwbahldmattbt.supabase.co',
+          anonKey: 'sb_publishable_AKIgnEw9PT2Sknj4WnaqoQ_dC1z7zNv',
+          key: 'sb_publishable_AKIgnEw9PT2Sknj4WnaqoQ_dC1z7zNv'
+        };
         updated = true;
       }
       if (updated) {
