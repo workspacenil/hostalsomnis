@@ -38,6 +38,12 @@ async function runAudit() {
 
   let passed = true;
   const issues = [];
+  const vitals = {
+    web: { ok: false, detail: 'Sense resposta' },
+    supabase: { ok: false, detail: 'Sense connexió' },
+    tarifes: { ok: false, detail: 'No verificat' },
+    xifratge: { ok: false, detail: 'No verificat' }
+  };
 
   // -------------------------------------------------------------------------
   // CHECK A: Estat de la Web a GitHub Pages
@@ -62,10 +68,12 @@ async function runAudit() {
       throw new Error('La pàgina no conté el títol ni la referència a "Hostal Somnis".');
     }
 
+    vitals.web = { ok: true, detail: `HTTP ${res.status} (${duration}ms) - Pàgina i títol correctes` };
     console.log(`   ✅ Web accessible: HTTP ${res.status} en ${duration}ms.`);
     console.log(`   ✅ Títol i contingut essencial verificat (${webText.length} bytes rebuts).`);
   } catch (err) {
     passed = false;
+    vitals.web = { ok: false, detail: err.message };
     const msg = `Fallada a la web de GitHub Pages: ${err.message}`;
     issues.push(msg);
     console.error(`   ❌ ${msg}`);
@@ -99,10 +107,12 @@ async function runAudit() {
       throw new Error('La resposta de Supabase no és una llista vàlida.');
     }
 
+    vitals.supabase = { ok: true, detail: `HTTP ${res.status} (${duration}ms) - Taula 'bookings' activa (${bookingsList.length} registres)` };
     console.log(`   ✅ Supabase connectat correctament: HTTP 200 en ${duration}ms.`);
     console.log(`   ✅ Taula "bookings" activa amb ${bookingsList.length} registres trobats.`);
   } catch (err) {
     passed = false;
+    vitals.supabase = { ok: false, detail: err.message };
     const msg = `Fallada de connexió amb Supabase: ${err.message}`;
     issues.push(msg);
     console.error(`   ❌ ${msg}`);
@@ -155,9 +165,11 @@ async function runAudit() {
       throw new Error(`Incoherència de taxa turística: ${touristTax}€ en comptes de ${CONFIG.expectedPrices.touristTax}€.`);
     }
 
+    vitals.tarifes = { ok: true, detail: `Habitació: ${roomPrice}€ | Esmorzar: ${breakfastPrice}€ | Taxa: ${touristTax}€ (${duration}ms)` };
     console.log(`   ✅ Integritat dels ajustos i tarifes confirmada al 100% en ${duration}ms.`);
   } catch (err) {
     passed = false;
+    vitals.tarifes = { ok: false, detail: err.message };
     const msg = `Fallada en la verificació de paràmetres/preus: ${err.message}`;
     issues.push(msg);
     console.error(`   ❌ ${msg}`);
@@ -200,6 +212,7 @@ async function runAudit() {
       if (malformedCount > 0) {
         throw new Error(`S'han detectat ${malformedCount} registres amb format danyat o incomplet a la base de dades.`);
       }
+      vitals.xifratge = { ok: true, detail: `HTTPS/TLS forçat, 0 fuites de claus, ${records.length} registres vàlids` };
       console.log(`   ✅ Integritat estructural de les reserves verificada (${records.length} registres vàlids).`);
     } else {
       throw new Error(`No s'ha pogut verificar la integritat estructural de les reserves (HTTP ${bookingsRes.status}).`);
@@ -207,26 +220,61 @@ async function runAudit() {
 
   } catch (err) {
     passed = false;
+    vitals.xifratge = { ok: false, detail: err.message };
     const msg = `Fallada en l'auditoria de seguretat: ${err.message}`;
     issues.push(msg);
     console.error(`   ❌ ${msg}`);
   }
 
   // -------------------------------------------------------------------------
-  // RESUM FINAL I RESULTAT D'EXECUCIÓ
+  // INFORME EXECUTIU D'INTEL·LIGÈNCIA ARTIFICIAL (IA CLOUD MONITOR)
   // -------------------------------------------------------------------------
   const elapsedSec = ((Date.now() - startTime.getTime()) / 1000).toFixed(2);
   console.log('\n======================================================================');
+  console.log('🧠 INFORME EXECUTIU IA - ANÀLISI D\'ESTAT I SEGURETAT (HOSTAL SOMNIS)');
+  console.log('======================================================================');
+  console.log(`📡 1. Web (GitHub Pages):       ${vitals.web.ok ? '🟢 100% OPERATIU' : '🔴 ANOMALIA'} -> ${vitals.web.detail}`);
+  console.log(`🗄️  2. Supabase (Base de Dades): ${vitals.supabase.ok ? '🟢 100% OPERATIU' : '🔴 ANOMALIA'} -> ${vitals.supabase.detail}`);
+  console.log(`💶 3. Tarifes i Ajustos:        ${vitals.tarifes.ok ? '🟢 100% INTEGRITAT' : '🔴 ANOMALIA'} -> ${vitals.tarifes.detail}`);
+  console.log(`🔐 4. Xifratge i Seguretat:     ${vitals.xifratge.ok ? '🟢 100% BLINDAT' : '🔴 ANOMALIA'} -> ${vitals.xifratge.detail}`);
+  console.log('----------------------------------------------------------------------');
+
+  if (process.env.GITHUB_STEP_SUMMARY) {
+    try {
+      const fs = require('fs');
+      const summaryMd = `
+#### 🧠 Anàlisi d'Estat del Vigilant IA (4 Punts Vitals)
+| Punt Vital | Estat | Detall |
+|---|---|---|
+| 📡 Web | ${vitals.web.ok ? '🟢 OPERATIU' : '🔴 ANOMALIA'} | ${vitals.web.detail} |
+| 🗄️ Supabase | ${vitals.supabase.ok ? '🟢 OPERATIU' : '🔴 ANOMALIA'} | ${vitals.supabase.detail} |
+| 💶 Tarifes | ${vitals.tarifes.ok ? '🟢 VERIFICAT' : '🔴 ANOMALIA'} | ${vitals.tarifes.detail} |
+| 🔐 Xifratge | ${vitals.xifratge.ok ? '🟢 BLINDAT' : '🔴 ANOMALIA'} | ${vitals.xifratge.detail} |
+
+**Diagnòstic:** ${passed ? '✅ Tots els sistemes operen amb normalitat absoluta.' : '🚨 Anomalia detectada - S\'ha disparat alerta per correu.'}
+`;
+      fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, summaryMd, 'utf8');
+    } catch (e) {
+      // Ignorar errors en escriure el resum
+    }
+  }
+
   if (passed) {
+    console.log('📋 CONCLUSIÓ DE L\'ANÀLISI IA:');
+    console.log('   Tots els sistemes d\'Hostal Somnis funcionen amb absoluta normalitat.');
+    console.log('   Les 6 habitacions reals (101, 102, 201, 202, 301, 302) estan sincronitzades.');
+    console.log('   Cap incidència detectada. La mare pot continuar gestionant sense cap risc.');
+    console.log('======================================================================');
     console.log(`✨ AUDITORIA SUPERADA AMB ÈXIT (Temps total: ${elapsedSec}s)`);
-    console.log('🔒 El sistema funciona a la perfecció de forma 100% autònoma al núvol.');
+    console.log('🔒 Vigilant 24/7 actiu i vigilant de forma 100% autònoma al núvol.');
     console.log('======================================================================\n');
     process.exit(0);
   } else {
-    console.error(`❌ AUDITORIA FALLADA AMB ${issues.length} ERROR(S) (Temps total: ${elapsedSec}s):`);
-    issues.forEach((err, idx) => console.error(`   ${idx + 1}. ${err}`));
-    console.error('\n⚠️ Es genera un codi de sortida 1 perquè GitHub Actions alerti per correu.');
-    console.log('======================================================================\n');
+    console.error('🚨 DIAGNÒSTIC D\'ANOMALIA DETECTADA PER L\'IA:');
+    console.error('   S\'han identificat fallades o incoherències en els sistemes vitals:');
+    issues.forEach((err, idx) => console.error(`   [INCIDÈNCIA ${idx + 1}] ${err}`));
+    console.error('\n⚠️ Es genera un codi de sortida 1 per disparar l\'alerta immediata per correu electrònic a GitHub Actions.');
+    console.error('======================================================================\n');
     process.exit(1);
   }
 }

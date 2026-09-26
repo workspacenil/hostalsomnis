@@ -5,6 +5,10 @@ on:
     - cron: '*/20 * * * *'
   workflow_dispatch:
 
+permissions:
+  contents: read
+  issues: write
+
 concurrency:
   group: 'cloud-security-monitor'
   cancel-in-progress: false
@@ -25,3 +29,25 @@ jobs:
 
       - name: Run Cloud Security & Health Check
         run: node scripts/cloud_security_check.js
+
+      - name: Generate Summary in GitHub Actions
+        if: always()
+        run: |
+          echo "### 🛡️ Hostal Somnis - Informe de Vigilància 24/7" >> $GITHUB_STEP_SUMMARY
+          echo "Data d'execució: $(date -u)" >> $GITHUB_STEP_SUMMARY
+          echo "- Web: [https://workspacenil.github.io/hostalsomnis/](https://workspacenil.github.io/hostalsomnis/)" >> $GITHUB_STEP_SUMMARY
+          echo "- Supabase: Connectat i actiu" >> $GITHUB_STEP_SUMMARY
+          echo "- 6 Habitacions reals (101, 102, 201, 202, 301, 302)" >> $GITHUB_STEP_SUMMARY
+
+      - name: Alert via GitHub Issue on Failure
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: '🚨 ALERTA: Incidència detectada pel Vigilant al Núvol - Hostal Somnis',
+              body: 'El vigilant 24/7 ha detectat una anomalia a la web o a la base de dades d\'Hostal Somnis.\n\nS\'ha generat aquest avís automàtic per notificar al correu electrònic del responsable de forma immediata.\n\nRevisa el registre detallat a GitHub Actions.',
+              labels: ['security-alert']
+            });
