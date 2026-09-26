@@ -928,7 +928,7 @@ Moltes gràcies per la vostra confiança!
 
 Cordialment,
 Hostal Somnis
-C/ Major, 47 — Súria (Barcelona)
+C. Diputació, 29 — 08260 Súria (Barcelona)
 Tel. 659 900 549
 www.hostalsomnis.com`;
 

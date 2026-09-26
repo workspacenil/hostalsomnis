@@ -389,34 +389,6 @@ body {
   background-color: var(--bg-sidebar);
 }
 
-/* Formularios minimalistas */
-.form-group {
-  margin-bottom: 16px;
-}
-
-.form-label {
-  display: block;
-  font-size: 12px;
-  font-weight: 500;
-  color: var(--text-muted);
-  margin-bottom: 4px;
-}
-
-.form-input, .form-select {
-  width: 100%;
-  padding: 8px 12px;
-  font-size: 13px;
-  font-family: inherit;
-  border: 1px solid var(--border-dark);
-  border-radius: var(--radius-sm);
-  background-color: var(--bg-app);
-  color: var(--text-main);
-}
-
-.form-input:focus, .form-select:focus {
-  outline: none;
-  border-color: var(--text-main);
-}
 
 /* ==========================================================================
    ESTILOS MÓDULO MAILS & IA
