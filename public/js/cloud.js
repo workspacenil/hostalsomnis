@@ -42,8 +42,9 @@ const CloudSync = {
       // Configurar subscripció Realtime
       this.setupRealtime();
 
-      // Descarregar reserves inicials del núvol
+      // Descarregar reserves inicials i ajustos del núvol
       this.pullBookings();
+      this.pullSettings();
     } catch (err) {
       console.error('Error inicialitzant CloudSync:', err);
       this.isConnected = false;
@@ -108,10 +109,33 @@ const CloudSync = {
       }
 
       if (data && Array.isArray(data)) {
-        const cloudBookings = data.map(row => row.data || row);
-        const localBookings = (window.Store && Store.get('bookings')) || [];
+        // 1. Detectar si venen els ajustos del núvol ('app_settings')
+        const settingsRow = data.find(row => row.id === 'app_settings');
+        if (settingsRow && settingsRow.data) {
+          const localSettings = (window.Store && Store.get('settings')) || {};
+          const merged = {
+            ...localSettings,
+            ...settingsRow.data,
+            supabase: {
+              ...(localSettings.supabase || {}),
+              ...(settingsRow.data.supabase || {})
+            }
+          };
+          Store.set('settings', merged);
+          if (window.SettingsModule && typeof SettingsModule.render === 'function') {
+            SettingsModule.render();
+          }
+          if (window.CalendarModule && typeof CalendarModule.recalculatePriceFormula === 'function') {
+            CalendarModule.recalculatePriceFormula();
+          }
+        }
 
-        // Si el núvol té dades, actualitzem el Store local i pugem reserves locals que faltin
+        // 2. Filtrar per ignorar 'app_settings' de les reserves reals
+        const bookingRows = data.filter(row => row.id !== 'app_settings');
+        const cloudBookings = bookingRows.map(row => row.data || row);
+        const localBookings = ((window.Store && Store.get('bookings')) || []).filter(b => b && b.id !== 'app_settings');
+
+        // Si el núvol té dades de reserves, actualitzem el Store local i pugem reserves locals que faltin
         if (cloudBookings.length > 0) {
           const cloudIds = new Set(cloudBookings.map(b => String(b.id)));
           const missingInCloud = localBookings.filter(b => b && b.id && !cloudIds.has(String(b.id)));
@@ -138,6 +162,73 @@ const CloudSync = {
       console.error('Error a pullBookings:', err);
     } finally {
       this.isSyncing = false;
+    }
+  },
+
+  async pushSettings(settings) {
+    if (!this.client || !settings) return;
+
+    try {
+      const payload = {
+        id: 'app_settings',
+        data: settings,
+        updated_at: new Date().toISOString()
+      };
+
+      const { error } = await this.client
+        .from('bookings')
+        .upsert(payload);
+
+      if (error) {
+        console.warn('Error pujant ajustos al núvol:', error);
+      } else {
+        console.log('Ajustos i preus sincronitzats al núvol amb èxit.');
+      }
+    } catch (err) {
+      console.warn('Error a pushSettings:', err);
+    }
+  },
+
+  async pullSettings() {
+    if (!this.client) return;
+
+    try {
+      const { data, error } = await this.client
+        .from('bookings')
+        .select('*')
+        .eq('id', 'app_settings')
+        .maybeSingle();
+
+      if (error) {
+        console.warn('Error en descarregar ajustos de Supabase:', error);
+        return;
+      }
+
+      const localSettings = (window.Store && Store.get('settings')) || {};
+
+      if (data && data.data) {
+        const cloudSettings = data.data;
+        const merged = {
+          ...localSettings,
+          ...cloudSettings,
+          supabase: {
+            ...(localSettings.supabase || {}),
+            ...(cloudSettings.supabase || {})
+          }
+        };
+        Store.set('settings', merged);
+        if (window.SettingsModule && typeof SettingsModule.render === 'function') {
+          SettingsModule.render();
+        }
+        if (window.CalendarModule && typeof CalendarModule.recalculatePriceFormula === 'function') {
+          CalendarModule.recalculatePriceFormula();
+        }
+      } else if (Object.keys(localSettings).length > 0) {
+        // Si no existeix al núvol i tenim settings locals, pugem els locals
+        await this.pushSettings(localSettings);
+      }
+    } catch (err) {
+      console.error('Error a pullSettings:', err);
     }
   },
 
@@ -186,7 +277,7 @@ const CloudSync = {
 
   async syncLocalBookingsToCloud() {
     if (!this.client) return;
-    const localBookings = (window.Store && Store.get('bookings')) || [];
+    const localBookings = ((window.Store && Store.get('bookings')) || []).filter(b => b && b.id !== 'app_settings');
     if (localBookings.length === 0) return;
 
     const rows = localBookings.map(b => ({
@@ -223,6 +314,31 @@ const CloudSync = {
         .channel('public:bookings')
         .on('postgres_changes', { event: '*', schema: 'public', table: 'bookings' }, (payload) => {
           console.log('Canvi detectat a Supabase en temps real:', payload);
+
+          // Si el canvi correspon a la configuració general i preus
+          if (payload.new && payload.new.id === 'app_settings') {
+            const localSettings = (window.Store && Store.get('settings')) || {};
+            const cloudSettings = payload.new.data || {};
+            const merged = {
+              ...localSettings,
+              ...cloudSettings,
+              supabase: {
+                ...(localSettings.supabase || {}),
+                ...(cloudSettings.supabase || {})
+              }
+            };
+            if (window.Store) {
+              Store.set('settings', merged);
+            }
+            if (window.SettingsModule && typeof SettingsModule.render === 'function') {
+              SettingsModule.render();
+            }
+            if (window.CalendarModule && typeof CalendarModule.recalculatePriceFormula === 'function') {
+              CalendarModule.recalculatePriceFormula();
+            }
+            return;
+          }
+
           CloudSync.pullBookings();
         })
         .subscribe((status) => {
@@ -355,6 +471,7 @@ const CloudSync = {
       this.updateStatusUI(true, 'Connectat al núvol');
       this.setupRealtime();
       await this.pullBookings();
+      await this.pullSettings();
       return { success: true, message: 'Connectat amb èxit!' };
     } catch (err) {
       return { success: false, message: err.message || 'Error inicialitzant connexió' };

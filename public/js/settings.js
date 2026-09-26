@@ -68,6 +68,10 @@ const SettingsModule = {
     }
 
     Store.set('settings', currentSettings);
+
+    if (window.CloudSync && typeof CloudSync.pushSettings === 'function') {
+      CloudSync.pushSettings(currentSettings);
+    }
     
     alert('Ajustes guardados correctamente.');
     
