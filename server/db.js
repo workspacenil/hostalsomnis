@@ -32,14 +32,15 @@ const DEFAULT_SETTINGS = {
     { id: '301', name: 'Habitació 301' },
     { id: '302', name: 'Habitació 302' }
   ],
-  icloud: {
-    enabled: false,
-    appleId: '',
-    appPassword: '',
-    calendarName: 'Hostal Somnis',
-    calendarUrl: '',
-    lastSync: null
-  }
+  ota_sync: {
+    '101': { airbnbUrl: '', bookingUrl: '' },
+    '102': { airbnbUrl: '', bookingUrl: '' },
+    '201': { airbnbUrl: '', bookingUrl: '' },
+    '202': { airbnbUrl: '', bookingUrl: '' },
+    '301': { airbnbUrl: '', bookingUrl: '' },
+    '302': { airbnbUrl: '', bookingUrl: '' }
+  },
+  ota_last_sync: null
 };
 
 const DEFAULT_TEMPLATES = [

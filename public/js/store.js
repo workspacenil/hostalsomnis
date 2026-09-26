@@ -45,8 +45,15 @@ const Store = {
         defaultRoomPrice: 89,
         defaultBreakfastPrice: 8,
         touristTaxRate: 0.99,
-        rooms: this.DEFAULT_ROOMS,
-        icloud: { enabled: false },
+        ota_sync: {
+          '101': { airbnbUrl: '', bookingUrl: '' },
+          '102': { airbnbUrl: '', bookingUrl: '' },
+          '201': { airbnbUrl: '', bookingUrl: '' },
+          '202': { airbnbUrl: '', bookingUrl: '' },
+          '301': { airbnbUrl: '', bookingUrl: '' },
+          '302': { airbnbUrl: '', bookingUrl: '' }
+        },
+        ota_last_sync: null,
         supabase: {
           url: 'https://jzehbzjcwbahldmattbt.supabase.co',
           anonKey: 'sb_publishable_AKIgnEw9PT2Sknj4WnaqoQ_dC1z7zNv',
@@ -76,6 +83,13 @@ const Store = {
           url: 'https://jzehbzjcwbahldmattbt.supabase.co',
           anonKey: 'sb_publishable_AKIgnEw9PT2Sknj4WnaqoQ_dC1z7zNv',
           key: 'sb_publishable_AKIgnEw9PT2Sknj4WnaqoQ_dC1z7zNv'
+        };
+        updated = true;
+      }
+      if (!currentSettings.outlook) {
+        currentSettings.outlook = {
+          motherEmail: currentSettings.email || 'info@hostalsomnis.cat',
+          provider: 'web'
         };
         updated = true;
       }

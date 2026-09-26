@@ -5,6 +5,7 @@ const path = require('path');
 const crypto = require('crypto');
 
 const bookingsRouter = require('./routes/bookings');
+const calendarRouter = require('./routes/calendar');
 const financesRouter = require('./routes/finances');
 const settingsRouter = require('./routes/settings');
 const templatesRouter = require('./routes/templates');
@@ -63,7 +64,15 @@ app.post('/api/auth/login', (req, res) => {
   return res.status(401).json({ success: false, error: 'Contrasenya incorrecta' });
 });
 
-// Rutas de API protegides
+// Rutas de API
+// Sincronització de Calendaris OTA (exportació .ics pública per a Booking/Airbnb, sync protegit)
+app.use('/api/calendar', (req, res, next) => {
+  if (req.path.startsWith('/export/')) {
+    return next();
+  }
+  return requireAuth(req, res, next);
+}, calendarRouter);
+
 app.use('/api/bookings', requireAuth, bookingsRouter);
 app.use('/api/finances', requireAuth, financesRouter);
 app.use('/api/settings', requireAuth, settingsRouter);

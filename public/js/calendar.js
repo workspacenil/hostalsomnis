@@ -56,6 +56,27 @@ const CalendarModule = {
       });
       this._escapeBound = true;
     }
+
+    // Auto-sincronització periòdica silenciosa de Booking i Airbnb (cada 15 minuts i en carregar)
+    if (!this._otaInterval) {
+      setTimeout(() => {
+        const settings = (window.Store && Store.get('settings')) || {};
+        const otaSync = settings.ota_sync || {};
+        const hasFeeds = Object.values(otaSync).some(r => r && (r.airbnbUrl || r.bookingUrl));
+        if (hasFeeds) {
+          this.syncOta(true);
+        }
+      }, 2500);
+
+      this._otaInterval = setInterval(() => {
+        const settings = (window.Store && Store.get('settings')) || {};
+        const otaSync = settings.ota_sync || {};
+        const hasFeeds = Object.values(otaSync).some(r => r && (r.airbnbUrl || r.bookingUrl));
+        if (hasFeeds) {
+          this.syncOta(true);
+        }
+      }, 15 * 60 * 1000);
+    }
   },
 
   formatDateIso(date) {
@@ -325,11 +346,25 @@ const CalendarModule = {
             badgesHtml += `<span class="action-tag out">📤 Sortida prèvia: ${status.checkOutBooking.guestName || 'Hoste'}</span>`;
           }
 
+          // Distinció visual de font de reserva: Airbnb, Booking.com o Directe
+          let sourceBadge = '';
+          const bSource = (b.source || '').toLowerCase();
+          const bGuest = (b.guestName || '').toLowerCase();
+          const bNotes = (b.notes || '').toLowerCase();
+          if (bSource === 'airbnb' || bGuest.includes('airbnb') || bNotes.includes('airbnb')) {
+            sourceBadge = `<span class="badge-source airbnb" style="background: #FFE4E6; color: #E11D48; font-weight: 700; font-size: 11px; padding: 2px 7px; border-radius: 4px; border: 1px solid #FECDD3;" title="Reserva procedent d'Airbnb">🔴 Airbnb</span>`;
+          } else if (bSource === 'booking' || bGuest.includes('booking') || bNotes.includes('booking')) {
+            sourceBadge = `<span class="badge-source booking" style="background: #DBEAFE; color: #1D4ED8; font-weight: 700; font-size: 11px; padding: 2px 7px; border-radius: 4px; border: 1px solid #BFDBFE;" title="Reserva procedent de Booking.com">🔵 Booking.com</span>`;
+          } else {
+            sourceBadge = `<span class="badge-source direct" style="background: #F1F5F9; color: #475569; font-weight: 600; font-size: 11px; padding: 2px 7px; border-radius: 4px;" title="Reserva directa del hostal">🏢 Directa</span>`;
+          }
+
           roomsCardsHtml += `
             <div class="room-status-card occupied">
               <div class="room-card-top">
                 <div class="room-card-title">
                   <span class="room-num-badge">${room.id}</span>
+                  ${sourceBadge}
                   <span class="badge-regim ${b.mealPlan === 'AD' ? 'ad' : 'ne'}" title="${b.mealPlan === 'AD' ? 'AD - Allotjament i Desdejuni' : 'NE - Sense esmorzar'}">${b.mealPlan === 'AD' ? 'AD' : 'NE'}</span>
                   <span class="room-name-text">${room.name}</span>
                 </div>
@@ -374,7 +409,7 @@ const CalendarModule = {
                     📝 ${b.notes}
                   </div>
                 ` : ''}
-                <button type="button" class="btn btn-mail-confirm" id="cal-btn-copy-mail-${b.id}" onclick="CalendarModule.copyConfirmationMail('${b.id}', this)" style="margin-top: 8px;">📧 Copiar Mail de Confirmació</button>
+                <button type="button" class="btn btn-mail-confirm" id="cal-btn-copy-mail-${b.id}" onclick="CalendarModule.openBookingInMails('${b.id}')" style="margin-top: 8px;">📧 Preparar Mail (Outlook)</button>
               </div>
 
               <div class="room-card-footer">
@@ -693,7 +728,12 @@ const CalendarModule = {
     document.getElementById('cal-modal-guest').value = b.guestName || '';
     document.getElementById('cal-modal-phone').value = b.guestPhone || b.phone || '';
     if (document.getElementById('cal-modal-dni')) document.getElementById('cal-modal-dni').value = b.dni || b.guestDni || '';
-    if (document.getElementById('cal-modal-email')) document.getElementById('cal-modal-email').value = b.guestEmail || b.email || '';
+    let guestEmail = b.guestEmail || b.email || '';
+    if (!guestEmail && (b.notes || b.description || b.summary)) {
+      const match = `${b.notes || ''} ${b.description || ''} ${b.summary || ''}`.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/);
+      if (match) guestEmail = match[0].trim();
+    }
+    if (document.getElementById('cal-modal-email')) document.getElementById('cal-modal-email').value = guestEmail;
     if (document.getElementById('cal-modal-address')) document.getElementById('cal-modal-address').value = b.guestAddress || b.address || '';
     document.getElementById('cal-modal-checkin').value = b.checkIn || '';
     document.getElementById('cal-modal-checkout').value = b.checkOut || '';
@@ -980,7 +1020,69 @@ www.hostalsomnis.com`;
   },
 
   copyModalConfirmationMail(btnEl) {
-    this.copyConfirmationMail();
+    this.openBookingInMails();
+  },
+
+  openBookingInMails(bookingId) {
+    let bookingData = null;
+    const targetId = bookingId || this.currentEditBookingId;
+
+    if (targetId) {
+      const bookings = (window.Store && Store.get('bookings')) || [];
+      const found = bookings.find(item => item.id === targetId);
+      if (found) {
+        bookingData = { ...found };
+      }
+    }
+
+    if (!bookingData) {
+      const guestName = (document.getElementById('cal-modal-guest') || {}).value || '';
+      const room = (document.getElementById('cal-modal-room') || {}).value || '101';
+      const checkIn = (document.getElementById('cal-modal-checkin') || {}).value || '';
+      const checkOut = (document.getElementById('cal-modal-checkout') || {}).value || '';
+      const mealPlan = (document.getElementById('cal-modal-mealplan') || {}).value || 'NE';
+      const guestsCount = parseInt((document.getElementById('cal-modal-guests') || {}).value, 10) || 2;
+      const dni = (document.getElementById('cal-modal-dni') || {}).value || '';
+      const phone = (document.getElementById('cal-modal-phone') || {}).value || '';
+      const email = (document.getElementById('cal-modal-email') || {}).value || '';
+      const address = (document.getElementById('cal-modal-address') || {}).value || '';
+      const notes = (document.getElementById('cal-modal-notes') || {}).value || '';
+      const price = parseFloat((document.getElementById('cal-modal-price') || {}).value) || 89;
+      const totalPrice = this.currentCalculatedTotal || price;
+
+      bookingData = {
+        guestName: guestName.trim() || 'Hoste',
+        room,
+        checkIn,
+        checkOut,
+        mealPlan,
+        guestsCount,
+        dni: dni.trim(),
+        phone: phone.trim(),
+        guestPhone: phone.trim(),
+        email: email.trim(),
+        guestEmail: email.trim(),
+        address: address.trim(),
+        notes: notes.trim(),
+        price,
+        totalPrice
+      };
+    }
+
+    if (!bookingData) return;
+
+    // Tanca modal si estava obert
+    this.closeModal();
+
+    // Envia les dades a MailsModule
+    if (window.MailsModule && typeof MailsModule.prepareBookingEmail === 'function') {
+      MailsModule.prepareBookingEmail(bookingData);
+    }
+
+    // Canvia a la pestanya Mails
+    if (window.App && typeof App.switchView === 'function') {
+      App.switchView('mails');
+    }
   },
 
   openCodesFromBooking(bookingId) {
@@ -1266,6 +1368,172 @@ Hostal Somnis`;
 
   goToCodes(bookingId) {
     this.openCodesFromBooking(bookingId);
+  },
+
+  /**
+   * Sincronització de calendaris OTA (Booking.com & Airbnb)
+   */
+  async syncOta(silent = false) {
+    const btn = document.getElementById('btn-cal-ota-sync');
+    const icon = document.getElementById('cal-ota-sync-icon');
+    if (btn) btn.disabled = true;
+    if (icon) icon.textContent = '⏳';
+
+    const settings = (window.Store && Store.get('settings')) || {};
+    const otaSync = settings.ota_sync || {};
+    let localBookings = (window.Store && Store.get('bookings')) || [];
+
+    let importedCount = 0;
+    let updatedCount = 0;
+    let syncError = null;
+
+    try {
+      // 1. Intentem sincronització a través del servidor Node backend si està disponible
+      const res = await fetch('/api/calendar/sync-ota', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-auth-token': Store.get('auth_token', '')
+        },
+        body: JSON.stringify({ ota_sync: otaSync })
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        if (data.success && data.bookings) {
+          Store.set('bookings', data.bookings);
+          importedCount = data.importedCount || 0;
+          updatedCount = data.updatedCount || 0;
+          if (data.lastSync) {
+            settings.ota_last_sync = data.lastSync;
+            Store.set('settings', settings);
+          }
+          if (window.CloudSync && typeof CloudSync.syncLocalBookingsToCloud === 'function') {
+            await CloudSync.syncLocalBookingsToCloud();
+          }
+        }
+      } else {
+        throw new Error(`Servidor respon HTTP ${res.status}`);
+      }
+    } catch (err) {
+      console.warn('Backend local no accessible per a OTA sync, executant en mode client/PWA:', err.message);
+      // Fallback a client side
+      try {
+        const clientRes = await this.syncOtaClientSide(otaSync, localBookings);
+        importedCount = clientRes.importedCount;
+        updatedCount = clientRes.updatedCount;
+        settings.ota_last_sync = new Date().toISOString();
+        Store.set('settings', settings);
+        Store.set('bookings', localBookings);
+        if (window.CloudSync && typeof CloudSync.syncLocalBookingsToCloud === 'function') {
+          await CloudSync.syncLocalBookingsToCloud();
+        }
+      } catch (cErr) {
+        syncError = cErr.message;
+      }
+    }
+
+    if (btn) btn.disabled = false;
+    if (icon) icon.textContent = '🔄';
+
+    this.render();
+    if (window.SettingsModule && typeof SettingsModule.renderOtaRooms === 'function') {
+      SettingsModule.renderOtaRooms();
+    }
+
+    if (!silent) {
+      if (syncError) {
+        alert(`⚠️ Nota sobre la sincronització:\n${syncError}\n\nRevisa els enllaços d'iCal configurats a la secció de Configuració.`);
+      } else {
+        alert(`✓ Sincronització de Booking.com i Airbnb completada!\n\n• Noves reserves importades: ${importedCount}\n• Reserves actualitzades: ${updatedCount}`);
+      }
+    }
+  },
+
+  async syncOtaClientSide(otaSync, localBookings) {
+    let importedCount = 0;
+    let updatedCount = 0;
+    const rooms = ['101', '102', '201', '202', '301', '302'];
+
+    for (const roomId of rooms) {
+      const roomConf = otaSync[roomId];
+      if (!roomConf) continue;
+
+      const feeds = [
+        { url: roomConf.airbnbUrl, source: 'airbnb' },
+        { url: roomConf.bookingUrl, source: 'booking' }
+      ];
+
+      for (const feed of feeds) {
+        if (!feed.url || !feed.url.trim().startsWith('http')) continue;
+
+        let icsText = '';
+        try {
+          // Intent directe
+          const resp = await fetch(feed.url.trim());
+          if (resp.ok) icsText = await resp.text();
+        } catch(e) {
+          // Intent via proxy CORS
+          try {
+            const proxyResp = await fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(feed.url.trim())}`);
+            if (proxyResp.ok) icsText = await proxyResp.text();
+          } catch(e2){}
+        }
+
+        if (!icsText || !icsText.includes('BEGIN:VEVENT')) continue;
+
+        // Parseig VEVENT bàsic
+        const vEventRegex = /BEGIN:VEVENT([\s\S]*?)END:VEVENT/gi;
+        let match;
+        while ((match = vEventRegex.exec(icsText)) !== null) {
+          const block = match[1];
+          const dtstartMatch = block.match(/DTSTART(?:;VALUE=DATE)?:([0-9]{8})/i);
+          const dtendMatch = block.match(/DTEND(?:;VALUE=DATE)?:([0-9]{8})/i);
+          const uidMatch = block.match(/UID:([^\r\n]+)/i);
+          const summaryMatch = block.match(/SUMMARY:([^\r\n]+)/i);
+
+          if (dtstartMatch && dtendMatch) {
+            const s = dtstartMatch[1];
+            const e = dtendMatch[1];
+            const checkIn = `${s.substring(0, 4)}-${s.substring(4, 6)}-${s.substring(6, 8)}`;
+            const checkOut = `${e.substring(0, 4)}-${e.substring(4, 6)}-${e.substring(6, 8)}`;
+            const uid = uidMatch ? uidMatch[1].trim() : `${feed.source}-${checkIn}-${checkOut}`;
+            const summary = summaryMatch ? summaryMatch[1].trim() : (feed.source === 'airbnb' ? 'Reserva Airbnb' : 'Reserva Booking.com');
+
+            const bookingId = `ota-${feed.source}-${roomId}-${uid.replace(/[^a-zA-Z0-9_-]/g, '')}`;
+            const existingIdx = localBookings.findIndex(b => b.id === bookingId || (b.otaUid === uid && b.room === roomId));
+
+            if (existingIdx !== -1) {
+              localBookings[existingIdx].checkIn = checkIn;
+              localBookings[existingIdx].checkOut = checkOut;
+              updatedCount++;
+            } else {
+              localBookings.push({
+                id: bookingId,
+                room: roomId,
+                guestName: feed.source === 'airbnb' ? (summary.includes('Not available') ? 'Reserva Airbnb' : summary) : 'Reserva Booking.com',
+                guestPhone: '',
+                guestEmail: '',
+                checkIn,
+                checkOut,
+                price: 0,
+                totalPrice: 0,
+                mealPlan: 'NE',
+                guestsCount: 2,
+                notes: `Importat automàticament des de ${feed.source === 'airbnb' ? 'Airbnb' : 'Booking.com'}`,
+                status: 'confirmada',
+                source: feed.source,
+                otaUid: uid,
+                createdAt: new Date().toISOString()
+              });
+              importedCount++;
+            }
+          }
+        }
+      }
+    }
+
+    return { importedCount, updatedCount };
   }
 };
 

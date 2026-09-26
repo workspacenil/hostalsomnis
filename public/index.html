@@ -13,7 +13,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
   <meta name="apple-mobile-web-app-title" content="Hostal Somnis">
   <meta name="theme-color" content="#000000">
-  <link rel="stylesheet" href="css/styles.css?v=51">
+  <link rel="stylesheet" href="css/styles.css?v=52">
 </head>
 <body>
 
@@ -186,6 +186,25 @@
               </div>
             </div>
 
+            <div class="form-row" style="background: #EFF6FF; padding: 14px 16px; border-radius: var(--radius-md); border: 1px solid #BFDBFE; margin-bottom: 16px;">
+              <div class="form-group" style="margin-bottom: 0;">
+                <label class="form-label" style="font-weight: 600; color: #1E40AF; display: flex; align-items: center; gap: 6px;">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#0078D4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                  <span>Correu Outlook de la mare (Remitent)</span>
+                </label>
+                <input type="email" id="mail-drawer-mother-email" class="form-input" placeholder="somnis@outlook.com" onchange="MailsModule.saveOutlookConfig(this.value, document.getElementById('mail-drawer-outlook-mode')?.value)">
+              </div>
+              <div class="form-group" style="margin-bottom: 0;">
+                <label class="form-label" style="font-weight: 600; color: #1E40AF;">Client de correu preferit</label>
+                <select id="mail-drawer-outlook-mode" class="form-select" onchange="MailsModule.saveOutlookConfig(document.getElementById('mail-drawer-mother-email')?.value, this.value)">
+                  <option value="thunderbird">🦅 Mozilla Thunderbird (Recomanat)</option>
+                  <option value="app">💻 App de Correu per defecte (Windows Mail / Outlook)</option>
+                  <option value="web">🌐 Outlook Web (hotmail / live / outlook.com)</option>
+                  <option value="office365">🏢 Microsoft 365 (Empresarial)</option>
+                </select>
+              </div>
+            </div>
+
             <div class="form-group" style="margin-bottom: 16px;">
               <label class="form-label" for="mail-custom-tone-input">Instrucciones de Tono y Estilo de mi Madre (Global)</label>
               <textarea id="mail-custom-tone-input" class="form-input" rows="2" style="font-size: 12.5px; resize: vertical;" placeholder="Tono familiar, cercano, educado y resolutivo para Hostal Somnis en Súria..."></textarea>
@@ -297,29 +316,126 @@
 
           <div id="accordion-confirmacio-body" style="padding: 20px; display: block;">
             <div style="display: flex; flex-direction: column; gap: 20px;">
-              <!-- Panel Superior: Entrada Datos Reserva (el que posa la mare) -->
-              <div class="panel" style="border: 1px solid var(--border-color); border-radius: var(--radius-md); background: #FFF; box-shadow: 0 1px 3px rgba(0,0,0,0.02);">
+
+              <!-- Bàner de Reserva Carregada (s'activa quan es ve del calendari) -->
+              <div id="mail-booking-loaded-banner" style="display: none; background: #EFF6FF; border: 1px solid #BFDBFE; border-radius: var(--radius-md); padding: 14px 18px; justify-content: space-between; align-items: center; box-shadow: 0 1px 3px rgba(0,0,0,0.04);">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                  <span style="font-size: 24px;">🛎️</span>
+                  <div>
+                    <div style="font-weight: 700; color: #1E40AF; font-size: 14px;" id="mail-booking-title">Reserva de l'Hoste</div>
+                    <div style="font-size: 12.5px; color: #2563EB; margin-top: 2px;" id="mail-booking-subtitle">Habitació -- • Dates -- • Total: -- €</div>
+                  </div>
+                </div>
+                <button type="button" class="btn btn-outline" onclick="MailsModule.clearActiveBooking()" style="font-size: 12px; padding: 5px 12px; background: #FFF;" title="Treure selecció de la reserva">Netejar</button>
+              </div>
+
+              <!-- PANELL PRINCIPAL: REVISIÓ I ENVIAMENT AMB OUTLOOK -->
+              <div class="panel" id="confirmacio-mail-review-panel" style="border: 1px solid var(--border-color); border-radius: var(--radius-md); background: #FFF; box-shadow: 0 2px 6px rgba(0,0,0,0.04);">
                 <div class="panel-header" style="display: flex; justify-content: space-between; align-items: center; padding: 14px 18px; border-bottom: 1px solid var(--border-color); background: var(--bg-sidebar);">
                   <div style="display: flex; align-items: center; gap: 8px;">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--accent);"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
-                    <span style="font-weight: 600; font-size: 14px; color: var(--text-main);">Dades de la Reserva (el que posa la mare)</span>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0078D4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                    <span style="font-weight: 700; font-size: 14.5px; color: var(--text-main);">Revisió i Enviament de Correu amb Outlook</span>
                   </div>
-                  <span style="font-size: 12px; color: var(--text-muted);">Escriu o enganxa les notes en brut</span>
+                  <div style="display: flex; align-items: center; gap: 8px;">
+                    <button type="button" class="btn btn-outline" onclick="document.getElementById('confirmacio-result-text').value=''" style="padding: 5px 10px; font-size: 12px;">Netejar text</button>
+                  </div>
+                </div>
+
+                <div class="panel-body" style="padding: 18px;">
+                  <!-- Informació de Remitent, Destinatari i Assumpte -->
+                  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; margin-bottom: 16px;">
+                    <!-- De: Outlook mare -->
+                    <div>
+                      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+                        <label class="form-label" style="font-weight: 600; font-size: 12.5px; margin-bottom: 0;">📧 De (Outlook de la mare):</label>
+                        <a href="javascript:void(0)" onclick="MailsModule.promptEditMotherEmail()" style="font-size: 11.5px; color: #0078D4; text-decoration: underline; font-weight: 500;">Canviar correu</a>
+                      </div>
+                      <input type="text" id="mail-mother-outlook-display" class="form-input" style="background: #F8FAFC; color: #334155; font-weight: 500;" readonly>
+                    </div>
+
+                    <!-- Per a: Contacte / Client -->
+                    <div>
+                      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+                        <label class="form-label" style="font-weight: 600; font-size: 12.5px; margin-bottom: 0;">👤 Per a (Correu del client):</label>
+                        <span id="mail-recipient-source-badge" style="font-size: 11px; font-weight: 600; color: var(--success);">Detectat de la reserva</span>
+                      </div>
+                      <input type="email" id="confirmacio-recipient-email" class="form-input" placeholder="client@exemple.com" oninput="MailsModule.onRecipientChange()" style="font-weight: 500;">
+                    </div>
+
+                    <!-- Assumpte -->
+                    <div style="grid-column: 1 / -1;">
+                      <label class="form-label" style="font-weight: 600; font-size: 12.5px; margin-bottom: 5px;">Assumpte:</label>
+                      <input type="text" id="confirmacio-subject" class="form-input" value="Confirmació de reserva — Hostal Somnis" style="font-weight: 500;">
+                    </div>
+                  </div>
+
+                  <!-- Selector d'idioma i mode d'Outlook -->
+                  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 10px; background: #F8FAFC; padding: 10px 14px; border-radius: var(--radius-md); border: 1px solid var(--border-color);">
+                    <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
+                      <span style="font-size: 12px; font-weight: 600; color: var(--text-muted); margin-right: 4px;">Idioma plantilla:</span>
+                      <button type="button" class="lang-pill active" id="btn-mail-lang-ca" onclick="MailsModule.setConfirmationLang('ca')">Català</button>
+                      <button type="button" class="lang-pill" id="btn-mail-lang-es" onclick="MailsModule.setConfirmationLang('es')">Castellano</button>
+                      <button type="button" class="lang-pill" id="btn-mail-lang-en" onclick="MailsModule.setConfirmationLang('en')">English</button>
+                      <button type="button" class="lang-pill" id="btn-mail-lang-fr" onclick="MailsModule.setConfirmationLang('fr')">Français</button>
+                    </div>
+
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                      <label for="mail-outlook-mode-select" style="font-size: 12px; color: var(--text-muted); margin-bottom: 0;">Obrir amb:</label>
+                      <select id="mail-outlook-mode-select" class="form-select" style="font-size: 12px; padding: 4px 8px; width: auto;" onchange="MailsModule.onOutlookModeChange(this.value)">
+                        <option value="thunderbird">🦅 Mozilla Thunderbird (Recomanat)</option>
+                        <option value="app">💻 App de Correu per defecte (Windows Mail / Outlook)</option>
+                        <option value="web">🌐 Outlook Web (hotmail / outlook.com)</option>
+                        <option value="office365">🏢 Microsoft 365 (Empresarial)</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <!-- Text de la confirmació oficial a revisar -->
+                  <div style="position: relative;">
+                    <textarea id="confirmacio-result-text" style="width: 100%; min-height: 420px; padding: 18px 20px; border: 1px solid var(--border-color); border-radius: var(--radius-md); font-family: Consolas, 'SF Mono', Monaco, 'Courier New', monospace; font-size: 13.5px; line-height: 1.65; color: #1F2937; background-color: #FAFAFA; resize: vertical; outline: none;" placeholder="Aquí apareixerà la confirmació oficial amb el format exacte i en l'idioma seleccionat, a punt per revisar i enviar amb Outlook..."></textarea>
+                  </div>
+                </div>
+
+                <!-- Barra d'Accions d'Enviament -->
+                <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; padding: 14px 18px; background: #F8FAFC; border-top: 1px solid var(--border-color); border-bottom-left-radius: var(--radius-md); border-bottom-right-radius: var(--radius-md);">
+                  <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+                    <button type="button" class="btn-outlook" id="btn-open-outlook" onclick="MailsModule.openInOutlook()" title="Obre el correu preparat a Thunderbird / Outlook per donar el vistiplau i prémer Enviar">
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                      <span id="btn-open-mail-label">🚀 Obrir i Enviar al Correu (Thunderbird / Outlook)</span>
+                    </button>
+                    <button type="button" class="btn btn-outline" id="btn-copy-confirmacio" onclick="MailsModule.copyConfirmation()" style="display: flex; align-items: center; gap: 6px; padding: 9px 16px; font-size: 13px; font-weight: 600;">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                      <span>Copiar text</span>
+                    </button>
+                  </div>
+
+                  <div style="font-size: 12px; color: var(--text-muted); display: inline-flex; align-items: center; gap: 6px;">
+                    <span style="font-size: 14px;">🔒</span>
+                    <span><strong>Segur:</strong> No s'envia sol. S'obre el correu a punt a la teva aplicació per revisar i prémer Enviar.</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- PANELL SECUNDARI: GENERACIÓ AVANÇADA O MODIFICACIÓ AMB IA -->
+              <div class="panel" style="border: 1px solid var(--border-color); border-radius: var(--radius-md); background: #FFF; box-shadow: 0 1px 3px rgba(0,0,0,0.02);">
+                <div class="panel-header" style="display: flex; justify-content: space-between; align-items: center; padding: 12px 18px; border-bottom: 1px solid var(--border-color); background: var(--bg-sidebar);">
+                  <div style="display: flex; align-items: center; gap: 8px;">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--accent);"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                    <span style="font-weight: 600; font-size: 13.5px; color: var(--text-main);">Notes de la reserva / Personalitzar amb IA (Opcional)</span>
+                  </div>
+                  <span style="font-size: 11.5px; color: var(--text-muted);">Pots demanar a la IA que adapti o tradueixi les notes</span>
                 </div>
                 <div class="panel-body" style="padding: 18px;">
-                  <div class="form-group" style="margin-bottom: 16px;">
-                    <label class="form-label" style="font-weight: 600; font-size: 13px; margin-bottom: 6px; display: block;">Notes o dades de la reserva:</label>
-                    <textarea id="confirmacio-input-text" class="form-input" rows="7" placeholder="Exemple: Alexandre Pérez Gutiérrez, Tel 685998557, C. Camí de Corbins 8 4-2 Lleida 25005. Entrada 27 setembre 2025, sortida 28 setembre 2025, 1 habitació, 1 nit, 2 persones, 99€ la nit, total 99€, pendent 50€..." style="resize: vertical; font-size: 13.5px; line-height: 1.5; font-family: inherit; width: 100%;"></textarea>
+                  <div class="form-group" style="margin-bottom: 14px;">
+                    <label class="form-label" style="font-weight: 600; font-size: 12.5px; margin-bottom: 6px; display: block;">Notes o dades de la reserva:</label>
+                    <textarea id="confirmacio-input-text" class="form-input" rows="4" placeholder="Exemple: Alexandre Pérez Gutiérrez, Tel 685998557, C. Camí de Corbins 8 4-2 Lleida 25005. Entrada 27 setembre 2025, sortida 28 setembre 2025..." style="resize: vertical; font-size: 13px; line-height: 1.5; font-family: inherit; width: 100%;"></textarea>
                   </div>
 
                   <!-- Controls: Idioma del correu + Rodetes Dia i Mes per data no reemborsable -->
-                  <div style="display: flex; flex-wrap: wrap; gap: 14px; margin-bottom: 18px; align-items: flex-end;">
-                    <!-- Idioma -->
-                    <div style="flex: 1 1 200px;">
-                      <label class="form-label" style="font-weight: 600; font-size: 12.5px; margin-bottom: 6px; display: flex; align-items: center; gap: 6px;">
-                        <span>🌐 Idioma del correu</span>
-                      </label>
-                      <select id="confirmacio-lang" class="form-select" style="font-weight: 500;">
+                  <div style="display: flex; flex-wrap: wrap; gap: 14px; margin-bottom: 16px; align-items: flex-end;">
+                    <div style="flex: 1 1 180px;">
+                      <label class="form-label" style="font-weight: 600; font-size: 12px; margin-bottom: 4px;">🌐 Idioma de sortida</label>
+                      <select id="confirmacio-lang" class="form-select" style="font-size: 13px;" onchange="MailsModule.setConfirmationLang(this.value)">
                         <option value="ca" selected>Català</option>
                         <option value="es">Castellano</option>
                         <option value="en">English</option>
@@ -327,73 +443,36 @@
                       </select>
                     </div>
 
-                    <!-- Rodeta / Selector Dia No Reemborsable -->
-                    <div style="flex: 1 1 140px;">
-                      <label class="form-label" style="font-weight: 600; font-size: 12.5px; margin-bottom: 6px; display: flex; align-items: center; gap: 6px;">
-                        <span>📅 Dia no reemborsable</span>
-                      </label>
-                      <select id="confirmacio-dia" class="form-select" style="font-weight: 500;">
+                    <div style="flex: 1 1 130px;">
+                      <label class="form-label" style="font-weight: 600; font-size: 12px; margin-bottom: 4px;">📅 Dia no reemborsable</label>
+                      <select id="confirmacio-dia" class="form-select" style="font-size: 13px;">
                         <option value="">Dia (opcional)</option>
-                        <option value="1">1</option>
-                        <option value="2">2</option>
-                        <option value="3">3</option>
-                        <option value="4">4</option>
-                        <option value="5">5</option>
-                        <option value="6">6</option>
-                        <option value="7">7</option>
-                        <option value="8">8</option>
-                        <option value="9">9</option>
-                        <option value="10">10</option>
-                        <option value="11">11</option>
-                        <option value="12">12</option>
-                        <option value="13">13</option>
-                        <option value="14">14</option>
-                        <option value="15">15</option>
-                        <option value="16">16</option>
-                        <option value="17">17</option>
-                        <option value="18">18</option>
-                        <option value="19">19</option>
-                        <option value="20">20</option>
-                        <option value="21">21</option>
-                        <option value="22">22</option>
-                        <option value="23">23</option>
-                        <option value="24">24</option>
-                        <option value="25">25</option>
-                        <option value="26">26</option>
-                        <option value="27">27</option>
-                        <option value="28">28</option>
-                        <option value="29">29</option>
-                        <option value="30">30</option>
-                        <option value="31">31</option>
+                        <option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option>
+                        <option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option>
+                        <option value="9">9</option><option value="10">10</option><option value="11">11</option><option value="12">12</option>
+                        <option value="13">13</option><option value="14">14</option><option value="15">15</option><option value="16">16</option>
+                        <option value="17">17</option><option value="18">18</option><option value="19">19</option><option value="20">20</option>
+                        <option value="21">21</option><option value="22">22</option><option value="23">23</option><option value="24">24</option>
+                        <option value="25">25</option><option value="26">26</option><option value="27">27</option><option value="28">28</option>
+                        <option value="29">29</option><option value="30">30</option><option value="31">31</option>
                       </select>
                     </div>
 
-                    <!-- Rodeta / Selector Mes No Reemborsable -->
-                    <div style="flex: 1 1 160px;">
-                      <label class="form-label" style="font-weight: 600; font-size: 12.5px; margin-bottom: 6px; display: flex; align-items: center; gap: 6px;">
-                        <span>🗓️ Mes no reemborsable</span>
-                      </label>
-                      <select id="confirmacio-mes" class="form-select" style="font-weight: 500;">
+                    <div style="flex: 1 1 150px;">
+                      <label class="form-label" style="font-weight: 600; font-size: 12px; margin-bottom: 4px;">🗓️ Mes no reemborsable</label>
+                      <select id="confirmacio-mes" class="form-select" style="font-size: 13px;">
                         <option value="">Mes (opcional)</option>
-                        <option value="1">Gener</option>
-                        <option value="2">Febrer</option>
-                        <option value="3">Març</option>
-                        <option value="4">Abril</option>
-                        <option value="5">Maig</option>
-                        <option value="6">Juny</option>
-                        <option value="7">Juliol</option>
-                        <option value="8">Agost</option>
-                        <option value="9">Setembre</option>
-                        <option value="10">Octubre</option>
-                        <option value="11">Novembre</option>
-                        <option value="12">Desembre</option>
+                        <option value="1">Gener</option><option value="2">Febrer</option><option value="3">Març</option>
+                        <option value="4">Abril</option><option value="5">Maig</option><option value="6">Juny</option>
+                        <option value="7">Juliol</option><option value="8">Agost</option><option value="9">Setembre</option>
+                        <option value="10">Octubre</option><option value="11">Novembre</option><option value="12">Desembre</option>
                       </select>
                     </div>
                   </div>
 
-                  <button type="button" id="btn-generate-confirmacio" class="btn btn-primary" onclick="MailsModule.generateConfirmation()" style="width: 100%; padding: 12px; font-size: 14.5px; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.08);">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
-                    ✨ Omplir Plantilla Oficial de Reserva amb IA
+                  <button type="button" id="btn-generate-confirmacio" class="btn btn-outline" onclick="MailsModule.generateConfirmation()" style="width: 100%; padding: 10px; font-size: 13.5px; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                    ✨ Personalitzar / Traduir plantilla amb IA
                   </button>
 
                   <div id="confirmacio-loading" style="display: none; flex-direction: column; align-items: center; justify-content: center; gap: 8px; margin-top: 14px; padding: 14px; background: var(--bg-sidebar); border: 1px solid var(--border-color); border-radius: var(--radius-md);">
@@ -402,26 +481,6 @@
                       <span id="confirmacio-loading-text">La IA està processant les dades, traduint i omplint la plantilla oficial...</span>
                     </div>
                   </div>
-                </div>
-              </div>
-
-              <!-- Panel Inferior: Plantilla Oficial Emplenada i Traduïda -->
-              <div class="panel" style="border: 1px solid var(--border-color); border-radius: var(--radius-md); background: #FFF; box-shadow: 0 1px 3px rgba(0,0,0,0.02);">
-                <div class="panel-header" style="display: flex; justify-content: space-between; align-items: center; padding: 14px 18px; border-bottom: 1px solid var(--border-color); background: var(--bg-sidebar);">
-                  <div style="display: flex; align-items: center; gap: 8px;">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--success);"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
-                    <span style="font-weight: 600; font-size: 14px; color: var(--text-main);">Plantilla Oficial Emplenada i Traduïda</span>
-                  </div>
-                  <div style="display: flex; gap: 8px;">
-                    <button type="button" class="btn btn-outline" onclick="document.getElementById('confirmacio-result-text').value=''" style="padding: 6px 12px; font-size: 12px;">Netejar</button>
-                    <button type="button" class="btn btn-primary" id="btn-copy-confirmacio" onclick="MailsModule.copyConfirmation()" style="display: flex; align-items: center; gap: 6px; padding: 6px 14px; font-size: 12.5px; font-weight: 600;">
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
-                      Copiar al porta-retalls
-                    </button>
-                  </div>
-                </div>
-                <div class="panel-body" style="padding: 0;">
-                  <textarea id="confirmacio-result-text" style="width: 100%; min-height: 440px; padding: 20px 22px; border: none; font-family: Consolas, 'SF Mono', Monaco, 'Courier New', monospace; font-size: 13.5px; line-height: 1.65; color: #1F2937; background-color: #FAFAFA; resize: vertical; outline: none; border-bottom-left-radius: var(--radius-md); border-bottom-right-radius: var(--radius-md);" placeholder="Aquí apareixerà la confirmació oficial amb el format exacte i en l'idioma seleccionat, a punt per copiar i enviar al client..."></textarea>
                 </div>
               </div>
             </div>
@@ -618,6 +677,25 @@
                   <label class="form-label">Taxa turística per persona (€)</label>
                   <input type="number" id="settings-tourist-tax" class="form-input" step="0.01" inputmode="decimal" value="0.99">
                 </div>
+
+                <div class="form-group" style="margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--border-color);">
+                  <label class="form-label" style="font-weight: 600; display: flex; align-items: center; gap: 6px;">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#0078D4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                    <span>Correu Outlook de la mare</span>
+                  </label>
+                  <input type="email" id="settings-mother-outlook" class="form-input" placeholder="somnis@outlook.com (o el correu que utilitzi)">
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">Client de correu preferit per enviar correus</label>
+                  <select id="settings-outlook-provider" class="form-select">
+                    <option value="thunderbird">🦅 Mozilla Thunderbird (Recomanat)</option>
+                    <option value="app">💻 App de Correu per defecte de Windows</option>
+                    <option value="web">🌐 Outlook Web (hotmail / live / outlook.com al navegador)</option>
+                    <option value="office365">🏢 Microsoft 365 (Compte empresarial / educatiu)</option>
+                  </select>
+                </div>
+
                 <div style="margin-top: 16px;">
                   <button type="submit" class="btn btn-primary">Guardar Ajustes</button>
                 </div>
@@ -689,13 +767,65 @@ ALTER PUBLICATION supabase_realtime ADD TABLE bookings;</pre>
               </div>
             </div>
           </div>
+
+          <!-- PANELL SINCRONITZACIÓ DE CALENDARIS BOOKING.COM & AIRBNB -->
+          <div class="panel" style="grid-column: 1 / -1; margin-top: 20px;">
+            <div class="panel-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <span style="font-size: 18px;">🔄</span>
+                <span style="font-weight: 600; font-size: 15px;">Sincronització amb Booking.com i Airbnb (iCal)</span>
+              </div>
+              <div id="ota-last-sync-badge" style="font-size: 12px; color: var(--text-muted); font-weight: normal;">
+                Sense sincronitzar encara
+              </div>
+            </div>
+            <div class="panel-body">
+              <p style="font-size: 13.5px; color: #4B5563; margin-bottom: 16px; line-height: 1.5;">
+                Connecta les teves 6 habitacions amb <strong>Booking.com</strong> i <strong>Airbnb</strong> mitjançant enllaços de calendari (iCal). 
+                D'aquesta manera, quan algú reservi a Booking o Airbnb, quedarà bloquejada l'habitació aquí automàticament sense haver de fer-ho a mà.
+              </p>
+
+              <!-- INSTRUCCIONS RÀPIDES -->
+              <div style="background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 8px; padding: 14px; margin-bottom: 20px; font-size: 12.5px; color: #334155; line-height: 1.5;">
+                <div style="font-weight: 600; margin-bottom: 6px; color: #0F172A;">💡 Com funciona la sincronització:</div>
+                <div style="margin-bottom: 6px;">
+                  <strong>1. A Airbnb:</strong> Ves a <em>Anuncis</em> &rarr; tria l'habitació &rarr; <em>Preus i disponibilitat</em> &rarr; <em>Sincronització de calendaris</em> &rarr; <em>Exportar calendari</em>. Copia l'enllaç i enganxa'l a la casella d'Airbnb d'aquella habitació.
+                </div>
+                <div style="margin-bottom: 6px;">
+                  <strong>2. A Booking.com:</strong> Ves a la <em>Extranet de Booking</em> &rarr; <em>Tarifes i disponibilitat</em> &rarr; <em>Sincronització de calendaris</em> &rarr; <em>Exporta</em>. Copia l'enllaç i enganxa'l a la casella de Booking.
+                </div>
+                <div>
+                  <strong>3. Perquè Booking i Airbnb sàpiguen les teves reserves d'aquí:</strong> Fes clic a <em>"Copiar enllaç iCal"</em> de cada habitació i enganxa'l a <em>"Importar calendari"</em> a Booking i Airbnb.
+                </div>
+              </div>
+
+              <!-- GRAELLA DE LES 6 HABITACIONS -->
+              <div id="ota-rooms-config-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 16px; margin-bottom: 20px;">
+                <!-- Es genera dinàmicament per JS o es col·loquen les 6 habitacions -->
+              </div>
+
+              <div style="display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: space-between; border-top: 1px solid var(--border-color); padding-top: 16px;">
+                <button type="button" class="btn btn-primary" onclick="SettingsModule.saveOtaSettings()" style="font-weight: 600; padding: 9px 18px;">
+                  💾 Desar Enllaços OTA
+                </button>
+                <button type="button" id="btn-sync-ota-settings" class="btn btn-outline" onclick="SettingsModule.syncOtaNow()" style="display: flex; align-items: center; gap: 8px; font-weight: 600; padding: 9px 18px; background: #ECFDF5; border-color: #10B981; color: #065F46;">
+                  <span>🔄</span> Sincronitzar Booking.com i Airbnb Ara
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
       <!-- VISTA CALENDARI -->
       <section id="view-calendari" class="view-section active">
-        <div class="section-header">
-          <h2 class="section-title">Calendari d'Ocupació</h2>
-          <div class="section-subtitle">Disponibilitat i reserves de les 6 habitacions de Hostal Somnis</div>
+        <div class="section-header" style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 12px;">
+          <div>
+            <h2 class="section-title">Calendari d'Ocupació</h2>
+            <div class="section-subtitle">Disponibilitat i reserves de les 6 habitacions de Hostal Somnis</div>
+          </div>
+          <button type="button" id="btn-cal-ota-sync" class="btn btn-outline" onclick="CalendarModule.syncOta()" style="display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; padding: 8px 16px; background: #FFF; border-color: #CBD5E1; color: #1E293B; box-shadow: 0 1px 2px rgba(0,0,0,0.05);" title="Descarregar últimes reserves de Booking.com i Airbnb">
+            <span id="cal-ota-sync-icon">🔄</span> Sincronitzar Booking & Airbnb
+          </button>
         </div>
 
         <div class="calendar-layout">
@@ -862,7 +992,7 @@ ALTER PUBLICATION supabase_realtime ADD TABLE bookings;</pre>
       <div class="modal-footer-bar">
         <div class="modal-footer-secondary" style="display: flex; align-items: center; gap: 8px;">
           <button type="button" id="cal-modal-delete-btn" class="btn btn-outline" style="color: #DC2626; border-color: #FCA5A5; background: #FEF2F2;" onclick="CalendarModule.deleteCurrentBooking()">Eliminar</button>
-          <button type="button" id="cal-modal-copy-btn" class="btn btn-mail-confirm" onclick="CalendarModule.copyModalConfirmationMail(this)" title="Copiar confirmació completa al porta-retalls">📧 Copiar Mail</button>
+          <button type="button" id="cal-modal-copy-btn" class="btn btn-mail-confirm" onclick="CalendarModule.openBookingInMails()" title="Preparar i enviar correu des de l'apartat Mails amb Outlook">📧 Preparar Mail (Outlook)</button>
           <button type="button" class="btn btn-codes-quick" id="cal-btn-go-codes" onclick="CalendarModule.openCodesFromBooking()" title="Obrir Còdigs amb les dades d'aquesta reserva">🔑 Còdigs</button>
         </div>
         <div class="modal-footer-primary" style="display: flex; gap: 10px; margin-left: auto;">
@@ -928,14 +1058,14 @@ ALTER PUBLICATION supabase_realtime ADD TABLE bookings;</pre>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="js/store.js?v=51"></script>
-  <script src="js/cloud.js?v=51"></script>
-  <script src="js/calendar.js?v=51"></script>
-  <script src="js/app.js?v=51"></script>
-  <script src="js/mails.js?v=51"></script>
-  <script src="js/checkin.js?v=51"></script>
-  <script src="js/codes.js?v=51"></script>
-  <script src="js/settings.js?v=51"></script>
+  <script src="js/store.js?v=52"></script>
+  <script src="js/cloud.js?v=52"></script>
+  <script src="js/calendar.js?v=52"></script>
+  <script src="js/app.js?v=52"></script>
+  <script src="js/mails.js?v=52"></script>
+  <script src="js/checkin.js?v=52"></script>
+  <script src="js/codes.js?v=52"></script>
+  <script src="js/settings.js?v=52"></script>
   <!-- Registre del Service Worker per a funcionament offline PWA -->
   <script>
     if ('serviceWorker' in navigator) {

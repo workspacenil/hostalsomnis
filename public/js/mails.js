@@ -28,12 +28,16 @@ const MOTHER_TRAINING_MAILS = [
 ];
 
 const MailsModule = {
+  activeBooking: null,
+  currentLang: 'ca',
+
   init() {
     this.render();
   },
 
   render() {
     this.renderApiKeyStatus();
+    this.renderOutlookStatus();
   },
 
   // =========================================================================
@@ -130,6 +134,101 @@ const MailsModule = {
     this.renderApiKeyStatus();
     alert(`Configuración guardada correctamente con ${geminiKeys.length} clave(s) de Google Gemini y proveedores de respaldo.`);
     this.toggleConfigDrawer();
+  },
+
+  // =========================================================================
+  // GESTIÓ DEL CORREU OUTLOOK DE LA MARE
+  // =========================================================================
+  getOutlookConfig() {
+    const settings = Store.get('settings', {}) || {};
+    return settings.outlook || {
+      motherEmail: settings.email || 'info@hostalsomnis.cat',
+      provider: 'web'
+    };
+  },
+
+  saveOutlookConfig(motherEmail, provider) {
+    const settings = Store.get('settings', {}) || {};
+    settings.outlook = {
+      motherEmail: (motherEmail || '').trim(),
+      provider: provider || settings.outlook?.provider || 'web'
+    };
+    Store.set('settings', settings);
+
+    if (window.CloudSync && typeof CloudSync.pushSettings === 'function') {
+      CloudSync.pushSettings(settings);
+    }
+    fetch('/api/settings', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ outlook: settings.outlook })
+    }).catch(() => {});
+
+    this.renderOutlookStatus();
+  },
+
+  renderOutlookStatus() {
+    const config = this.getOutlookConfig();
+    const displayEl = document.getElementById('mail-mother-outlook-display');
+    const modeSelect = document.getElementById('mail-outlook-mode-select');
+    const drawerMotherEmail = document.getElementById('mail-drawer-mother-email');
+    const drawerOutlookMode = document.getElementById('mail-drawer-outlook-mode');
+
+    const provider = config.provider || 'thunderbird';
+
+    if (displayEl) {
+      displayEl.value = config.motherEmail || 'Sense configurar';
+    }
+    if (modeSelect) {
+      modeSelect.value = provider;
+    }
+    if (drawerMotherEmail) {
+      drawerMotherEmail.value = config.motherEmail || '';
+    }
+    if (drawerOutlookMode) {
+      drawerOutlookMode.value = provider;
+    }
+
+    const btnLabel = document.getElementById('btn-open-mail-label');
+    if (btnLabel) {
+      if (provider === 'thunderbird') {
+        btnLabel.textContent = '🦅 Obrir i Enviar a Thunderbird';
+      } else if (provider === 'app') {
+        btnLabel.textContent = '💻 Obrir i Enviar a la teva App de Correu';
+      } else if (provider === 'office365') {
+        btnLabel.textContent = '🏢 Obrir i Enviar a Microsoft 365';
+      } else {
+        btnLabel.textContent = '🚀 Obrir i Enviar a Outlook Web';
+      }
+    }
+  },
+
+  promptEditMotherEmail() {
+    const config = this.getOutlookConfig();
+    const current = config.motherEmail || 'info@hostalsomnis.cat';
+    const email = prompt('Introdueix el correu electrònic de la mare (Outlook / Hotmail):', current);
+    if (email !== null) {
+      this.saveOutlookConfig(email, config.provider);
+      alert(`Correu d'Outlook de la mare guardat: ${email.trim()}`);
+    }
+  },
+
+  onOutlookModeChange(mode) {
+    const config = this.getOutlookConfig();
+    this.saveOutlookConfig(config.motherEmail, mode);
+  },
+
+  onRecipientChange() {
+    const recipientInput = document.getElementById('confirmacio-recipient-email');
+    const badge = document.getElementById('mail-recipient-source-badge');
+    if (!badge || !recipientInput) return;
+    if (recipientInput.value.trim().length > 0) {
+      badge.textContent = 'Destinatari llest';
+      badge.style.color = 'var(--success)';
+    } else {
+      badge.textContent = 'Cal introduir correu';
+      badge.style.color = '#D97706';
+    }
   },
 
   // =========================================================================
@@ -858,6 +957,339 @@ Omple la plantilla oficial en ${langName} seguint totes les instruccions:`;
       document.execCommand('copy');
       alert('¡Text copiat al porta-retalls!');
     });
+  },
+
+  // =========================================================================
+  // AUTOMATITZACIÓ DE RESERVES I ENVIAMENT PER OUTLOOK
+  // =========================================================================
+  extractEmail(booking) {
+    if (!booking) return '';
+    if (booking.guestEmail && booking.guestEmail.trim()) return booking.guestEmail.trim();
+    if (booking.email && booking.email.trim()) return booking.email.trim();
+    
+    // Cercar adreça de correu a notes, descripció o resum
+    const fullText = `${booking.notes || ''} ${booking.description || ''} ${booking.summary || ''}`;
+    const match = fullText.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/);
+    return match ? match[0].trim() : '';
+  },
+
+  calculateNights(checkIn, checkOut) {
+    if (!checkIn || !checkOut) return 1;
+    try {
+      const d1 = new Date(checkIn);
+      const d2 = new Date(checkOut);
+      const diff = Math.round((d2 - d1) / (1000 * 3600 * 24));
+      return diff > 0 ? diff : 1;
+    } catch (e) {
+      return 1;
+    }
+  },
+
+  formatDisplayDate(dateStr, lang = 'ca') {
+    if (!dateStr) return '';
+    const parts = String(dateStr).trim().split('-');
+    if (parts.length === 3) {
+      const y = parts[0], m = parseInt(parts[1], 10), d = parseInt(parts[2], 10);
+      const months = {
+        ca: ['', 'gener', 'febrer', 'març', 'abril', 'maig', 'juny', 'juliol', 'agost', 'setembre', 'octubre', 'novembre', 'desembre'],
+        es: ['', 'enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'],
+        en: ['', 'January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+        fr: ['', 'janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre']
+      };
+      if (lang === 'ca') {
+        const prep = (m === 4 || m === 8 || m === 10) ? "d’" : "de ";
+        return `${d} ${prep}${months.ca[m]} de ${y}`;
+      } else if (lang === 'es') {
+        return `${d} de ${months.es[m]} de ${y}`;
+      } else if (lang === 'en') {
+        const ord = (d === 1 || d === 21 || d === 31) ? 'st' : ((d === 2 || d === 22) ? 'nd' : ((d === 3 || d === 23) ? 'rd' : 'th'));
+        return `${months.en[m]} ${d}${ord}, ${y}`;
+      } else if (lang === 'fr') {
+        return `${d === 1 ? '1er' : d} ${months.fr[m]} ${y}`;
+      }
+    }
+    return dateStr;
+  },
+
+  calculateCancellationDate(checkInStr, lang = 'ca') {
+    if (!checkInStr) return '';
+    try {
+      const d = new Date(checkInStr);
+      d.setDate(d.getDate() - 30);
+      const day = d.getDate();
+      const month = d.getMonth() + 1;
+      return this.formatCancellationDate(day, month, lang) || `${day}/${month}`;
+    } catch (e) {
+      return '';
+    }
+  },
+
+  populateConfirmationTemplate(booking, lang = 'ca', customCancellationDate = null) {
+    if (!booking) return;
+    const templateObj = this.CONFIRMATION_TEMPLATES[lang] || this.CONFIRMATION_TEMPLATES.ca;
+    let template = templateObj.template;
+
+    const guestName = (booking.guestName || 'Hoste').trim();
+    const phone = (booking.guestPhone || booking.phone || '').trim();
+    const address = (booking.guestAddress || booking.address || '').trim();
+    const city = (booking.city || booking.postalCode ? `${booking.postalCode || ''} ${booking.city || ''}`.trim() : '').trim();
+    const checkInStr = booking.checkIn || '';
+    const checkOutStr = booking.checkOut || '';
+    const nights = this.calculateNights(checkInStr, checkOutStr);
+    const formattedCheckIn = this.formatDisplayDate(checkInStr, lang) || checkInStr;
+    const formattedCheckOut = this.formatDisplayDate(checkOutStr, lang) || checkOutStr;
+    const roomsCount = booking.roomsCount || 1;
+    const guestsCount = booking.guestsCount || 2;
+    const pricePerNight = booking.price ? parseFloat(booking.price).toFixed(2) : '89.00';
+    const totalStay = booking.totalPrice ? parseFloat(booking.totalPrice).toFixed(2) : (parseFloat(pricePerNight) * nights).toFixed(2);
+    const pendingPayment = (parseFloat(totalStay) * 0.5).toFixed(2);
+    const cancelDate = customCancellationDate || this.calculateCancellationDate(checkInStr, lang) || (lang === 'en' ? '30 days before arrival' : '30 dies abans de la data d\'arribada');
+
+    // Substitució en Català
+    template = template
+      .replace('[NOM I COGNOMS DEL CLIENT]', guestName)
+      .replace('[NOMBRE Y APELLIDOS DEL CLIENTE]', guestName)
+      .replace('[GUEST FULL NAME]', guestName)
+      .replace('[NOM ET PRÉNOM DU CLIENT]', guestName);
+
+    template = template
+      .replace('[TELÈFON]', phone || '')
+      .replace('[TELÉFONO]', phone || '')
+      .replace('[PHONE]', phone || '')
+      .replace('[TÉLÉPHONE]', phone || '');
+
+    template = template
+      .replace('[ADREÇA]', address || '')
+      .replace('[DIRECCIÓN]', address || '')
+      .replace('[ADDRESS]', address || '')
+      .replace('[ADRESSE]', address || '');
+
+    template = template
+      .replace('[CODI POSTAL I POBLACIÓ]', city || '')
+      .replace('[CÓDIGO POSTAL Y POBLACIÓN]', city || '')
+      .replace('[POSTAL CODE AND CITY]', city || '')
+      .replace('[CODE POSTAL ET VILLE]', city || '');
+
+    template = template
+      .replace("[DATA D'ENTRADA]", formattedCheckIn)
+      .replace('[FECHA DE ENTRADA]', formattedCheckIn)
+      .replace('[CHECK-IN DATE]', formattedCheckIn)
+      .replace("[DATE D'ARRIVÉE]", formattedCheckIn);
+
+    template = template
+      .replace('[DATA DE SORTIDA]', formattedCheckOut)
+      .replace('[FECHA DE SALIDA]', formattedCheckOut)
+      .replace('[CHECK-OUT DATE]', formattedCheckOut)
+      .replace('[DATE DE DÉPART]', formattedCheckOut);
+
+    template = template
+      .replace("[NÚMERO D'HABITACIONS]", `${roomsCount} (Habitació ${booking.room || '101'})`)
+      .replace('[NÚMERO DE HABITACIONES]', `${roomsCount} (Habitación ${booking.room || '101'})`)
+      .replace('[NUMBER OF ROOMS]', `${roomsCount} (Room ${booking.room || '101'})`)
+      .replace('[NOMBRE DE CHAMBRES]', `${roomsCount} (Chambre ${booking.room || '101'})`);
+
+    template = template
+      .replace("[NÚMERO DE NITS] [nit / nits]", `${nights} ${nights === 1 ? 'nit' : 'nits'}`)
+      .replace('[NÚMERO DE NOCHES] [noche / noches]', `${nights} ${nights === 1 ? 'noche' : 'noches'}`)
+      .replace('[NUMBER OF NIGHTS] [night / nights]', `${nights} ${nights === 1 ? 'night' : 'nights'}`)
+      .replace('[NOMBRE DE NUITS] [nuit / nuits]', `${nights} ${nights === 1 ? 'nuit' : 'nuits'}`);
+
+    template = template
+      .replace('[NÚMERO DE PERSONES]', `${guestsCount} ${guestsCount === 1 ? 'persona' : 'persones'}`)
+      .replace('[NÚMERO DE PERSONAS]', `${guestsCount} ${guestsCount === 1 ? 'persona' : 'personas'}`)
+      .replace('[NUMBER OF GUESTS]', `${guestsCount} ${guestsCount === 1 ? 'guest' : 'guests'}`)
+      .replace('[NOMBRE DE PERSONNES]', `${guestsCount} ${guestsCount === 1 ? 'personne' : 'personnes'}`);
+
+    template = template
+      .replace('[IMPORT PER HABITACIÓ I NIT]', pricePerNight)
+      .replace('[IMPORTE POR HABITACIÓN Y NOCHE]', pricePerNight)
+      .replace('[RATE PER ROOM AND NIGHT]', pricePerNight)
+      .replace('[TARIF PAR CHAMBRE ET PAR NUIT]', pricePerNight);
+
+    template = template
+      .replace('[TOTAL ESTADA]', totalStay)
+      .replace('[TOTAL ESTANCIA]', totalStay)
+      .replace('[TOTAL STAY]', totalStay)
+      .replace('[TOTAL DU SÉJOUR]', totalStay);
+
+    template = template
+      .replace('[PENDENT DE PAGAMENT]', pendingPayment)
+      .replace('[PENDIENTE DE PAGO]', pendingPayment)
+      .replace('[BALANCE DUE]', pendingPayment)
+      .replace('[RESTE À PAYER]', pendingPayment);
+
+    template = template
+      .replace('[DATA_LIMIT_CANCEL_LACIO]', cancelDate)
+      .replace('[FECHA_LIMITE_CANCELACION]', cancelDate)
+      .replace('[CANCELLATION_DEADLINE_DATE]', cancelDate)
+      .replace('[DATE_LIMITE_ANNULATION]', cancelDate);
+
+    // Netejar línies buides residuals si faltaven adreça o telèfon
+    template = template.replace(/^TEL\.\s*\n/m, '').replace(/^\n\n\n+/g, '\n\n');
+
+    const resultText = document.getElementById('confirmacio-result-text');
+    if (resultText) {
+      resultText.value = template.trim();
+    }
+    return template;
+  },
+
+  setConfirmationLang(lang) {
+    this.currentLang = lang || 'ca';
+    ['ca', 'es', 'en', 'fr'].forEach(l => {
+      const btn = document.getElementById(`btn-mail-lang-${l}`);
+      if (btn) btn.classList.toggle('active', l === this.currentLang);
+    });
+    const select = document.getElementById('confirmacio-lang');
+    if (select) select.value = this.currentLang;
+
+    if (this.activeBooking) {
+      this.populateConfirmationTemplate(this.activeBooking, this.currentLang);
+      const subjectInput = document.getElementById('confirmacio-subject');
+      if (subjectInput) {
+        const subjNames = {
+          ca: 'Confirmació de reserva — Hostal Somnis',
+          es: 'Confirmación de reserva — Hostal Somnis',
+          en: 'Booking Confirmation — Hostal Somnis',
+          fr: 'Confirmation de réservation — Hostal Somnis'
+        };
+        subjectInput.value = `${subjNames[this.currentLang] || subjNames.ca} (Hab. ${this.activeBooking.room || '101'} - ${this.activeBooking.guestName || 'Hoste'})`;
+      }
+    }
+  },
+
+  prepareBookingEmail(bookingData) {
+    this.activeBooking = bookingData;
+    const lang = this.currentLang || 'ca';
+
+    // Obrir l'acordió de confirmació automàticament
+    const body = document.getElementById('accordion-confirmacio-body');
+    const arrow = document.getElementById('arrow-confirmacio');
+    if (body) body.style.display = 'block';
+    if (arrow) arrow.style.transform = 'rotate(0deg)';
+
+    // Minimitzar acordió de preguntes per deixar espai lliure a la revisió
+    const pregBody = document.getElementById('accordion-preguntes-body');
+    const pregArrow = document.getElementById('arrow-preguntes');
+    if (pregBody) pregBody.style.display = 'none';
+    if (pregArrow) pregArrow.style.transform = 'rotate(-90deg)';
+
+    // Mostrar bàner de reserva activa
+    const banner = document.getElementById('mail-booking-loaded-banner');
+    const titleEl = document.getElementById('mail-booking-title');
+    const subEl = document.getElementById('mail-booking-subtitle');
+    const nights = this.calculateNights(bookingData.checkIn, bookingData.checkOut);
+    const totalStay = bookingData.totalPrice ? parseFloat(bookingData.totalPrice).toFixed(2) : (parseFloat(bookingData.price || 89) * nights).toFixed(2);
+
+    if (banner) banner.style.display = 'flex';
+    if (titleEl) titleEl.textContent = `🛎️ Reserva: ${bookingData.guestName || 'Hoste'}`;
+    if (subEl) subEl.textContent = `Habitació ${bookingData.room || '101'} • ${bookingData.checkIn || ''} al ${bookingData.checkOut || ''} (${nights} ${nights === 1 ? 'nit' : 'nits'}) • Total: ${totalStay} €`;
+
+    // Extreure correu del client de les dades o notes
+    const recipientEmail = this.extractEmail(bookingData);
+    const recipientInput = document.getElementById('confirmacio-recipient-email');
+    if (recipientInput) {
+      recipientInput.value = recipientEmail;
+    }
+    this.onRecipientChange();
+
+    // Emplenar assumpte
+    const subjNames = {
+      ca: 'Confirmació de reserva — Hostal Somnis',
+      es: 'Confirmación de reserva — Hostal Somnis',
+      en: 'Booking Confirmation — Hostal Somnis',
+      fr: 'Confirmation de réservation — Hostal Somnis'
+    };
+    const subjectInput = document.getElementById('confirmacio-subject');
+    if (subjectInput) {
+      subjectInput.value = `${subjNames[lang] || subjNames.ca} (Hab. ${bookingData.room || '101'} - ${bookingData.guestName || 'Hoste'})`;
+    }
+
+    // Emplenar la plantilla oficial automàticament a l'instant
+    this.populateConfirmationTemplate(bookingData, lang);
+
+    // Posar notes en brut a la casella d'IA per si vol afinar
+    const rawInput = document.getElementById('confirmacio-input-text');
+    if (rawInput) {
+      rawInput.value = `${bookingData.guestName || ''}, Tel ${bookingData.guestPhone || bookingData.phone || ''}, ${recipientEmail}. Entrada ${bookingData.checkIn || ''}, sortida ${bookingData.checkOut || ''}, Hab. ${bookingData.room || '101'}, ${nights} nit(s), ${bookingData.guestsCount || 2} pers., Total: ${totalStay}€, Notes: ${bookingData.notes || 'Sense observacions'}`.trim();
+    }
+
+    // Scroll suau cap al panell de revisió
+    setTimeout(() => {
+      const panel = document.getElementById('confirmacio-mail-review-panel') || document.getElementById('accordion-confirmacio-body');
+      if (panel) {
+        panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+      if (!recipientEmail && recipientInput) {
+        recipientInput.focus();
+      }
+    }, 150);
+  },
+
+  clearActiveBooking() {
+    this.activeBooking = null;
+    const banner = document.getElementById('mail-booking-loaded-banner');
+    if (banner) banner.style.display = 'none';
+    const recipientInput = document.getElementById('confirmacio-recipient-email');
+    if (recipientInput) recipientInput.value = '';
+    this.onRecipientChange();
+  },
+
+  openInOutlook() {
+    const recipientInput = document.getElementById('confirmacio-recipient-email');
+    const subjectInput = document.getElementById('confirmacio-subject');
+    const bodyTextarea = document.getElementById('confirmacio-result-text');
+
+    const to = recipientInput ? recipientInput.value.trim() : '';
+    const subject = subjectInput ? subjectInput.value.trim() : 'Confirmació de reserva — Hostal Somnis';
+    const body = bodyTextarea ? bodyTextarea.value.trim() : '';
+
+    if (!to) {
+      alert('⚠️ Si us plau, introdueix el correu electrònic del client (destinatari) abans d\'obrir Outlook.');
+      if (recipientInput) {
+        recipientInput.focus();
+        recipientInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+      return;
+    }
+
+    if (!body) {
+      alert('⚠️ El text de la confirmació està buit. Si us plau, revisa la plantilla.');
+      return;
+    }
+
+    const config = this.getOutlookConfig();
+    const provider = config.provider || 'thunderbird';
+
+    if (provider === 'web') {
+      // Outlook Web (outlook.live.com per a Hotmail / Outlook personal)
+      const url = `https://outlook.live.com/mail/0/deeplink/compose?to=${encodeURIComponent(to)}&subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+      window.open(url, '_blank');
+    } else if (provider === 'office365') {
+      // Outlook Microsoft 365 per a comptes empresarials
+      const url = `https://outlook.office.com/mail/deeplink/compose?to=${encodeURIComponent(to)}&subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+      window.open(url, '_blank');
+    } else {
+      // Mozilla Thunderbird o aplicació de correu per defecte del sistema
+      // Protocol estàndard mailto suportat nativament al 100% per Thunderbird
+      const mailtoUrl = `mailto:${encodeURIComponent(to)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+      window.location.href = mailtoUrl;
+    }
+
+    // Feedback visual a la interfície
+    const btn = document.getElementById('btn-open-outlook');
+    if (btn) {
+      const origHtml = btn.innerHTML;
+      const appName = provider === 'thunderbird' ? 'Thunderbird' : (provider === 'app' ? 'el teu correu' : 'Outlook');
+      btn.innerHTML = `✓ Obert a ${appName}! Revisa i prem Enviar`;
+      btn.style.background = '#059669';
+      btn.style.borderColor = '#059669';
+      setTimeout(() => {
+        btn.innerHTML = origHtml;
+        btn.style.background = '';
+        btn.style.borderColor = '';
+      }, 4000);
+    }
   }
 };
 

@@ -22,6 +22,13 @@ const SettingsModule = {
     if (breakfastPriceInput) breakfastPriceInput.value = settings.defaultBreakfastPrice ?? 8;
     if (taxPriceInput) taxPriceInput.value = settings.touristTax ?? settings.touristTaxRate ?? 0.99;
 
+    // Outlook de la mare
+    const outlookConfig = settings.outlook || {};
+    const motherOutlookInput = document.getElementById('settings-mother-outlook');
+    const outlookProviderSelect = document.getElementById('settings-outlook-provider');
+    if (motherOutlookInput) motherOutlookInput.value = outlookConfig.motherEmail || settings.email || 'info@hostalsomnis.cat';
+    if (outlookProviderSelect) outlookProviderSelect.value = outlookConfig.provider || 'web';
+
     // Supabase
     const supabaseConfig = settings.supabase || {};
     const urlInput = document.getElementById('settings-supabase-url');
@@ -34,6 +41,9 @@ const SettingsModule = {
     if (window.CloudSync) {
       CloudSync.updateStatusUI(CloudSync.isConnected, CloudSync.isConnected ? 'Connectat al núvol (Supabase ⚡)' : 'Desconnectat');
     }
+
+    // Renderitzar configuració OTA (Booking.com & Airbnb)
+    this.renderOtaRooms();
   },
 
   saveSettings(e) {
@@ -53,6 +63,13 @@ const SettingsModule = {
     currentSettings.defaultBreakfastPrice = breakfastPrice;
     currentSettings.touristTax = touristTax;
     currentSettings.touristTaxRate = touristTax;
+
+    const motherOutlookInput = document.getElementById('settings-mother-outlook');
+    const outlookProviderSelect = document.getElementById('settings-outlook-provider');
+    currentSettings.outlook = {
+      motherEmail: motherOutlookInput ? motherOutlookInput.value.trim() : (currentSettings.outlook?.motherEmail || currentSettings.email || 'info@hostalsomnis.cat'),
+      provider: outlookProviderSelect ? outlookProviderSelect.value : (currentSettings.outlook?.provider || 'web')
+    };
 
     const urlInput = document.getElementById('settings-supabase-url');
     const keyInput = document.getElementById('settings-supabase-key');
@@ -195,6 +212,148 @@ ALTER PUBLICATION supabase_realtime ADD TABLE bookings;`;
     if (confirm('Vols sincronitzar i pujar totes les reserves locals d\'aquest dispositiu cap a Supabase?')) {
       await CloudSync.syncLocalBookingsToCloud();
       alert('Reserves locals sincronitzades amb Supabase amb èxit!');
+    }
+  },
+
+  renderOtaRooms() {
+    const grid = document.getElementById('ota-rooms-config-grid');
+    if (!grid) return;
+
+    const settings = Store.get('settings', {});
+    const otaSync = settings.ota_sync || {};
+    const rooms = [
+      { id: '101', name: 'Habitació 101', floor: '1a Planta' },
+      { id: '102', name: 'Habitació 102', floor: '1a Planta' },
+      { id: '201', name: 'Habitació 201', floor: '2a Planta' },
+      { id: '202', name: 'Habitació 202', floor: '2a Planta' },
+      { id: '301', name: 'Habitació 301', floor: '3a Planta' },
+      { id: '302', name: 'Habitació 302', floor: '3a Planta' }
+    ];
+
+    const lastSyncEl = document.getElementById('ota-last-sync-badge');
+    if (lastSyncEl) {
+      if (settings.ota_last_sync) {
+        const d = new Date(settings.ota_last_sync);
+        const timeStr = d.toLocaleDateString('ca-ES') + ' a les ' + d.toLocaleTimeString('ca-ES', { hour: '2-digit', minute: '2-digit' });
+        lastSyncEl.innerHTML = `🟢 Darrera sincronització: <strong>${timeStr}</strong>`;
+        lastSyncEl.style.color = '#059669';
+      } else {
+        lastSyncEl.innerHTML = 'Sense sincronitzar encara';
+        lastSyncEl.style.color = 'var(--text-muted)';
+      }
+    }
+
+    grid.innerHTML = rooms.map(room => {
+      const roomConf = otaSync[room.id] || { airbnbUrl: '', bookingUrl: '' };
+      const exportUrl = `${window.location.origin}/api/calendar/export/${room.id}.ics`;
+
+      return `
+        <div class="ota-room-card" style="background: #FFF; border: 1px solid var(--border-color); border-radius: 8px; padding: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.03);">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid var(--border-color);">
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <span class="room-num-badge" style="background: #1E293B; color: #FFF; padding: 2px 8px; border-radius: 6px; font-weight: 700; font-size: 13px;">${room.id}</span>
+              <strong style="font-size: 14px; color: var(--text-main);">${room.name}</strong>
+            </div>
+            <span style="font-size: 11px; color: var(--text-muted); background: var(--bg-element); padding: 2px 6px; border-radius: 4px;">${room.floor}</span>
+          </div>
+
+          <!-- Airbnb iCal -->
+          <div class="form-group" style="margin-bottom: 12px;">
+            <label class="form-label" style="font-size: 12px; font-weight: 600; color: #E11D48; display: flex; align-items: center; gap: 6px;">
+              <span>🔴 Enllaç iCal d'Airbnb</span>
+            </label>
+            <input type="url" id="ota-airbnb-${room.id}" class="form-input ota-airbnb-input" data-room="${room.id}" value="${roomConf.airbnbUrl || ''}" placeholder="https://www.airbnb.com/calendar/ical/...ics" style="font-size: 12px; font-family: monospace;">
+          </div>
+
+          <!-- Booking.com iCal -->
+          <div class="form-group" style="margin-bottom: 14px;">
+            <label class="form-label" style="font-size: 12px; font-weight: 600; color: #2563EB; display: flex; align-items: center; gap: 6px;">
+              <span>🔵 Enllaç iCal de Booking.com</span>
+            </label>
+            <input type="url" id="ota-booking-${room.id}" class="form-input ota-booking-input" data-room="${room.id}" value="${roomConf.bookingUrl || ''}" placeholder="https://ical.booking.com/v1/export?..." style="font-size: 12px; font-family: monospace;">
+          </div>
+
+          <!-- Enllaç de sortida (Hostal Somnis -> Booking / Airbnb) -->
+          <div style="padding-top: 10px; border-top: 1px dashed var(--border-color); display: flex; flex-direction: column; gap: 6px;">
+            <div style="font-size: 11px; color: var(--text-muted);">
+              Enllaç per posar a Booking i Airbnb:
+            </div>
+            <button type="button" class="btn btn-outline" onclick="SettingsModule.copyRoomIcalExportUrl('${room.id}', this)" style="display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 11.5px; padding: 6px 10px; background: #F8FAFC;">
+              📋 Copiar enllaç iCal de l'Habitació ${room.id}
+            </button>
+          </div>
+        </div>
+      `;
+    }).join('');
+  },
+
+  copyRoomIcalExportUrl(roomId, btnEl) {
+    const exportUrl = `${window.location.origin}/api/calendar/export/${roomId}.ics`;
+    const copyText = () => {
+      if (btnEl) {
+        const orig = btnEl.innerHTML;
+        btnEl.innerHTML = '✓ Enllaç copiat!';
+        btnEl.style.background = '#ECFDF5';
+        btnEl.style.color = '#059669';
+        setTimeout(() => {
+          btnEl.innerHTML = orig;
+          btnEl.style.background = '#F8FAFC';
+          btnEl.style.color = '';
+        }, 2500);
+      }
+    };
+
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(exportUrl).then(copyText).catch(() => {
+        prompt('Copia aquest enllaç iCal per a Booking/Airbnb:', exportUrl);
+      });
+    } else {
+      prompt('Copia aquest enllaç iCal per a Booking/Airbnb:', exportUrl);
+    }
+  },
+
+  saveOtaSettings() {
+    const currentSettings = Store.get('settings', {});
+    const otaSync = currentSettings.ota_sync || {};
+    const rooms = ['101', '102', '201', '202', '301', '302'];
+
+    rooms.forEach(id => {
+      const airbnbInput = document.getElementById(`ota-airbnb-${id}`);
+      const bookingInput = document.getElementById(`ota-booking-${id}`);
+      otaSync[id] = {
+        airbnbUrl: airbnbInput ? airbnbInput.value.trim() : '',
+        bookingUrl: bookingInput ? bookingInput.value.trim() : ''
+      };
+    });
+
+    currentSettings.ota_sync = otaSync;
+    Store.set('settings', currentSettings);
+
+    // Si hi ha backend, persistir a settings
+    fetch('/api/settings', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-auth-token': Store.get('auth_token', '')
+      },
+      body: JSON.stringify({ ota_sync: otaSync })
+    }).catch(err => console.warn('Ajustos desats localment (backend no accessible):', err.message));
+
+    // Si tenim Supabase, sincronitzar també configuració
+    if (window.CloudSync && typeof CloudSync.pushSettings === 'function') {
+      CloudSync.pushSettings(currentSettings);
+    }
+
+    alert('✓ Enllaços de Booking.com i Airbnb desats correctament.');
+  },
+
+  async syncOtaNow() {
+    this.saveOtaSettings();
+    if (window.CalendarModule && typeof CalendarModule.syncOta === 'function') {
+      await CalendarModule.syncOta();
+      this.renderOtaRooms();
+    } else {
+      alert('Sincronització de calendaris completada.');
     }
   }
 };
