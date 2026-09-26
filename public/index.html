@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="ca">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,7 +13,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
   <meta name="apple-mobile-web-app-title" content="Hostal Somnis">
   <meta name="theme-color" content="#000000">
-  <link rel="stylesheet" href="css/styles.css?v=52">
+  <link rel="stylesheet" href="css/styles.css?v=53">
 </head>
 <body>
 
@@ -25,10 +25,10 @@
         <source src="assets/Logo_reveal_animation_instructions_20260912012041.mp4" type="video/mp4">
       </video>
       <div class="splash-controls">
-        <button type="button" class="splash-btn" onclick="SplashModule.toggleAudio()" title="Activar/Silenciar sonido">
-          <span id="splash-sound-icon">🔇</span> <span id="splash-sound-label">Activar sonido</span>
+        <button type="button" class="splash-btn" onclick="SplashModule.toggleAudio()" title="Activar/Silenciar so">
+          <span id="splash-sound-icon">🔇</span> <span id="splash-sound-label">Activar so</span>
         </button>
-        <button type="button" class="splash-btn" onclick="SplashModule.dismiss()" title="Saltar animación de carga">
+        <button type="button" class="splash-btn" onclick="SplashModule.dismiss()" title="Saltar animació de càrrega">
           Saltar intro &rarr;
         </button>
       </div>
@@ -53,13 +53,13 @@
     <div style="background: #FFF; width: 100%; max-width: 360px; text-align: center; padding: 40px 32px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); border: 1px solid #E5E7EB;">
       <img src="assets/logo.png" alt="Hostal Somnis" style="width: 72px; height: 72px; margin-bottom: 20px; border-radius: 8px;">
       <h2 style="font-size: 18px; margin-bottom: 6px; font-weight: 600; color: #111827;">Hostal Somnis</h2>
-      <p style="font-size: 13px; color: #6B7280; margin-bottom: 24px;">Introduce la contraseña para acceder</p>
+      <p style="font-size: 13px; color: #6B7280; margin-bottom: 24px;">Introdueix la contrasenya per accedir</p>
       
       <form onsubmit="App.handleLogin(event)" style="display: flex; flex-direction: column; gap: 16px;">
-        <input type="password" id="login-password" class="form-input" placeholder="Contraseña..." required autofocus style="text-align: center; padding: 10px;">
+        <input type="password" id="login-password" class="form-input" placeholder="Contrasenya..." required autofocus style="text-align: center; padding: 10px;">
         <button type="submit" class="btn btn-primary" style="padding: 10px; width: 100%;">Entrar al Workspace</button>
       </form>
-      <div id="login-error" style="color: #DC2626; font-size: 12px; margin-top: 12px; display: none;">Contraseña incorrecta</div>
+      <div id="login-error" style="color: #DC2626; font-size: 12px; margin-top: 12px; display: none;">Contrasenya incorrecta</div>
     </div>
   </div>
 
@@ -83,7 +83,7 @@
       <div class="sidebar-footer" onclick="App.switchView('ajustes')" style="cursor: pointer; display: flex; align-items: center; justify-content: space-between; margin-top: auto; padding: 12px 8px; border-radius: 6px; transition: background 0.2s;" onmouseover="this.style.background='var(--bg-element)'" onmouseout="this.style.background='transparent'">
         <div style="display: flex; align-items: center; gap: 10px;">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
-          <span style="font-size: 13px; color: var(--text-main); font-weight: 500;">Configuración</span>
+          <span style="font-size: 13px; color: var(--text-main); font-weight: 500;">Configuració</span>
         </div>
       </div>
     </aside>
@@ -94,12 +94,12 @@
     <main class="main-content">
       
       <div class="top-bar" style="display: flex; justify-content: space-between; align-items: center;">
-        <button class="btn-toggle-sidebar" onclick="App.toggleSidebar()" title="Mostrar/Ocultar Menú">
+        <button class="btn-toggle-sidebar" onclick="App.toggleSidebar()" title="Mostrar/Amagar Menú">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
         </button>
-        <button class="btn-toggle-sidebar" onclick="window.location.reload(true)" title="Recargar última versión" style="display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text-muted); padding: 4px 10px;">
+        <button class="btn-toggle-sidebar" onclick="window.location.reload(true)" title="Recarregar darrera versió" style="display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text-muted); padding: 4px 10px;">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
-          Actualizar versión
+          Actualitzar versió
         </button>
       </div>
 
@@ -107,8 +107,8 @@
       <section id="view-mails" class="view-section">
         <div class="section-header" style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 12px;">
           <div>
-            <h2 class="section-title">Mails - Respuestas con IA</h2>
-            <div class="section-subtitle">Genera respuestas al estilo de tu madre usando Google Gemini y la base de ejemplos</div>
+            <h2 class="section-title">Mails — Respostes amb IA</h2>
+            <div class="section-subtitle">Genera respostes a l'estil de la mare utilitzant Google Gemini i la base d'exemples</div>
           </div>
           <div style="display: flex; align-items: center; gap: 10px;">
             <div id="mail-api-status-badge"></div>
@@ -119,16 +119,16 @@
           </div>
         </div>
 
-        <!-- PANEL DESPLEGABLE: CONFIGURACIÓN MULTI-IA (FALLBACK Y POOL DE CLAVES) -->
+        <!-- PANEL DESPLEGABLE: CONFIGURACIÓ MULTI-IA (ALTERNATIVA I BANC DE CLAUS) -->
         <div id="mail-config-drawer" style="display: none; margin-bottom: 24px; padding: 22px 24px; background: #FFF; border: 1px solid var(--border-dark); border-radius: var(--radius-lg); box-shadow: 0 4px 12px rgba(0,0,0,0.06);">
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid var(--border-color);">
             <div>
               <div style="font-weight: 600; font-size: 15px; color: var(--text-main); display: flex; align-items: center; gap: 8px;">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"></path></svg>
-                Configurar API Keys Gratuitas (Multi-IA con Fallback)
+                Configurar Claus API Gratuïtes (Multi-IA amb Alternativa)
               </div>
               <div style="font-size: 12px; color: var(--text-muted); margin-top: 3px;">
-                Si una clave o IA agota sus tokens, el sistema pasará automáticamente a la siguiente sin dar error.
+                Si una clau o IA esgota els tokens, el sistema passarà automàticament a la següent sense donar error.
               </div>
             </div>
             <button type="button" onclick="MailsModule.toggleConfigDrawer()" style="background: none; border: none; font-size: 20px; cursor: pointer; color: var(--text-muted); padding: 4px;">&times;</button>
@@ -139,16 +139,16 @@
             <div class="form-group" style="background: #F9FAFB; padding: 14px 16px; border-radius: var(--radius-md); border: 1px solid var(--border-color); margin-bottom: 16px;">
               <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
                 <label class="form-label" style="font-weight: 600; color: var(--text-main); margin-bottom: 0;">
-                  1º Prioridad: Google Gemini (Recomendada - gemini-2.5-flash)
+                  1a Prioritat: Google Gemini (Recomanada - gemini-2.5-flash)
                 </label>
-                <span style="font-size: 11px; background: #ECFDF5; color: var(--success); padding: 2px 8px; border-radius: 10px; font-weight: 600;">100% Gratis</span>
+                <span style="font-size: 11px; background: #ECFDF5; color: var(--success); padding: 2px 8px; border-radius: 10px; font-weight: 600;">100% Gratuït</span>
               </div>
               <p style="font-size: 11.5px; color: var(--text-muted); margin-bottom: 8px;">
-                💡 <strong>Puedes poner tantas claves de Google como quieras (una por línea).</strong> Si la primera se queda sin tokens, saltará automáticamente a la siguiente.
+                💡 <strong>Pots posar tantes claus de Google com vulguis (una per línia).</strong> Si la primera es queda sense tokens, saltarà automàticament a la següent.
               </p>
-              <textarea id="mail-gemini-keys-input" class="form-input" rows="3" placeholder="AIzaSy... (Clave 1)&#10;AIzaSy... (Clave 2 opcional de otra cuenta de Google)" style="font-family: monospace; font-size: 12px; resize: vertical;"></textarea>
+              <textarea id="mail-gemini-keys-input" class="form-input" rows="3" placeholder="AIzaSy... (Clau 1)&#10;AIzaSy... (Clau 2 opcional d'un altre compte de Google)" style="font-family: monospace; font-size: 12px; resize: vertical;"></textarea>
               <div style="font-size: 11.5px; color: var(--text-muted); margin-top: 6px;">
-                ¿Necesitas claves? Consíguelas gratis en <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener noreferrer" style="color: var(--text-main); font-weight: 600; text-decoration: underline;">Google AI Studio</a>.
+                Necessites claus? Aconsegueix-les de franc a <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener noreferrer" style="color: var(--text-main); font-weight: 600; text-decoration: underline;">Google AI Studio</a>.
               </div>
             </div>
 
@@ -156,32 +156,32 @@
             <div class="form-group" style="background: #F9FAFB; padding: 14px 16px; border-radius: var(--radius-md); border: 1px solid var(--border-color); margin-bottom: 16px;">
               <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
                 <label class="form-label" style="font-weight: 600; color: var(--text-main); margin-bottom: 0;">
-                  2º Prioridad: Groq Cloud (Llama 3.3 70B - Inferencia Ultra Rápida)
+                  2a Prioritat: Groq Cloud (Llama 3.3 70B - Inferència Ultra Ràpida)
                 </label>
-                <span style="font-size: 11px; background: #EFF6FF; color: #2563EB; padding: 2px 8px; border-radius: 10px; font-weight: 600;">Ultra Rápido</span>
+                <span style="font-size: 11px; background: #EFF6FF; color: #2563EB; padding: 2px 8px; border-radius: 10px; font-weight: 600;">Ultra Ràpid</span>
               </div>
               <input type="password" id="mail-groq-key-input" class="form-input" placeholder="gsk_..." style="font-family: monospace; font-size: 12px;">
               <div style="font-size: 11.5px; color: var(--text-muted); margin-top: 6px;">
-                Consigue tu clave gratuita sin tarjeta en <a href="https://console.groq.com/keys" target="_blank" rel="noopener noreferrer" style="color: var(--text-main); font-weight: 600; text-decoration: underline;">console.groq.com/keys</a>.
+                Aconsegueix la teva clau gratuïta sense targeta a <a href="https://console.groq.com/keys" target="_blank" rel="noopener noreferrer" style="color: var(--text-main); font-weight: 600; text-decoration: underline;">console.groq.com/keys</a>.
               </div>
             </div>
 
             <div class="form-row">
               <!-- 3. OPENROUTER -->
               <div class="form-group">
-                <label class="form-label" style="font-weight: 600;">3º Respaldo: OpenRouter API Key</label>
+                <label class="form-label" style="font-weight: 600;">3a Alternativa: OpenRouter API Key</label>
                 <input type="password" id="mail-openrouter-key-input" class="form-input" placeholder="sk-or-v1-..." style="font-family: monospace; font-size: 12px;">
                 <div style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">
-                  Gratis en <a href="https://openrouter.ai/settings/keys" target="_blank" rel="noopener noreferrer" style="color: var(--text-main); text-decoration: underline;">openrouter.ai</a>
+                  Gratuït a <a href="https://openrouter.ai/settings/keys" target="_blank" rel="noopener noreferrer" style="color: var(--text-main); text-decoration: underline;">openrouter.ai</a>
                 </div>
               </div>
 
               <!-- 4. MISTRAL -->
               <div class="form-group">
-                <label class="form-label" style="font-weight: 600;">4º Respaldo: Mistral AI (Opcional)</label>
-                <input type="password" id="mail-mistral-key-input" class="form-input" placeholder="Clave de Mistral..." style="font-family: monospace; font-size: 12px;">
+                <label class="form-label" style="font-weight: 600;">4a Alternativa: Mistral AI (Opcional)</label>
+                <input type="password" id="mail-mistral-key-input" class="form-input" placeholder="Clau de Mistral..." style="font-family: monospace; font-size: 12px;">
                 <div style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">
-                  Gratis en <a href="https://console.mistral.ai/api-keys/" target="_blank" rel="noopener noreferrer" style="color: var(--text-main); text-decoration: underline;">console.mistral.ai</a>
+                  Gratuït a <a href="https://console.mistral.ai/api-keys/" target="_blank" rel="noopener noreferrer" style="color: var(--text-main); text-decoration: underline;">console.mistral.ai</a>
                 </div>
               </div>
             </div>
@@ -205,13 +205,13 @@
             </div>
 
             <div class="form-group" style="margin-bottom: 16px;">
-              <label class="form-label" for="mail-custom-tone-input">Instrucciones de Tono y Estilo de mi Madre (Global)</label>
-              <textarea id="mail-custom-tone-input" class="form-input" rows="2" style="font-size: 12.5px; resize: vertical;" placeholder="Tono familiar, cercano, educado y resolutivo para Hostal Somnis en Súria..."></textarea>
+              <label class="form-label" for="mail-custom-tone-input">Instruccions de To i Estil de la Mare (Global)</label>
+              <textarea id="mail-custom-tone-input" class="form-input" rows="2" style="font-size: 12.5px; resize: vertical;" placeholder="To familiar, proper, educat i resolutiu per a Hostal Somnis a Súria..."></textarea>
             </div>
 
             <div style="display: flex; justify-content: flex-end; gap: 8px;">
-              <button type="button" class="btn btn-outline" onclick="MailsModule.toggleConfigDrawer()">Cerrar</button>
-              <button type="submit" class="btn btn-primary" style="font-weight: 600; padding: 8px 18px;">Guardar Todas las Claves</button>
+              <button type="button" class="btn btn-outline" onclick="MailsModule.toggleConfigDrawer()">Tancar</button>
+              <button type="submit" class="btn btn-primary" style="font-weight: 600; padding: 8px 18px;">Desar Totes les Claus</button>
             </div>
           </form>
         </div>
@@ -485,12 +485,12 @@
           </div>
         </div>
 
-        <!-- Indicador de entrenamiento integrado -->
+        <!-- Indicador d'entrenament integrat -->
         <div style="display: flex; align-items: center; justify-content: space-between; padding: 14px 18px; background: var(--bg-sidebar); border: 1px solid var(--border-color); border-radius: var(--radius-md); font-size: 13px; color: var(--text-muted); margin-bottom: 24px;">
           <div style="display: flex; align-items: center; gap: 8px;">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--success)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
-            <span style="color: var(--text-main); font-weight: 600;">IA entrenada con los correos de tu madre</span>
-            <span>(integrados de forma fija en la aplicación)</span>
+            <span style="color: var(--text-main); font-weight: 600;">IA entrenada amb els correus de la mare</span>
+            <span>(integrats de manera fixa a l'aplicació)</span>
           </div>
         </div>
       </section>
@@ -499,17 +499,17 @@
       <section id="view-codigos" class="view-section">
         <div class="section-header">
           <h2 class="section-title">Còdigs 2</h2>
-          <div class="section-subtitle">Generador rápido de códigos para enviar a los clientes</div>
+          <div class="section-subtitle">Generador ràpid de còdigs per enviar als clients</div>
         </div>
         
         <div class="panels-grid">
-          <!-- Formulario de datos -->
+          <!-- Formulari de dades -->
           <div class="panel">
-            <div class="panel-header">Datos de Llegada</div>
+            <div class="panel-header">Dades d'Arribada</div>
             <div class="panel-body">
               <form id="form-codigos">
                 <div class="form-group">
-                  <label class="form-label">Idioma del Mensaje</label>
+                  <label class="form-label">Idioma del Missatge</label>
                   <select id="codigos-idioma" class="form-select">
                     <option value="ca">Català</option>
                     <option value="es">Castellano</option>
@@ -519,7 +519,7 @@
                 </div>
 
                 <div class="form-group">
-                  <label class="form-label">Codi Porta Principal (máx. 6 dígitos)</label>
+                  <label class="form-label">Codi Porta Principal (màx. 6 dígits)</label>
                   <input type="tel" inputmode="numeric" pattern="[0-9]*" maxlength="6" id="codigos-porta" class="form-input" placeholder="152030">
                 </div>
 
@@ -534,7 +534,7 @@
                     </select>
                   </div>
                   <div class="form-group">
-                    <label class="form-label">Codi de Caixa (máx. 4 dígitos)</label>
+                    <label class="form-label">Codi de Caixa (màx. 4 dígits)</label>
                     <input type="tel" inputmode="numeric" pattern="[0-9]*" maxlength="4" id="codigos-caixa-codi" class="form-input" placeholder="1479">
                   </div>
                 </div>
@@ -561,14 +561,14 @@
                 <div class="form-group" style="margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border-color);">
                   <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 13px; color: var(--text-main); font-weight: 500;">
                     <input type="checkbox" id="codigos-limpieza" checked style="width: 16px; height: 16px; accent-color: var(--text-main);">
-                    Incluir aviso "Cartel Verde" (Limpieza de habitación)
+                    Incloure avís "Cartell Verd" (Neteja d'habitació)
                   </label>
                 </div>
 
                 <div class="form-group" style="margin-top: 12px;">
                   <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 13px; color: var(--text-main); font-weight: 500;">
                     <input type="checkbox" id="codigos-esmorzar" style="width: 16px; height: 16px; accent-color: var(--text-main);" onchange="document.getElementById('esmorzar-options').style.display = this.checked ? 'block' : 'none'; window.CodesModule.generateText();">
-                    Añadir información de Esmorzar (Desayuno)
+                    Afegir informació d'Esmorzar
                   </label>
                 </div>
                 
@@ -576,21 +576,21 @@
                   <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px;">
                     <label style="display: flex; align-items: center; gap: 6px; cursor: pointer; font-size: 13px; color: var(--text-main);">
                       <input type="radio" name="esmorzar-tipo" id="esmorzar-ofrecer" value="ofrecer" checked onchange="window.CodesModule.generateText();" style="accent-color: var(--text-main);">
-                      Ofrecer comprar desayuno
+                      Oferir comprar esmorzar
                     </label>
                     <label style="display: flex; align-items: center; gap: 6px; cursor: pointer; font-size: 13px; color: var(--text-main);">
                       <input type="radio" name="esmorzar-tipo" id="esmorzar-recordar" value="recordar" onchange="window.CodesModule.generateText();" style="accent-color: var(--text-main);">
-                      Recordar desayuno ya incluido
+                      Recordar esmorzar ja inclòs
                     </label>
                   </div>
                   <div style="display: flex; align-items: center; gap: 6px; font-size: 13px;">
-                    <span>Horario de:</span>
+                    <span>Horari de:</span>
                     <input type="time" id="esmorzar-inicio" min="05:00" max="12:00" class="form-input" value="08:00" style="padding: 4px; width: auto;" onchange="window.CodesModule.generateText();">
                     <span>a:</span>
                     <input type="time" id="esmorzar-fin" min="05:00" max="12:00" class="form-input" value="10:00" style="padding: 4px; width: auto;" onchange="window.CodesModule.generateText();">
                   </div>
                   <div style="display: flex; align-items: center; gap: 6px; font-size: 13px; margin-top: 8px;">
-                    <span>Precio (€):</span>
+                    <span>Preu (€):</span>
                     <input type="number" id="esmorzar-precio" inputmode="numeric" pattern="[0-9]*" min="0" max="20" class="form-input" value="13" style="padding: 4px; width: 60px;" onchange="window.CodesModule.generateText();" oninput="window.CodesModule.generateText();">
                   </div>
                 </div>
@@ -598,10 +598,10 @@
             </div>
           </div>
 
-          <!-- Resultado y Copiar -->
+          <!-- Resultat i Copiar -->
           <div class="panel">
             <div class="panel-header" style="display: flex; justify-content: space-between; align-items: center;">
-              <span>Mensaje Generado</span>
+              <span>Missatge Generat</span>
               <button class="btn btn-primary" onclick="CodesModule.copyText()" style="display: flex; align-items: center; gap: 6px; padding: 6px 14px; border-radius: 6px; font-size: 13px;">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
                 Copiar
@@ -618,12 +618,12 @@
       <section id="view-checkin" class="view-section">
         <div class="section-header">
           <h2 class="section-title">Check In 1</h2>
-          <div class="section-subtitle">Mensaje para enviar el enlace de check-in online antes de la llegada</div>
+          <div class="section-subtitle">Missatge per enviar l'enllaç de check-in en línia abans de l'arribada</div>
         </div>
         <div class="panels-grid">
           <div class="panel">
             <div class="panel-header" style="display: flex; justify-content: space-between; align-items: center;">
-              <span>Mensaje para el cliente</span>
+              <span>Missatge per al client</span>
               <button class="btn btn-primary" onclick="CheckinModule.copyText()" style="display: flex; align-items: center; gap: 6px; padding: 6px 14px; border-radius: 6px; font-size: 13px;">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
                 Copiar
@@ -642,23 +642,23 @@
         </div>
       </section>
 
-      <!-- VISTA AJUSTES -->
+      <!-- VISTA AJUSTES / CONFIGURACIÓ -->
       <section id="view-ajustes" class="view-section">
         <div class="section-header">
-          <h2 class="section-title">Configuración</h2>
-          <div class="section-subtitle">Ajustes generales del hostal</div>
+          <h2 class="section-title">Configuració</h2>
+          <div class="section-subtitle">Configuració general de l'hostal</div>
         </div>
         <div class="panels-grid">
           <div class="panel">
-            <div class="panel-header">Datos del Hostal</div>
+            <div class="panel-header">Dades de l'Hostal</div>
             <div class="panel-body">
               <form id="form-settings" onsubmit="SettingsModule.saveSettings(event)">
                 <div class="form-group">
-                  <label class="form-label">Nombre del Hostal</label>
+                  <label class="form-label">Nom de l'Hostal</label>
                   <input type="text" id="settings-name" class="form-input" value="Hostal Somnis">
                 </div>
                 <div class="form-group">
-                  <label class="form-label">Ubicación</label>
+                  <label class="form-label">Ubicació</label>
                   <input type="text" id="settings-city" class="form-input" value="Súria">
                 </div>
                 <div class="form-row" style="margin-top: 14px;">
@@ -694,7 +694,7 @@
                 </div>
 
                 <div style="margin-top: 16px;">
-                  <button type="submit" class="btn btn-primary">Guardar Ajustes</button>
+                  <button type="submit" class="btn btn-primary">Guardar Configuració</button>
                 </div>
               </form>
             </div>
@@ -1055,14 +1055,14 @@ ALTER PUBLICATION supabase_realtime ADD TABLE bookings;</pre>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="js/store.js?v=52"></script>
-  <script src="js/cloud.js?v=52"></script>
-  <script src="js/calendar.js?v=52"></script>
-  <script src="js/app.js?v=52"></script>
-  <script src="js/mails.js?v=52"></script>
-  <script src="js/checkin.js?v=52"></script>
-  <script src="js/codes.js?v=52"></script>
-  <script src="js/settings.js?v=52"></script>
+  <script src="js/store.js?v=53"></script>
+  <script src="js/cloud.js?v=53"></script>
+  <script src="js/calendar.js?v=53"></script>
+  <script src="js/app.js?v=53"></script>
+  <script src="js/mails.js?v=53"></script>
+  <script src="js/checkin.js?v=53"></script>
+  <script src="js/codes.js?v=53"></script>
+  <script src="js/settings.js?v=53"></script>
   <!-- Registre del Service Worker per a funcionament offline PWA -->
   <script>
     if ('serviceWorker' in navigator) {

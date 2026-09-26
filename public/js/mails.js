@@ -89,13 +89,13 @@ const MailsModule = {
         statusBadge.innerHTML = `
           <span style="display: inline-flex; align-items: center; gap: 6px; color: var(--success); font-size: 12px; font-weight: 600; background: #ECFDF5; border: 1px solid #A7F3D0; padding: 4px 10px; border-radius: 16px;">
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
-            ${totalCount} IA${totalCount === 1 ? '' : 's'} / Clave${totalCount === 1 ? '' : 's'} lista${totalCount === 1 ? '' : 's'} (Fallback activo)
+            ${totalCount} IA${totalCount === 1 ? '' : 's'} / Clau${totalCount === 1 ? '' : 's'} a punt (Alternativa activa)
           </span>`;
       } else {
         statusBadge.innerHTML = `
           <span style="display: inline-flex; align-items: center; gap: 5px; color: #D97706; font-size: 12px; font-weight: 500; background: #FFFBEB; border: 1px solid #FDE68A; padding: 4px 10px; border-radius: 16px;">
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
-            Configurar API Keys
+            Configurar claus API
           </span>`;
       }
     }
@@ -132,7 +132,7 @@ const MailsModule = {
 
     Store.set('ai_keys_config', newConfig);
     this.renderApiKeyStatus();
-    alert(`Configuración guardada correctamente con ${geminiKeys.length} clave(s) de Google Gemini y proveedores de respaldo.`);
+    alert(`Configuració desada correctament amb ${geminiKeys.length} clau(s) de Google Gemini i proveïdors alternatius.`);
     this.toggleConfigDrawer();
   },
 
@@ -416,14 +416,14 @@ const MailsModule = {
     const queue = this.buildQueue(config);
 
     if (queue.length === 0) {
-      alert('No tienes ninguna API Key configurada.\n\nPulsa en "Configurar API Keys" arriba a la derecha para añadir tus claves gratuitas de Google Gemini o Groq.');
+      alert('No tens cap clau API configurada.\n\nPrem a "Google API Key" a dalt a la dreta per afegir les teves claus gratuïtes de Google Gemini o Groq.');
       this.toggleConfigDrawer();
       return;
     }
 
     const incomingMail = document.getElementById('mail-incoming-text').value.trim();
     if (!incomingMail) {
-      alert('Por favor, pega el correo o mensaje del cliente que deseas responder.');
+      alert('Si us plau, enganxa el correu o missatge del client que vols respondre.');
       document.getElementById('mail-incoming-text').focus();
       return;
     }
@@ -453,24 +453,24 @@ const MailsModule = {
       const current = queue[i];
 
       if (i > 0) {
-        // Informar al usuario de que se agotaron los tokens de la anterior y tardará unos segundos más
+        // Informar a l'usuari que s'han esgotat els tokens de l'anterior
         this.showLoadingMessage(
-          `La IA anterior agotó su cuota de tokens o no respondió. Cambiando de inteligencia artificial a "${current.name}"... Tardará un poco más en redactar.`,
+          `La IA anterior ha esgotat la seva quota o no ha respost. Canviant d'intel·ligència artificial a "${current.name}"... Tardarà uns segons més a redactar.`,
           true
         );
-        // Pequeña pausa para que el navegador renderice la advertencia
+        // Petita pausa perquè el navegador renderitzi l'avís
         await new Promise(resolve => setTimeout(resolve, 800));
       } else {
-        this.showLoadingMessage(`Conectando con ${current.name} para redactar la respuesta...`, false);
+        this.showLoadingMessage(`Connectant amb ${current.name} per redactar la resposta...`, false);
       }
 
       try {
-        console.log(`Intentando generar respuesta con: ${current.name}`);
+        console.log(`Intentant generar resposta amb: ${current.name}`);
         successResponse = await current.fn(systemPrompt, userMessage);
         usedProviderName = current.name;
-        break; // Éxito! Salir del bucle
+        break; // Èxit! Sortir del bucle
       } catch (err) {
-        console.warn(`Error con ${current.name}:`, err.message);
+        console.warn(`Error amb ${current.name}:`, err.message);
         failedErrors.push(`${current.name}: ${err.message}`);
       }
     }
@@ -481,16 +481,16 @@ const MailsModule = {
     if (successResponse) {
       if (resultText) resultText.value = successResponse;
       if (providerBadge) {
-        providerBadge.textContent = `Generado con: ${usedProviderName}`;
+        providerBadge.textContent = `Generat amb: ${usedProviderName}`;
       }
       if (resultBox) {
         resultBox.style.display = 'block';
         resultBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
       }
     } else {
-      // Si fallaron todas las claves
+      // Si han fallat totes les claus
       const errorDetails = failedErrors.join('\n• ');
-      alert(`No se pudo generar la respuesta con ninguna de las IAs configuradas.\n\nDetalles:\n• ${errorDetails}\n\nPor favor revisa tus claves o añade claves adicionales en la configuración.`);
+      alert(`No s'ha pogut generar la resposta amb cap de les IAs configurades.\n\nDetalls:\n• ${errorDetails}\n\nSi us plau, revisa les teves claus o afegeix-ne a la configuració.`);
     }
   },
 
@@ -559,7 +559,7 @@ Genera ÚNICAMENTE el texto del correo de respuesta listo para enviar, sin preá
         const originalHtml = btn.innerHTML;
         btn.innerHTML = `
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
-          ¡Copiado!
+          ✓ Copiat!
         `;
         btn.style.backgroundColor = 'var(--success)';
         btn.style.borderColor = 'var(--success)';
@@ -571,7 +571,7 @@ Genera ÚNICAMENTE el texto del correo de respuesta listo para enviar, sin preá
       }
     }).catch(err => {
       console.error('Error al copiar:', err);
-      alert('No se pudo copiar automáticamente. Por favor selecciónalo y cópialo manualmente.');
+      alert('No s\'ha pogut copiar automàticament. Si us plau, selecciona-ho i copia-ho manualment.');
     });
   },
 

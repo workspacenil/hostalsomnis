@@ -73,7 +73,7 @@ Hostal Somnis`
     const text = this.texts[this.currentLang] || this.texts.ca;
     try {
       await navigator.clipboard.writeText(text);
-      alert('¡Mensaje de check-in copiado al portapapeles!');
+      alert('Missatge de check-in copiat al porta-retalls!');
     } catch (err) {
       const tempTextArea = document.createElement("textarea");
       tempTextArea.value = text;
@@ -81,7 +81,7 @@ Hostal Somnis`
       tempTextArea.select();
       document.execCommand("copy");
       document.body.removeChild(tempTextArea);
-      alert('¡Mensaje de check-in copiado al portapapeles!');
+      alert('Missatge de check-in copiat al porta-retalls!');
     }
   }
 };

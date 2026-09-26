@@ -254,7 +254,7 @@ Hostal Somnis`;
 
     try {
       await navigator.clipboard.writeText(this.currentText);
-      alert('¡Mensaje copiado al portapapeles!');
+      alert('Missatge copiat al porta-retalls!');
     } catch (err) {
       // Fallback manual si falla la API del portapapeles
       const tempTextArea = document.createElement("textarea");
@@ -263,7 +263,7 @@ Hostal Somnis`;
       tempTextArea.select();
       document.execCommand("copy");
       document.body.removeChild(tempTextArea);
-      alert('¡Mensaje copiado al portapapeles!');
+      alert('Missatge copiat al porta-retalls!');
     }
   },
 

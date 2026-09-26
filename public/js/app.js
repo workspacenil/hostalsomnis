@@ -249,7 +249,7 @@ const SplashModule = {
       icon.textContent = video.muted ? '🔇' : '🔊';
     }
     if (label) {
-      label.textContent = video.muted ? 'Activar sonido' : 'Silenciar';
+      label.textContent = video.muted ? 'Activar so' : 'Silenciar';
     }
   },
 

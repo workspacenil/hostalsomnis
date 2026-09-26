@@ -90,7 +90,7 @@ const SettingsModule = {
       CloudSync.pushSettings(currentSettings);
     }
     
-    alert('Ajustes guardados correctamente.');
+    alert('Configuració desada correctament.');
     
     // Actualizar nombre en la UI
     const headerName = document.querySelector('.sidebar-title');
