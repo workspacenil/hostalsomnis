@@ -47,7 +47,7 @@ jobs:
             await github.rest.issues.create({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              title: '🚨 ALERTA: Incidència detectada pel Vigilant al Núvol - Hostal Somnis',
-              body: 'El vigilant 24/7 ha detectat una anomalia a la web o a la base de dades d\'Hostal Somnis.\n\nS\'ha generat aquest avís automàtic per notificar al correu electrònic del responsable de forma immediata.\n\nRevisa el registre detallat a GitHub Actions.',
+              title: '🚨 ALERTA: Incidència detectada pel Vigilant al Núvol - Hostal Somnis (@workspacenil / nilrodergas00@gmail.com)',
+              body: 'El vigilant 24/7 ha detectat una anomalia a la web o a la base de dades d\'Hostal Somnis.\n\n👤 Atenció responsable: @workspacenil\n📧 Correu de contacte: nilrodergas00@gmail.com\n📱 Canal d\'emergència: WhatsApp (+34633431945)\n\nS\'ha generat aquest avís automàtic per notificar de forma immediata al responsable.\n\nRevisa el registre detallat de l\'execució a GitHub Actions.',
               labels: ['security-alert']
             });

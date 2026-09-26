@@ -20,6 +20,42 @@ const CONFIG = {
   maxDbResponseTimeMs: 2500
 };
 
+const NOTIFICATIONS = {
+  whatsapp: {
+    phone: '34633431945',
+    apikey: '4893407',
+    enabled: true
+  },
+  email: 'nilrodergas00@gmail.com'
+};
+
+async function sendWhatsApp(text) {
+  if (!NOTIFICATIONS.whatsapp.enabled || !NOTIFICATIONS.whatsapp.phone || !NOTIFICATIONS.whatsapp.apikey) {
+    console.log('   ⚠️ Notificació WhatsApp desactivada o credencials no configurades.');
+    return { ok: false, detail: 'Notificació desactivada' };
+  }
+
+  const url = `https://api.callmebot.com/whatsapp.php?phone=${encodeURIComponent(NOTIFICATIONS.whatsapp.phone)}&text=${encodeURIComponent(text)}&apikey=${encodeURIComponent(NOTIFICATIONS.whatsapp.apikey)}`;
+  try {
+    const res = await fetch(url, {
+      method: 'GET',
+      headers: { 'User-Agent': 'HostalSomnis-CloudMonitor/1.0' },
+      signal: AbortSignal.timeout(10000)
+    });
+    const responseText = await res.text();
+    if (res.ok) {
+      console.log(`   📱 WhatsApp enviat correctament a +${NOTIFICATIONS.whatsapp.phone} via CallMeBot.`);
+      return { ok: true, detail: responseText };
+    } else {
+      console.warn(`   ⚠️ Error en enviar WhatsApp (HTTP ${res.status}): ${responseText}`);
+      return { ok: false, detail: responseText };
+    }
+  } catch (err) {
+    console.warn(`   ⚠️ Excepció en connectar amb CallMeBot WhatsApp: ${err.message}`);
+    return { ok: false, detail: err.message };
+  }
+}
+
 async function measureFetch(url, options = {}) {
   const t0 = performance.now();
   const res = await fetch(url, options);
@@ -34,6 +70,7 @@ async function runAudit() {
   console.log(`📅 Data d\'execució: ${startTime.toISOString()} (UTC)`);
   console.log(`📍 Web objectiu:   ${CONFIG.webUrl}`);
   console.log(`☁️  Supabase BD:    ${CONFIG.supabaseBaseUrl}`);
+  console.log(`📱 Alertes:        WhatsApp (+${NOTIFICATIONS.whatsapp.phone}) | Email (${NOTIFICATIONS.email})`);
   console.log('======================================================================\n');
 
   let passed = true;
@@ -251,7 +288,9 @@ async function runAudit() {
 | 💶 Tarifes | ${vitals.tarifes.ok ? '🟢 VERIFICAT' : '🔴 ANOMALIA'} | ${vitals.tarifes.detail} |
 | 🔐 Xifratge | ${vitals.xifratge.ok ? '🟢 BLINDAT' : '🔴 ANOMALIA'} | ${vitals.xifratge.detail} |
 
-**Diagnòstic:** ${passed ? '✅ Tots els sistemes operen amb normalitat absoluta.' : '🚨 Anomalia detectada - S\'ha disparat alerta per correu.'}
+- 📱 **Canal WhatsApp d'alerta:** +${NOTIFICATIONS.whatsapp.phone} (CallMeBot)
+- 📧 **Canal Correu electrònic:** ${NOTIFICATIONS.email}
+**Diagnòstic:** ${passed ? '✅ Tots els sistemes operen amb normalitat absoluta.' : '🚨 Anomalia detectada - Notificació enviada a WhatsApp i correu.'}
 `;
       fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, summaryMd, 'utf8');
     } catch (e) {
@@ -260,6 +299,18 @@ async function runAudit() {
   }
 
   if (passed) {
+    const isManualRun = process.argv.includes('--notify-ok') ||
+                        process.argv.includes('--manual') ||
+                        process.env.GITHUB_EVENT_NAME === 'workflow_dispatch' ||
+                        process.env.NOTIFY_OK === 'true';
+
+    if (isManualRun) {
+      console.log('\n📲 Llançament manual / primer registre detectat: enviant confirmació per WhatsApp...');
+      await sendWhatsApp('✅ HOSTAL SOMNIS: Vigilància 24/7 superada amb èxit. Tots els sistemes operatius i dades blindades.');
+    } else {
+      console.log('📱 Canal WhatsApp preparat per a alertes immediates en cas d\'incidència.');
+    }
+
     console.log('📋 CONCLUSIÓ DE L\'ANÀLISI IA:');
     console.log('   Tots els sistemes d\'Hostal Somnis funcionen amb absoluta normalitat.');
     console.log('   Les 6 habitacions reals (101, 102, 201, 202, 301, 302) estan sincronitzades.');
@@ -274,6 +325,10 @@ async function runAudit() {
     console.error('   S\'han identificat fallades o incoherències en els sistemes vitals:');
     issues.forEach((err, idx) => console.error(`   [INCIDÈNCIA ${idx + 1}] ${err}`));
     console.error('\n⚠️ Es genera un codi de sortida 1 per disparar l\'alerta immediata per correu electrònic a GitHub Actions.');
+
+    console.log('\n📲 Enviant avís d\'emergència per WhatsApp...');
+    await sendWhatsApp('🚨 ALERTA HOSTAL SOMNIS: Incidència detectada pel vigilant al núvol! Revisa nilrodergas00@gmail.com per més detalls.');
+
     console.error('======================================================================\n');
     process.exit(1);
   }
