@@ -26,11 +26,13 @@ const SettingsModule = {
     const supabaseConfig = settings.supabase || {};
     const urlInput = document.getElementById('settings-supabase-url');
     const keyInput = document.getElementById('settings-supabase-key');
-    if (urlInput) urlInput.value = supabaseConfig.url || '';
-    if (keyInput) keyInput.value = supabaseConfig.anonKey || supabaseConfig.key || '';
+    const defUrl = (window.CloudSync && CloudSync.DEFAULT_URL) || 'https://jzehbzjcwbahldmattbt.supabase.co';
+    const defKey = (window.CloudSync && CloudSync.DEFAULT_KEY) || 'sb_publishable_AKIgnEw9PT2Sknj4WnaqoQ_dC1z7zNv';
+    if (urlInput) urlInput.value = supabaseConfig.url || defUrl;
+    if (keyInput) keyInput.value = supabaseConfig.anonKey || supabaseConfig.key || defKey;
 
     if (window.CloudSync) {
-      CloudSync.updateStatusUI(CloudSync.isConnected, CloudSync.isConnected ? 'Connectat al núvol (Temps real actiu ⚡)' : 'Desconnectat');
+      CloudSync.updateStatusUI(CloudSync.isConnected, CloudSync.isConnected ? 'Connectat al núvol (Supabase ⚡)' : 'Desconnectat');
     }
   },
 

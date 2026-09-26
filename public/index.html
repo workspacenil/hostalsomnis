@@ -12,7 +12,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
   <meta name="apple-mobile-web-app-title" content="Hostal Somnis">
   <meta name="theme-color" content="#000000">
-  <link rel="stylesheet" href="css/styles.css?v=44">
+  <link rel="stylesheet" href="css/styles.css?v=45">
 </head>
 <body>
 
@@ -628,23 +628,23 @@
           <div class="panel">
             <div class="panel-header" style="display: flex; justify-content: space-between; align-items: center;">
               <span>☁️ Sincronització al Núvol (Mòbil i Ordinador - Supabase)</span>
-              <div id="supabase-status-indicator" style="font-size: 12px; font-weight: normal;"></div>
+              <div id="supabase-status-indicator" style="font-size: 12px; font-weight: 500; color: #059669; display: inline-flex; align-items: center; gap: 6px;"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#059669;"></span> Connectat al núvol (Supabase) ✓</div>
             </div>
             <div class="panel-body">
               <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 14px; line-height: 1.4;">
-                Connecta el teu projecte gratuït de <strong>Supabase</strong> perquè qualsevol reserva creada o modificada al mòbil o l'ordinador s'actualitzi automàticament en temps real a tots els dispositius.
+                Projecte oficial de <strong>Supabase</strong> configurat per defecte. Qualsevol reserva creada o modificada al mòbil o l'ordinador s'actualitza automàticament en temps real a tots els dispositius.
               </p>
 
               <div class="form-group">
                 <label class="form-label" for="settings-supabase-url">URL del Projecte Supabase</label>
-                <input type="url" id="settings-supabase-url" class="form-input" placeholder="https://xxxxxxxx.supabase.co" autocomplete="off" spellcheck="false">
-                <span style="font-size: 11px; color: var(--text-muted);">Exemple: https://xyzcompany.supabase.co (Project Settings &rarr; API)</span>
+                <input type="url" id="settings-supabase-url" class="form-input" value="https://jzehbzjcwbahldmattbt.supabase.co" placeholder="https://jzehbzjcwbahldmattbt.supabase.co" autocomplete="off" spellcheck="false">
+                <span style="font-size: 11px; color: var(--text-muted);">Configurat automàticament per a Hostal Somnis.</span>
               </div>
 
               <div class="form-group" style="margin-top: 12px;">
                 <label class="form-label" for="settings-supabase-key">Clau Anònima Pública (anon / public key)</label>
-                <input type="password" id="settings-supabase-key" class="form-input" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." autocomplete="off" spellcheck="false">
-                <span style="font-size: 11px; color: var(--text-muted);">Clau segura d'accés anònim per al navegador client (Project Settings &rarr; API &rarr; anon key).</span>
+                <input type="password" id="settings-supabase-key" class="form-input" value="sb_publishable_AKIgnEw9PT2Sknj4WnaqoQ_dC1z7zNv" placeholder="sb_publishable_..." autocomplete="off" spellcheck="false">
+                <span style="font-size: 11px; color: var(--text-muted);">Clau segura d'accés anònim predeterminada per al navegador client.</span>
               </div>
 
               <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; margin-bottom: 20px;">
@@ -868,13 +868,13 @@ ALTER PUBLICATION supabase_realtime ADD TABLE bookings;</pre>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="js/store.js?v=44"></script>
-  <script src="js/cloud.js?v=44"></script>
-  <script src="js/calendar.js?v=44"></script>
-  <script src="js/app.js?v=44"></script>
-  <script src="js/mails.js?v=44"></script>
-  <script src="js/checkin.js?v=44"></script>
-  <script src="js/codes.js?v=44"></script>
-  <script src="js/settings.js?v=44"></script>
+  <script src="js/store.js?v=45"></script>
+  <script src="js/cloud.js?v=45"></script>
+  <script src="js/calendar.js?v=45"></script>
+  <script src="js/app.js?v=45"></script>
+  <script src="js/mails.js?v=45"></script>
+  <script src="js/checkin.js?v=45"></script>
+  <script src="js/codes.js?v=45"></script>
+  <script src="js/settings.js?v=45"></script>
 </body>
 </html>

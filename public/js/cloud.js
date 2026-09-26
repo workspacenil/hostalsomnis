@@ -9,12 +9,15 @@ const CloudSync = {
   isConnected: false,
   channel: null,
 
+  DEFAULT_URL: 'https://jzehbzjcwbahldmattbt.supabase.co',
+  DEFAULT_KEY: 'sb_publishable_AKIgnEw9PT2Sknj4WnaqoQ_dC1z7zNv',
+
   init() {
     try {
       const settings = (window.Store && Store.get('settings')) || {};
       const config = settings.supabase || {};
-      const url = config.url ? config.url.trim() : '';
-      const key = (config.anonKey || config.key) ? (config.anonKey || config.key).trim() : '';
+      const url = (config.url ? config.url.trim() : '') || this.DEFAULT_URL;
+      const key = (config.anonKey || config.key ? (config.anonKey || config.key).trim() : '') || this.DEFAULT_KEY;
 
       if (!url || !key) {
         this.isConnected = false;
@@ -34,7 +37,7 @@ const CloudSync = {
       });
 
       this.isConnected = true;
-      this.updateStatusUI(true, 'Connectat al núvol');
+      this.updateStatusUI(true, 'Connectat al núvol (Supabase) ✓');
 
       // Configurar subscripció Realtime
       this.setupRealtime();
@@ -108,11 +111,20 @@ const CloudSync = {
         const cloudBookings = data.map(row => row.data || row);
         const localBookings = (window.Store && Store.get('bookings')) || [];
 
-        // Si el núvol té dades, actualitzem el Store local
+        // Si el núvol té dades, actualitzem el Store local i pugem reserves locals que faltin
         if (cloudBookings.length > 0) {
+          const cloudIds = new Set(cloudBookings.map(b => String(b.id)));
+          const missingInCloud = localBookings.filter(b => b && b.id && !cloudIds.has(String(b.id)));
+
+          if (missingInCloud.length > 0) {
+            for (const b of missingInCloud) {
+              await this.pushBooking(b);
+              cloudBookings.push(b);
+            }
+          }
           Store.set('bookings', cloudBookings);
         } else if (localBookings.length > 0 && cloudBookings.length === 0) {
-          // Si el núvol és nou i buit, pujem les reserves locals existents
+          // Si el núvol és nou i buit, pugem les reserves locals existents
           console.log('Núvol buit, enviant reserves locals...');
           await this.syncLocalBookingsToCloud();
         }
