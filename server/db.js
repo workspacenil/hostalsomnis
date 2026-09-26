@@ -25,10 +25,12 @@ const DEFAULT_SETTINGS = {
   phone: '+34 600 000 000',
   email: 'info@hostalsomnis.cat',
   rooms: [
-    { id: 'hab-1', name: 'Habitación 1 - Doble' },
-    { id: 'hab-2', name: 'Habitación 2 - Matrimonial' },
-    { id: 'hab-3', name: 'Habitación 3 - Doble' },
-    { id: 'hab-4', name: 'Habitación 4 - Individual' }
+    { id: '101', name: 'Habitació 101' },
+    { id: '102', name: 'Habitació 102' },
+    { id: '201', name: 'Habitació 201' },
+    { id: '202', name: 'Habitació 202' },
+    { id: '301', name: 'Habitació 301' },
+    { id: '302', name: 'Habitació 302' }
   ],
   icloud: {
     enabled: false,
