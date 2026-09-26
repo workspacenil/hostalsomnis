@@ -712,6 +712,8 @@ const CalendarModule = {
   saveModalBooking(e) {
     if (e && e.preventDefault) e.preventDefault();
 
+    let savedBooking = null;
+
     const id = document.getElementById('cal-modal-id').value;
     const roomId = document.getElementById('cal-modal-room').value;
     const guestName = document.getElementById('cal-modal-guest').value.trim();
@@ -771,6 +773,7 @@ const CalendarModule = {
           notes,
           status: 'confirmada'
         };
+        savedBooking = bookings[idx];
       }
     } else {
       // Nova reserva
@@ -799,9 +802,8 @@ const CalendarModule = {
         createdAt: new Date().toISOString()
       };
       bookings.push(newBooking);
+      savedBooking = newBooking;
     }
-
-    const savedBooking = id ? bookings.find(b => b.id === id) : newBooking;
 
     if (window.Store) {
       Store.set('bookings', bookings);
@@ -839,10 +841,7 @@ const CalendarModule = {
   },
 
   submitModalForm() {
-    const form = document.getElementById('form-cal-booking');
-    if (form) {
-      form.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
-    }
+    this.saveModalBooking();
   },
 
   copyConfirmationMail(bookingId) {
@@ -977,10 +976,17 @@ www.hostalsomnis.com`;
 
   openCodesFromBooking(bookingId) {
     let bookingData = null;
-    if (bookingId) {
+    const targetId = bookingId || this.currentEditBookingId;
+
+    if (targetId) {
       const bookings = (window.Store && Store.get('bookings')) || [];
-      bookingData = bookings.find(item => item.id === bookingId);
-    } else {
+      const found = bookings.find(item => item.id === targetId);
+      if (found) {
+        bookingData = { ...found };
+      }
+    }
+
+    if (!bookingData) {
       const roomEl = document.getElementById('cal-modal-room');
       const mealPlanEl = document.getElementById('cal-modal-mealplan');
       const guestEl = document.getElementById('cal-modal-guest');
@@ -989,6 +995,13 @@ www.hostalsomnis.com`;
         mealPlan: mealPlanEl ? mealPlanEl.value : 'NE',
         guestName: guestEl ? guestEl.value : ''
       };
+    } else {
+      const roomEl = document.getElementById('cal-modal-room');
+      const mealPlanEl = document.getElementById('cal-modal-mealplan');
+      const guestEl = document.getElementById('cal-modal-guest');
+      if (roomEl && roomEl.value) bookingData.room = roomEl.value;
+      if (mealPlanEl && mealPlanEl.value) bookingData.mealPlan = mealPlanEl.value;
+      if (guestEl && guestEl.value) bookingData.guestName = guestEl.value;
     }
 
     this.closeModal();
@@ -1000,6 +1013,8 @@ www.hostalsomnis.com`;
     if (window.CodesModule && typeof CodesModule.loadFromBooking === 'function') {
       CodesModule.loadFromBooking(bookingData || {});
     }
+
+    window.scrollTo({ top: 0, behavior: 'smooth' });
 
     setTimeout(() => {
       const porta = document.getElementById('codigos-porta');

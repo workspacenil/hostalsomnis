@@ -12,7 +12,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
   <meta name="apple-mobile-web-app-title" content="Hostal Somnis">
   <meta name="theme-color" content="#000000">
-  <link rel="stylesheet" href="css/styles.css?v=45">
+  <link rel="stylesheet" href="css/styles.css?v=46">
 </head>
 <body>
 
@@ -854,27 +854,27 @@ ALTER PUBLICATION supabase_realtime ADD TABLE bookings;</pre>
 
       <!-- PEU DE FINESTRA FIX -->
       <div class="modal-footer-bar">
-        <div style="display: flex; align-items: center; gap: 8px;">
+        <div class="modal-footer-secondary" style="display: flex; align-items: center; gap: 8px;">
           <button type="button" id="cal-modal-delete-btn" class="btn btn-outline" style="color: #DC2626; border-color: #FCA5A5; background: #FEF2F2;" onclick="CalendarModule.deleteCurrentBooking()">Eliminar</button>
           <button type="button" id="cal-modal-copy-btn" class="btn btn-mail-confirm" onclick="CalendarModule.copyModalConfirmationMail(this)" title="Copiar confirmació completa al porta-retalls">📧 Copiar Mail</button>
           <button type="button" class="btn btn-codes-quick" id="cal-btn-go-codes" onclick="CalendarModule.openCodesFromBooking()" title="Obrir Còdigs amb les dades d'aquesta reserva">🔑 Còdigs</button>
         </div>
-        <div style="display: flex; gap: 10px; margin-left: auto;">
+        <div class="modal-footer-primary" style="display: flex; gap: 10px; margin-left: auto;">
           <button type="button" class="btn btn-outline" id="cal-modal-cancel-btn" onclick="CalendarModule.closeModal()" style="font-weight: 600; padding: 10px 18px;">Desfer</button>
-          <button type="button" class="btn btn-primary" id="cal-modal-save-btn" onclick="CalendarModule.submitModalForm()" style="font-weight: 700; padding: 10px 22px; min-width: 110px; background: #059669; border-color: #059669;">Guardar</button>
+          <button type="button" class="btn btn-primary" id="cal-modal-save-btn" onclick="CalendarModule.saveModalBooking(event)" style="font-weight: 700; padding: 10px 22px; min-width: 110px; background: #059669; border-color: #059669; cursor: pointer;">Guardar</button>
         </div>
       </div>
     </div>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="js/store.js?v=45"></script>
-  <script src="js/cloud.js?v=45"></script>
-  <script src="js/calendar.js?v=45"></script>
-  <script src="js/app.js?v=45"></script>
-  <script src="js/mails.js?v=45"></script>
-  <script src="js/checkin.js?v=45"></script>
-  <script src="js/codes.js?v=45"></script>
-  <script src="js/settings.js?v=45"></script>
+  <script src="js/store.js?v=46"></script>
+  <script src="js/cloud.js?v=46"></script>
+  <script src="js/calendar.js?v=46"></script>
+  <script src="js/app.js?v=46"></script>
+  <script src="js/mails.js?v=46"></script>
+  <script src="js/checkin.js?v=46"></script>
+  <script src="js/codes.js?v=46"></script>
+  <script src="js/settings.js?v=46"></script>
 </body>
 </html>
