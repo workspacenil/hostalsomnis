@@ -197,10 +197,9 @@
               <div class="form-group" style="margin-bottom: 0;">
                 <label class="form-label" style="font-weight: 600; color: #1E40AF;">Client de correu preferit</label>
                 <select id="mail-drawer-outlook-mode" class="form-select" onchange="MailsModule.saveOutlookConfig(document.getElementById('mail-drawer-mother-email')?.value, this.value)">
-                  <option value="thunderbird">🦅 Mozilla Thunderbird (Recomanat)</option>
-                  <option value="app">💻 App de Correu per defecte (Windows Mail / Outlook)</option>
-                  <option value="web">🌐 Outlook Web (hotmail / live / outlook.com)</option>
-                  <option value="office365">🏢 Microsoft 365 (Empresarial)</option>
+                  <option value="default" selected>📱💻 Aplicació predeterminada del dispositiu (Thunderbird, Mail...)</option>
+                  <option value="web">🌐 Outlook Web (hotmail / live / outlook.com al navegador)</option>
+                  <option value="office365">🏢 Microsoft 365 (Compte empresarial)</option>
                 </select>
               </div>
             </div>
@@ -382,26 +381,25 @@
                     <div style="display: flex; align-items: center; gap: 8px;">
                       <label for="mail-outlook-mode-select" style="font-size: 12px; color: var(--text-muted); margin-bottom: 0;">Obrir amb:</label>
                       <select id="mail-outlook-mode-select" class="form-select" style="font-size: 12px; padding: 4px 8px; width: auto;" onchange="MailsModule.onOutlookModeChange(this.value)">
-                        <option value="thunderbird">🦅 Mozilla Thunderbird (Recomanat)</option>
-                        <option value="app">💻 App de Correu per defecte (Windows Mail / Outlook)</option>
-                        <option value="web">🌐 Outlook Web (hotmail / outlook.com)</option>
-                        <option value="office365">🏢 Microsoft 365 (Empresarial)</option>
+                        <option value="default" selected>📱💻 App predeterminada del dispositiu (Thunderbird, Mail...)</option>
+                        <option value="web">🌐 Outlook Web (hotmail / live / outlook.com al navegador)</option>
+                        <option value="office365">🏢 Microsoft 365 (Compte empresarial)</option>
                       </select>
                     </div>
                   </div>
 
                   <!-- Text de la confirmació oficial a revisar -->
                   <div style="position: relative;">
-                    <textarea id="confirmacio-result-text" style="width: 100%; min-height: 420px; padding: 18px 20px; border: 1px solid var(--border-color); border-radius: var(--radius-md); font-family: Consolas, 'SF Mono', Monaco, 'Courier New', monospace; font-size: 13.5px; line-height: 1.65; color: #1F2937; background-color: #FAFAFA; resize: vertical; outline: none;" placeholder="Aquí apareixerà la confirmació oficial amb el format exacte i en l'idioma seleccionat, a punt per revisar i enviar amb Outlook..."></textarea>
+                    <textarea id="confirmacio-result-text" style="width: 100%; min-height: 420px; padding: 18px 20px; border: 1px solid var(--border-color); border-radius: var(--radius-md); font-family: Consolas, 'SF Mono', Monaco, 'Courier New', monospace; font-size: 13.5px; line-height: 1.65; color: #1F2937; background-color: #FAFAFA; resize: vertical; outline: none;" placeholder="Aquí apareixerà la confirmació oficial amb el format exacte i en l'idioma seleccionat, a punt per revisar i enviar..."></textarea>
                   </div>
                 </div>
 
                 <!-- Barra d'Accions d'Enviament -->
                 <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; padding: 14px 18px; background: #F8FAFC; border-top: 1px solid var(--border-color); border-bottom-left-radius: var(--radius-md); border-bottom-right-radius: var(--radius-md);">
                   <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
-                    <button type="button" class="btn-outlook" id="btn-open-outlook" onclick="MailsModule.openInOutlook()" title="Obre el correu preparat a Thunderbird / Outlook per donar el vistiplau i prémer Enviar">
+                    <button type="button" class="btn-outlook" id="btn-open-outlook" onclick="MailsModule.openInOutlook()" title="Obre el correu preparat a l'aplicació predeterminada del dispositiu per donar el vistiplau i prémer Enviar">
                       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
-                      <span id="btn-open-mail-label">🚀 Obrir i Enviar al Correu (Thunderbird / Outlook)</span>
+                      <span id="btn-open-mail-label">📱💻 Obrir a l'App de Correu Predeterminada</span>
                     </button>
                     <button type="button" class="btn btn-outline" id="btn-copy-confirmacio" onclick="MailsModule.copyConfirmation()" style="display: flex; align-items: center; gap: 6px; padding: 9px 16px; font-size: 13px; font-weight: 600;">
                       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
@@ -689,8 +687,7 @@
                 <div class="form-group">
                   <label class="form-label">Client de correu preferit per enviar correus</label>
                   <select id="settings-outlook-provider" class="form-select">
-                    <option value="thunderbird">🦅 Mozilla Thunderbird (Recomanat)</option>
-                    <option value="app">💻 App de Correu per defecte de Windows</option>
+                    <option value="default" selected>📱💻 Aplicació predeterminada del dispositiu (Thunderbird, Mail...)</option>
                     <option value="web">🌐 Outlook Web (hotmail / live / outlook.com al navegador)</option>
                     <option value="office365">🏢 Microsoft 365 (Compte empresarial / educatiu)</option>
                   </select>
@@ -992,7 +989,7 @@ ALTER PUBLICATION supabase_realtime ADD TABLE bookings;</pre>
       <div class="modal-footer-bar">
         <div class="modal-footer-secondary" style="display: flex; align-items: center; gap: 8px;">
           <button type="button" id="cal-modal-delete-btn" class="btn btn-outline" style="color: #DC2626; border-color: #FCA5A5; background: #FEF2F2;" onclick="CalendarModule.deleteCurrentBooking()">Eliminar</button>
-          <button type="button" id="cal-modal-copy-btn" class="btn btn-mail-confirm" onclick="CalendarModule.openBookingInMails()" title="Preparar i enviar correu des de l'apartat Mails amb Outlook">📧 Preparar Mail (Outlook)</button>
+          <button type="button" id="cal-modal-copy-btn" class="btn btn-mail-confirm" onclick="CalendarModule.openBookingInMails()" title="Preparar el correu de confirmació a l'apartat Mails">📧 Preparar Mail</button>
           <button type="button" class="btn btn-codes-quick" id="cal-btn-go-codes" onclick="CalendarModule.openCodesFromBooking()" title="Obrir Còdigs amb les dades d'aquesta reserva">🔑 Còdigs</button>
         </div>
         <div class="modal-footer-primary" style="display: flex; gap: 10px; margin-left: auto;">

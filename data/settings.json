@@ -48,6 +48,6 @@
   "ota_last_sync": null,
   "outlook": {
     "motherEmail": "info@hostalsomnis.cat",
-    "provider": "web"
+    "provider": "default"
   }
 }

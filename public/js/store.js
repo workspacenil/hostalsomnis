@@ -89,7 +89,7 @@ const Store = {
       if (!currentSettings.outlook) {
         currentSettings.outlook = {
           motherEmail: currentSettings.email || 'info@hostalsomnis.cat',
-          provider: 'web'
+          provider: 'default'
         };
         updated = true;
       }

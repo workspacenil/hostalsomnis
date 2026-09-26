@@ -409,7 +409,7 @@ const CalendarModule = {
                     📝 ${b.notes}
                   </div>
                 ` : ''}
-                <button type="button" class="btn btn-mail-confirm" id="cal-btn-copy-mail-${b.id}" onclick="CalendarModule.openBookingInMails('${b.id}')" style="margin-top: 8px;">📧 Preparar Mail (Outlook)</button>
+                <button type="button" class="btn btn-mail-confirm" id="cal-btn-copy-mail-${b.id}" onclick="CalendarModule.openBookingInMails('${b.id}')" style="margin-top: 8px;">📧 Preparar Mail</button>
               </div>
 
               <div class="room-card-footer">

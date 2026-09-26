@@ -143,7 +143,7 @@ const MailsModule = {
     const settings = Store.get('settings', {}) || {};
     return settings.outlook || {
       motherEmail: settings.email || 'info@hostalsomnis.cat',
-      provider: 'web'
+      provider: 'default'
     };
   },
 
@@ -151,7 +151,7 @@ const MailsModule = {
     const settings = Store.get('settings', {}) || {};
     settings.outlook = {
       motherEmail: (motherEmail || '').trim(),
-      provider: provider || settings.outlook?.provider || 'web'
+      provider: provider || settings.outlook?.provider || 'default'
     };
     Store.set('settings', settings);
 
@@ -174,7 +174,7 @@ const MailsModule = {
     const drawerMotherEmail = document.getElementById('mail-drawer-mother-email');
     const drawerOutlookMode = document.getElementById('mail-drawer-outlook-mode');
 
-    const provider = config.provider || 'thunderbird';
+    const provider = config.provider || 'default';
 
     if (displayEl) {
       displayEl.value = config.motherEmail || 'Sense configurar';
@@ -191,14 +191,12 @@ const MailsModule = {
 
     const btnLabel = document.getElementById('btn-open-mail-label');
     if (btnLabel) {
-      if (provider === 'thunderbird') {
-        btnLabel.textContent = '🦅 Obrir i Enviar a Thunderbird';
-      } else if (provider === 'app') {
-        btnLabel.textContent = '💻 Obrir i Enviar a la teva App de Correu';
+      if (provider === 'web') {
+        btnLabel.textContent = '🌐 Obrir i Enviar a Outlook Web';
       } else if (provider === 'office365') {
         btnLabel.textContent = '🏢 Obrir i Enviar a Microsoft 365';
       } else {
-        btnLabel.textContent = '🚀 Obrir i Enviar a Outlook Web';
+        btnLabel.textContent = '📱💻 Obrir a l\'App de Correu Predeterminada';
       }
     }
   },
@@ -1259,7 +1257,7 @@ Omple la plantilla oficial en ${langName} seguint totes les instruccions:`;
     }
 
     const config = this.getOutlookConfig();
-    const provider = config.provider || 'thunderbird';
+    const provider = config.provider || 'default';
 
     if (provider === 'web') {
       // Outlook Web (outlook.live.com per a Hotmail / Outlook personal)
@@ -1270,17 +1268,22 @@ Omple la plantilla oficial en ${langName} seguint totes les instruccions:`;
       const url = `https://outlook.office.com/mail/deeplink/compose?to=${encodeURIComponent(to)}&subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
       window.open(url, '_blank');
     } else {
-      // Mozilla Thunderbird o aplicació de correu per defecte del sistema
-      // Protocol estàndard mailto suportat nativament al 100% per Thunderbird
+      // Aplicació predeterminada del dispositiu (Thunderbird, Windows Mail, Outlook, Apple Mail, etc.)
       const mailtoUrl = `mailto:${encodeURIComponent(to)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-      window.location.href = mailtoUrl;
+      const link = document.createElement('a');
+      link.href = mailtoUrl;
+      document.body.appendChild(link);
+      link.click();
+      setTimeout(() => {
+        try { document.body.removeChild(link); } catch (e) {}
+      }, 500);
     }
 
     // Feedback visual a la interfície
     const btn = document.getElementById('btn-open-outlook');
     if (btn) {
       const origHtml = btn.innerHTML;
-      const appName = provider === 'thunderbird' ? 'Thunderbird' : (provider === 'app' ? 'el teu correu' : 'Outlook');
+      const appName = provider === 'web' ? 'Outlook Web' : (provider === 'office365' ? 'Microsoft 365' : "l'App de Correu del dispositiu");
       btn.innerHTML = `✓ Obert a ${appName}! Revisa i prem Enviar`;
       btn.style.background = '#059669';
       btn.style.borderColor = '#059669';

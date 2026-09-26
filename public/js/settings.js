@@ -27,7 +27,7 @@ const SettingsModule = {
     const motherOutlookInput = document.getElementById('settings-mother-outlook');
     const outlookProviderSelect = document.getElementById('settings-outlook-provider');
     if (motherOutlookInput) motherOutlookInput.value = outlookConfig.motherEmail || settings.email || 'info@hostalsomnis.cat';
-    if (outlookProviderSelect) outlookProviderSelect.value = outlookConfig.provider || 'web';
+    if (outlookProviderSelect) outlookProviderSelect.value = outlookConfig.provider || 'default';
 
     // Supabase
     const supabaseConfig = settings.supabase || {};
