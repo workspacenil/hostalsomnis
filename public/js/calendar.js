@@ -9,6 +9,9 @@ const CalendarModule = {
   viewDate: null,     // Data de referència del mes que s'està visualitzant (Date)
   selectedDate: null, // Data seleccionada en format 'YYYY-MM-DD'
   currentEditBookingId: null,
+  currentQuickCodeBooking: null,
+  currentQuickCodeLang: 'ca',
+  currentQuickCodesText: '',
 
   // Les 6 habitacions reals de Hostal Somnis (Súria)
   ROOMS: [
@@ -36,10 +39,15 @@ const CalendarModule = {
     this.viewDate = new Date(today.getFullYear(), today.getMonth(), 1);
     this.selectedDate = this.formatDateIso(today);
 
-    // Suport per a la tecla 'Escape' per tancar el modal
+    // Suport per a la tecla 'Escape' per tancar els modals
     if (!this._escapeBound) {
       document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape' || e.key === 'Esc') {
+          const codesModal = document.getElementById('calendar-codes-modal');
+          if (codesModal && codesModal.style.display !== 'none') {
+            this.closeCodesModal();
+            return;
+          }
           const modal = document.getElementById('calendar-booking-modal');
           if (modal && modal.style.display !== 'none') {
             this.closeModal();
@@ -993,36 +1001,262 @@ www.hostalsomnis.com`;
       bookingData = {
         room: roomEl ? roomEl.value : '101',
         mealPlan: mealPlanEl ? mealPlanEl.value : 'NE',
-        guestName: guestEl ? guestEl.value : ''
+        guestName: guestEl ? guestEl.value : 'Hoste'
       };
     } else {
       const roomEl = document.getElementById('cal-modal-room');
       const mealPlanEl = document.getElementById('cal-modal-mealplan');
       const guestEl = document.getElementById('cal-modal-guest');
-      if (roomEl && roomEl.value) bookingData.room = roomEl.value;
-      if (mealPlanEl && mealPlanEl.value) bookingData.mealPlan = mealPlanEl.value;
-      if (guestEl && guestEl.value) bookingData.guestName = guestEl.value;
+      if (roomEl && roomEl.value && !bookingId) bookingData.room = roomEl.value;
+      if (mealPlanEl && mealPlanEl.value && !bookingId) bookingData.mealPlan = mealPlanEl.value;
+      if (guestEl && guestEl.value && !bookingId) bookingData.guestName = guestEl.value;
     }
 
+    this.currentQuickCodeBooking = bookingData;
+
+    // Tanca el modal de reserva si estava obert
     this.closeModal();
 
-    if (window.App && typeof App.switchView === 'function') {
-      App.switchView('codigos');
+    // Obre el modal dedicat de còdigs
+    const codesModal = document.getElementById('calendar-codes-modal');
+    if (codesModal) {
+      codesModal.style.display = 'flex';
     }
 
-    if (window.CodesModule && typeof CodesModule.loadFromBooking === 'function') {
-      CodesModule.loadFromBooking(bookingData || {});
+    const roomClean = String(bookingData.room || '101').replace(/\D/g, '') || '101';
+    const guestName = (bookingData.guestName || 'Hoste').trim();
+    const subtitleEl = document.getElementById('cal-codes-modal-subtitle');
+    if (subtitleEl) {
+      subtitleEl.textContent = `Habitació ${roomClean} - ${guestName}`;
     }
 
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    // Selecciona idioma actiu i actualitza el text
+    this.setQuickCodeLang(this.currentQuickCodeLang || 'ca');
+  },
 
-    setTimeout(() => {
-      const porta = document.getElementById('codigos-porta');
-      if (porta) {
-        porta.focus();
-        porta.select();
+  closeCodesModal() {
+    const codesModal = document.getElementById('calendar-codes-modal');
+    if (codesModal) {
+      codesModal.style.display = 'none';
+    }
+  },
+
+  setQuickCodeLang(lang) {
+    this.currentQuickCodeLang = lang || 'ca';
+    ['ca', 'es', 'en', 'fr'].forEach(l => {
+      const btn = document.getElementById(`btn-quick-lang-${l}`);
+      if (btn) {
+        btn.classList.toggle('active', l === this.currentQuickCodeLang);
       }
-    }, 150);
+    });
+    this.updateQuickCodesText();
+  },
+
+  updateQuickCodesText() {
+    const lang = this.currentQuickCodeLang || 'ca';
+
+    const portaInput = document.getElementById('quick-code-porta');
+    const porta = (portaInput && portaInput.value.trim()) || '152030';
+
+    const caixaNumSelect = document.getElementById('quick-code-caixa-num');
+    const caixaNum = (caixaNumSelect && caixaNumSelect.value) || '1';
+
+    const caixaPinInput = document.getElementById('quick-code-caixa-pin');
+    const caixaCodi = (caixaPinInput && caixaPinInput.value.trim()) || '1479';
+
+    const b = this.currentQuickCodeBooking || {};
+    let roomNum = String(b.room || '101').replace(/\D/g, '') || '101';
+    const planta = roomNum.charAt(0) || '1';
+
+    const floors = {
+      ca: { '1': '1a planta', '2': '2a planta', '3': '3a planta' },
+      es: { '1': '1a planta', '2': '2a planta', '3': '3a planta' },
+      en: { '1': '1st floor', '2': '2nd floor', '3': '3rd floor' },
+      fr: { '1': 'Etage 1', '2': 'Etage 2', '3': 'Etage 3' }
+    };
+    const floorLabel = (floors[lang] && floors[lang][planta]) || `${planta}a planta`;
+
+    let roomsText = '';
+    if (lang === 'ca') {
+      roomsText = `HABITACIÓ ${roomNum}  (${floorLabel})`;
+    } else if (lang === 'es') {
+      roomsText = `Habitación ${roomNum}  (${floorLabel})`;
+    } else if (lang === 'en') {
+      roomsText = `Room: ${roomNum}  (${floorLabel})`;
+    } else if (lang === 'fr') {
+      roomsText = `Chambre : ${roomNum}  (${floorLabel})`;
+    }
+
+    const cleaningTexts = {
+      ca: '\n\nIMPORTANT: Si cal que netegin l\'habitació, penjar el cartell verd.',
+      es: '\n\nIMPORTANTE: Si desean la limpieza de la habitación, colgar el cartel verde.',
+      en: '\n\nIf you would like your room to be cleaned, please hang the green sign.',
+      fr: '\n\nIMPORTANT : Si vous souhaitez que la chambre soit nettoyée, veuillez accrocher l\'écriteau vert.'
+    };
+    const cleaningText = cleaningTexts[lang] || cleaningTexts['ca'];
+
+    // Esmorzar
+    let breakfastText = '';
+    const mealPlan = b.mealPlan || 'NE';
+    const settings = (window.Store && Store.get('settings')) || {};
+    const bfPrice = settings.defaultBreakfastPrice || '8';
+
+    if (mealPlan === 'AD') {
+      const bfReminders = {
+        ca: `\n\nL'esmorzar se serveix a la planta baixa de 8:30 a 10:30 h. A quina hora us aniria bé esmorzar?`,
+        es: `\n\nEl desayuno se sirve en la planta baja de 8:30 a 10:30 h. ¿A qué hora les iría bien desayunar?`,
+        en: `\n\nBreakfast is served on the ground floor from 8:30 to 10:30 AM. What time would suit you best for breakfast?`,
+        fr: `\n\nLe petit-déjeuner est servi au rez-de-chaussée de 8:30 à 10:30. À quelle heure souhaiteriez-vous prendre le petit-déjeuner ?`
+      };
+      breakfastText = bfReminders[lang] || bfReminders['ca'];
+    } else {
+      const bfOffers = {
+        ca: `\n\nOferim servei d'esmorzar (de 8:30 a 10:30, ${bfPrice} € per persona).\nSi us ve de gust esmorzar, us agrairem que ens ho feu saber avui abans de les 19 h.`,
+        es: `\n\nDisponemos de servicio de desayuno (de 8:30 a 10:30, ${bfPrice} € por persona).\nSi les apetece, pueden confirmárnoslo hoy antes de las 19h.`,
+        en: `\n\nWe offer a delicious breakfast service (from 8:30 to 10:30, €${bfPrice} per person).\nIf you would like to have breakfast with us, please let us know today before 7:00 PM.`,
+        fr: `\n\nNous proposons un service de petit-déjeuner (de 8:30 à 10:30, ${bfPrice} € par personne).\nSi vous souhaitez prendre le petit-déjeuner avec nous, merci de nous le faire savoir aujourd'hui avant 19 h.`
+      };
+      breakfastText = bfOffers[lang] || bfOffers['ca'];
+    }
+
+    let text = '';
+    if (lang === 'ca') {
+      text = `Per accedir, cal marcar al teclat lateral de la porta d’entrada:
+
+el codi  ${porta}   i ✅
+
+La targeta/clau de l’habitació és a les caixes que hi ha darrere de la porta.
+
+Codi per obrir la caixa:
+
+Caixa ${caixaNum}
+Codi:  ${caixaCodi} A i girar la rodeta.
+${roomsText}
+
+Ara amb la targeta podeu obrir totes dues portes, passeu-la pel lector. Ja no necessiteu el codi.${cleaningText}${breakfastText}
+
+Hora de check-out: 11:30 AM
+Podeu tornar la targeta a la mateixa caixa de recollida si la recepció està tancada.
+
+Gràcies 
+Hostal Somnis`;
+    } else if (lang === 'es') {
+      text = `Para acceder se tiene que marcar en el teclado lateral de la puerta de entrada:
+
+código     ${porta}  y ✅
+
+La tarjeta / llave de la habitación está en las cajas de detrás de la puerta.
+
+El código para abrir la caja:
+
+Caja  ${caixaNum}
+Código:  ${caixaCodi} A y girar ruedecilla.
+${roomsText}
+
+Ahora con la tarjeta puede abrir ambas puertas, pásela por el teclado. Ya no necesita el código.${cleaningText}${breakfastText}
+
+*Hora Check out:   11:30 AM *
+Si la recepción estuviera cerrada, pueden dejar la tarjeta en la misma caja de recogida.
+
+Gracias 
+HOSTAL SOMNIS`;
+    } else if (lang === 'en') {
+      text = `To access, please use the side keypad by the main entrance door and enter the code: 
+
+${porta}   and ✅
+
+The keycard for the room is in the boxes behind the door.
+
+Code to open the box:
+
+Box ${caixaNum}
+Code:  ${caixaCodi} A and turn the wheel.
+${roomsText}
+
+Now with the keycard you can open both doors, just tap it on the keypad. You will no longer need the code.${cleaningText}${breakfastText}
+
+Check-out time: 11:30 AM
+
+If reception is closed, you can return your keycard to the same box.
+
+Thank you
+Hostal Somnis`;
+    } else if (lang === 'fr') {
+      text = `Pour entrer, il faut composer sur le clavier situé à côté de la porte principale Code : 
+
+${porta}   et ✅
+
+La carte de la chambre se trouve dans les boîtes derrière la porte principale.
+
+Boîte ${caixaNum}
+Code :  ${caixaCodi} A puis tourner la molette
+${roomsText}
+
+Vous pouvez désormais ouvrir les deux portes avec la carte, il suffit de la passer sur le lecteur. Vous n'avez plus besoin du code.${cleaningText}${breakfastText}
+
+Heure de check-out : 11:30 AM
+
+En partant, si la réception est fermée, vous pouvez laisser la carte dans la même boîte de dépôt.
+
+Merci
+Hostal Somnis`;
+    }
+
+    const previewEl = document.getElementById('quick-code-preview');
+    if (previewEl) {
+      previewEl.textContent = text;
+    }
+    this.currentQuickCodesText = text;
+  },
+
+  copyQuickCodes(btnEl) {
+    const text = this.currentQuickCodesText || (document.getElementById('quick-code-preview') ? document.getElementById('quick-code-preview').textContent : '');
+    if (!text) return;
+
+    const targetBtn = btnEl || document.getElementById('btn-copy-quick-codes');
+
+    const handleSuccess = () => {
+      if (targetBtn) {
+        const origHtml = targetBtn.innerHTML;
+        const origBg = targetBtn.style.background;
+        const origBorder = targetBtn.style.borderColor;
+
+        targetBtn.innerHTML = '✓ Copiat al porta-retalls!';
+        targetBtn.style.background = '#047857';
+        targetBtn.style.borderColor = '#047857';
+
+        setTimeout(() => {
+          targetBtn.innerHTML = origHtml;
+          targetBtn.style.background = origBg;
+          targetBtn.style.borderColor = origBorder;
+        }, 3000);
+      }
+    };
+
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(handleSuccess).catch(err => {
+        console.warn('Fallback porta-retalls:', err);
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        ta.style.position = 'fixed';
+        ta.style.opacity = '0';
+        document.body.appendChild(ta);
+        ta.select();
+        try { document.execCommand('copy'); } catch(e){}
+        document.body.removeChild(ta);
+        handleSuccess();
+      });
+    } else {
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      try { document.execCommand('copy'); } catch(e){}
+      document.body.removeChild(ta);
+      handleSuccess();
+    }
   },
 
   goToCodesFromModal() {
