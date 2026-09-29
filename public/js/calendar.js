@@ -414,7 +414,7 @@ const CalendarModule = {
 
               <div class="room-card-footer">
                 ${badgesHtml || '<span></span>'}
-                <button type="button" class="btn-room-action btn-codes-quick" onclick="CalendarModule.openCodesFromBooking('${b.id}')">🔑 Còdigs</button>
+                <button type="button" class="btn-room-action btn-codes-quick" onclick="CalendarModule.openCodesFromBooking('${b.id}')">🔑 Codics</button>
                 <button type="button" class="btn-room-action" onclick="CalendarModule.openEditBooking('${b.id}')">
                   Veure / Modificar
                 </button>
@@ -1120,7 +1120,7 @@ www.hostalsomnis.com`;
     // Tanca el modal de reserva si estava obert
     this.closeModal();
 
-    // Obre el modal dedicat de còdigs
+    // Obre el modal dedicat de codics
     const codesModal = document.getElementById('calendar-codes-modal');
     if (codesModal) {
       codesModal.style.display = 'flex';
@@ -1258,7 +1258,7 @@ ${roomsText}
 
 Ahora con la tarjeta puede abrir ambas puertas, pásela por el teclado. Ya no necesita el código.${cleaningText}${breakfastText}
 
-*Hora Check out:   11:30 AM *
+Hora Check out:   11:30 AM 
 Si la recepción estuviera cerrada, pueden dejar la tarjeta en la misma caja de recogida.
 
 Gracias 

@@ -1,5 +1,5 @@
 /**
- * MÓDULO DE CÒDIGS (CHECK-IN) - HOSTAL SOMNIS
+ * MÓDULO DE CODICS (CHECK-IN) - HOSTAL SOMNIS
  */
 
 const CodesModule = {
@@ -195,7 +195,7 @@ ${roomsText}
 
 Ahora con la tarjeta puede abrir ambas puertas, pásela por el teclado. Ya no necesita el código.${cleaningText}${breakfastText}
 
-*Hora Check out:   11:30 AM *
+Hora Check out:   11:30 AM 
 Si la recepción estuviera cerrada, pueden dejar la tarjeta en la misma caja de recogida.
 
 Gracias 
