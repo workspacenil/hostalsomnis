@@ -14,7 +14,7 @@ const App = {
 
   // Configuració de seguretat criptogràfica (sense contrasenyes visibles a GitHub)
   AUTH_SALT: 'hostal_somnis_suria_salt_2026',
-  AUTH_HASH: '7a442fa2731403f2390c1679d37a9dd733f9016e5cca9866542ecb923186ea37',
+  AUTH_HASH: '922ecbf62defd2b3cf0cffc15f1d896eb7b4b3037859fab556e46bf336195173',
 
   async computeHash(text) {
     if (window.crypto && window.crypto.subtle) {
