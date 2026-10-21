@@ -414,7 +414,7 @@ const CalendarModule = {
 
               <div class="room-card-footer">
                 ${badgesHtml || '<span></span>'}
-                <button type="button" class="btn-room-action btn-codes-quick" onclick="CalendarModule.openCodesFromBooking('${b.id}')">🔑 Codics</button>
+                <button type="button" class="btn-room-action btn-codes-quick" onclick="CalendarModule.openCodesFromBooking('${b.id}')">🔑 Codis</button>
                 <button type="button" class="btn-room-action" onclick="CalendarModule.openEditBooking('${b.id}')">
                   Veure / Modificar
                 </button>
@@ -1120,7 +1120,7 @@ www.hostalsomnis.com`;
     // Tanca el modal de reserva si estava obert
     this.closeModal();
 
-    // Obre el modal dedicat de codics
+    // Obre el modal dedicat de codis
     const codesModal = document.getElementById('calendar-codes-modal');
     if (codesModal) {
       codesModal.style.display = 'flex';

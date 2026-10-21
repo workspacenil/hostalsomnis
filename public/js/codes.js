@@ -1,5 +1,5 @@
 /**
- * MÓDULO DE CODICS (CHECK-IN) - HOSTAL SOMNIS
+ * MÓDULO DE CODIS (CHECK-IN) - HOSTAL SOMNIS
  */
 
 const CodesModule = {
