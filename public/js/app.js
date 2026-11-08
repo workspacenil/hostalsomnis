@@ -202,6 +202,8 @@ const SplashModule = {
 
     // Iniciar reproducción (muted para garantizar autoplay en todos los navegadores móviles y escritorio)
     video.muted = true;
+    video.volume = 0;
+    splash.addEventListener('click', function() { SplashModule.dismiss(); });
     const playPromise = video.play();
     if (playPromise !== undefined) {
       playPromise.catch((err) => {
@@ -239,19 +241,7 @@ const SplashModule = {
     } catch (e) {}
   },
 
-  toggleAudio() {
-    const video = document.getElementById('splash-video');
-    const label = document.getElementById('splash-sound-label');
-    const icon = document.getElementById('splash-sound-icon');
-    if (!video) return;
-    video.muted = !video.muted;
-    if (icon) {
-      icon.textContent = video.muted ? '🔇' : '🔊';
-    }
-    if (label) {
-      label.textContent = video.muted ? 'Activar so' : 'Silenciar';
-    }
-  },
+  toggleAudio() { /* so silenciat sempre */ },
 
   dismiss() {
     if (this.dismissed) return;

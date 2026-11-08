@@ -24,14 +24,6 @@
         <source src="assets/loading-video.mp4" type="video/mp4">
         <source src="assets/Logo_reveal_animation_instructions_20260912012041.mp4" type="video/mp4">
       </video>
-      <div class="splash-controls">
-        <button type="button" class="splash-btn" onclick="SplashModule.toggleAudio()" title="Activar/Silenciar so">
-          <span id="splash-sound-icon">🔇</span> <span id="splash-sound-label">Activar so</span>
-        </button>
-        <button type="button" class="splash-btn" onclick="SplashModule.dismiss()" title="Saltar animació de càrrega">
-          Saltar intro &rarr;
-        </button>
-      </div>
     </div>
   </div>
   <script>
@@ -41,6 +33,7 @@
         var v = document.getElementById('splash-video');
         if (v) {
           v.muted = true;
+          v.volume = 0;
           var p = v.play();
           if (p !== undefined) { p.catch(function(){}); }
         }
