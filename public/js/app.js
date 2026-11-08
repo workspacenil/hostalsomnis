@@ -75,8 +75,8 @@ const App = {
     if (window.SettingsModule) SettingsModule.init();
     if (window.CalendarModule) CalendarModule.init();
     
-    // Cargar la vista por defecto (calendari primero)
-    this.switchView('calendari');
+    // Cargar la vista por defecto (codis primero)
+    this.switchView('codigos');
   },
 
   // Gestión del sidebar responsivo
